@@ -1,0 +1,1670 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="author" content="" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="autocomplete" content="off" />
+
+  <title>기후변화 상황지도</title>
+
+  <link rel="stylesheet" href="../resources/cdn/krds.min.css">
+  <link rel="stylesheet" href="../resources/css-2026/custom.css">
+  <link rel="stylesheet" href="../resources/css-2026/icon.css">
+
+  <style>
+    .guide-page-content {padding:2rem}
+    .guide-item-wrap {display:flex;align-items:center;flex-wrap:wrap;gap:.4rem;margin-bottom:1.6rem}
+    .guide-item-wrap.type-col {flex-direction:column;}
+    .guide-item-wrap.type-col.a-l {align-items:flex-start;}
+    .guide-item-wrap.type-col .form-input-box,
+    .guide-item-wrap.type-col > div {width:100%}
+    .guide-item-wrap.gap-20 {gap:.8rem 2rem}
+    .guide-item {display:flex;flex-direction:column;gap:.4rem;font-size:1.2rem;color:#111;font-weight:500;align-items:center;}
+    .guide-item.dark {background-color:#111;color:#fff}
+    .guide-item span {text-align:center}
+    .guide-title {font-size:2.4rem;font-weight:800;margin-bottom:1.2rem}
+    .guide-sub-title {height:3.6rem;background-color:#F3F9FE;padding:0 1.6rem;display:flex;align-items:center;margin-bottom:.8rem;font-size:1.6rem;font-weight:500;border-radius:.4rem}
+    .guide-group ~ .guide-group {margin-top:3.6rem}
+    .form-fake-button-group {margin-bottom:1.6rem}
+    .mt-36 {margin-top:3.6rem}
+    .tooltip-pink-box,
+    .tooltip-blue-box,
+    .tooltip-gradation-box {position:relative !important;}
+    .form-input-tooltip-area .tooltip-pink-box {position:absolute !important;}
+
+    /* ================= Icon Guide Custom Styles ================= */
+    .icon-guide-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .icon-guide-search {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+      max-width: 400px;
+    }
+    .icon-guide-search input {
+      width: 100%;
+      height: 42px;
+      padding: 0 16px 0 40px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .icon-guide-search input:focus {
+      border-color: #0b78cb;
+      box-shadow: 0 0 0 3px rgba(11, 120, 203, 0.15);
+    }
+    .icon-guide-search .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #94a3b8;
+    }
+    .icon-guide-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .control-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .btn-chip-group {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
+    }
+    .btn-chip {
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-chip:hover {
+      color: #0f172a;
+    }
+    .btn-chip.is-active {
+      background: #ffffff;
+      color: #0b78cb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .color-dot-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .color-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .color-dot:hover {
+      transform: scale(1.15);
+    }
+    .color-dot.is-active {
+      border-color: #0f172a;
+      transform: scale(1.15);
+    }
+
+    /* Icon Grid */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .icon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 10px 14px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+    .icon-card:hover {
+      border-color: #0b78cb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px -4px rgba(11, 120, 203, 0.15);
+    }
+    .icon-card-preview {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .icon-card-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+      word-break: break-all;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .icon-card-sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .icon-card-copy-hint {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 10px;
+      background: #eff6ff;
+      color: #0b78cb;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: all 0.2s;
+    }
+    .icon-card:hover .icon-card-copy-hint {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Showcase Demo Section */
+    .icon-demo-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .icon-demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+    .demo-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .demo-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+    .demo-btn.primary {
+      background: #0b78cb;
+      border-color: #0b78cb;
+      color: #ffffff;
+    }
+    .demo-btn.primary:hover {
+      background: #0963a8;
+    }
+    .demo-btn.dark {
+      background: #1e293b;
+      border-color: #1e293b;
+      color: #ffffff;
+    }
+    .demo-btn.danger {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+    .demo-code {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      overflow-x: auto;
+    }
+
+    /* Toast Notification */
+    #icon-toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #icon-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+<div class="base-wrap">
+  <main class="guide-page-content">
+    <div class="guide-group">
+      <p class="guide-title">TEXT GUIDE</p>
+      <p class="guide-sub-title">Text Size</p>
+      <div class="guide-item-wrap type-col a-l gap-20">
+        <p class="text-10-800">text-10-800</p>
+        <p class="text-12-800">text-12-800</p>
+        <p class="text-13-800">text-13-800</p>
+        <p class="text-14-800">text-14-800</p>
+        <p class="text-16-800">text-16-800</p>
+        <p class="text-18-800">text-18-800</p>
+        <p class="text-20-800">text-20-800</p>
+        <p class="text-24-800">text-24-800</p>
+        <p class="text-28-800">text-28-800</p>
+      </div>
+    </div>
+
+    <div class="guide-group" style="display:none;">
+      <p class="guide-title">BUTTON</p>
+      <p class="guide-sub-title">Button Style</p>
+      <div class="guide-item-wrap">
+        <button type="button" class="btn-base" data-color="dark" data-size="40" data-round="full">
+          <span class="btn-text">dark</span>
+        </button>
+        <button type="button" class="btn-base" data-color="white" data-size="58" data-round="full">
+          <span class="btn-text ui-flex-1" data-text-align="center">더보기</span>
+          <span class="btn-round-icon-box" data-size="40">
+            <i class="icon-aspect-arrow-more" data-size="24"></i>
+          </span>
+        </button>
+        <button type="button" class="btn-base" data-color="white" data-size="58" data-round="full" data-min-w="264">
+          <span class="btn-text ui-flex-1" data-text-align="center">기후변화 상황지도 소개</span>
+          <span class="btn-round-icon-box" data-size="40">
+            <i class="icon-aspect-arrow-right" data-size="24"></i>
+          </span>
+        </button>
+        <button type="button" class="btn-base" data-color="light-gray" data-size="58" data-round="full">
+          <span class="btn-text ui-flex-1" data-text-align="center">더보기</span>
+          <span class="btn-round-icon-box" data-size="40">
+            <i class="icon-aspect-arrow-more" data-size="24"></i>
+          </span>
+        </button>
+        <button type="button" class="btn-base" data-color="white" data-size="40" data-round="full">
+          <span class="btn-text">white</span>
+        </button>
+        <button type="button" class="btn-base" data-color="dark" data-size="40" data-round="full" disabled>
+          <span class="btn-text">disabled</span>
+        </button>
+        <button type="button" class="btn-base" data-color="deep-dark" data-size="48" data-round="4">
+          <span class="btn-text">deep-dark</span>
+        </button>
+        <button type="button" class="btn-base" data-color="line-gray" data-size="48" data-round="full">
+          <span class="btn-text" data-font-size="18-800">line-gray</span>
+        </button>
+        <button type="button" class="btn-base" data-color="line-gray" data-size="48" data-round="full" data-min-w="140">
+          <span class="btn-text ui-flex-1 pl-8" data-font-size="18-800" data-text-align="left">XLSX</span>
+          <i class="icon-aspect-circle-down -mr-2" data-size="24"></i>
+        </button>
+        <button type="button" class="btn-base" data-color="deep-dark" data-size="48" data-round="4" data-type="icon" data-shadow="true">
+          <i class="icon-aspect-stacks" data-size="24" aria-label="편차비교"></i>
+        </button>
+        <button type="button" class="btn-base" data-color="deep-dark" data-size="48" data-round="4" data-type="icon" data-shadow="true" data-state="selected">
+          <i class="icon-aspect-stacks" data-size="24" aria-label="편차비교"></i>
+        </button>
+        <button type="button" class="btn-base" data-color="gray" data-size="42" data-round="full" data-type="icon">
+          <i class="icon-aspect-division" data-size="24" aria-label="분리"></i>
+        </button>
+        <button type="button" class="btn-base" data-color="gray" data-size="42" data-round="full" data-type="icon" data-state="selected">
+          <i class="icon-aspect-division" data-size="24" aria-label="분히"></i>
+        </button>
+      </div>
+      <p class="guide-sub-title">Button Size</p>
+      <div class="guide-item-wrap">
+        <button type="button" class="btn-base" data-color="dark" data-size="40" data-round="full">
+          <span class="btn-text">dark</span>
+        </button>
+      </div>
+    </div>
+    <div class="guide-group" style="display:none;">
+      <p class="guide-title">FORM</p>
+      <p class="guide-sub-title">Checkbox</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="form-element-checkbox" data-size="22" data-style="no-line">
+          <input type="checkbox" id="checkbox0" name="checkbox" value="">
+          <label for="checkbox0">
+            no frame
+          </label>
+        </div>
+        <div class="form-element-checkbox" data-size="22">
+          <input type="checkbox" id="checkbox1" name="checkbox" value="" disabled>
+          <label for="checkbox1">
+            disabled
+          </label>
+        </div>
+        <div class="form-element-checkbox" data-size="22">
+          <input type="checkbox" id="checkbox1-4" name="checkbox" value="" disabled checked>
+          <label for="checkbox1-4">
+            checked disabled
+          </label>
+        </div>
+        <div class="form-element-checkbox" data-size="22">
+          <input type="checkbox" id="checkbox1-1" name="checkbox1" value="">
+          <label for="checkbox1-1">
+            checkbox 22
+          </label>
+        </div>
+        <div class="form-element-checkbox" data-size="24">
+          <input type="checkbox" id="checkbox1-2" name="checkbox1" value="">
+          <label for="checkbox1-2">
+            checkbox 24
+          </label>
+        </div>
+        <div class="form-element-checkbox" data-size="24">
+          <input type="checkbox" id="checkbox1-3" name="checkbox1" value="">
+          <label for="checkbox1-3" class="sr-only">
+            <span class="for-a11y">checkbox</span>
+          </label>
+        </div>
+        <div class="form-element-checkbox" data-size="18">
+          <input type="checkbox" id="checkbox2-1" name="checkbox" value="">
+          <label for="checkbox2-1">
+            checkbox 18
+          </label>
+        </div>
+
+        <div class="form-element-check">
+          <input type="checkbox" id="checkbox3-1" name="checkbox" value="" class="native-input">
+          <label for="checkbox3-1" class="label-value">
+            no frame
+          </label>
+        </div>
+      </div>
+      <p class="guide-sub-title">Radio</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="form-element-radio" data-size="20">
+          <input type="radio" id="radio1" name="radio" value="" disabled>
+          <label for="radio1">
+            disabled
+          </label>
+        </div>
+        <div class="form-element-radio" data-size="20">
+          <input type="radio" id="radio1-4" name="radio" value="" disabled checked>
+          <label for="radio1-4">
+            disabled checked
+          </label>
+        </div>
+        <div class="form-element-radio" data-size="20">
+          <input type="radio" id="radio1-1" name="radio1" value="">
+          <label for="radio1-1">
+            radio 20
+          </label>
+        </div>
+        <div class="form-element-radio" data-size="24">
+          <input type="radio" id="radio1-2" name="radio1" value="">
+          <label for="radio1-2">
+            radio 24
+          </label>
+        </div>
+        <div class="form-element-radio" data-size="24">
+          <input type="radio" id="radio1-3" name="radio1" value="">
+          <label for="radio1-3" class="sr-only">
+            <span class="for-a11y">radio</span>
+          </label>
+        </div>
+      </div>
+      <p class="guide-sub-title">Radio - [Button Type]</p>
+      <div class="guide-item-wrap type-col gap-20">
+        <div class="form-fake-group-flex" data-form-style="round-box" data-form-h="40" data-item-size="96">
+          <div class="form-fake-button">
+            <input type="radio" id="radio001-1" name="radio001" value="" class="form-fake-input" checked>
+            <label for="radio001-1" class="form-fake-label">
+              현재
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio001-2" name="radio001" value="" class="form-fake-input" disabled>
+            <label for="radio001-2" class="form-fake-label">
+              SSP1-2.6
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio001-3" name="radio001" value="" class="form-fake-input">
+            <label for="radio001-3" class="form-fake-label">
+              SSP2-4.5
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio001-4" name="radio001" value="" class="form-fake-input">
+            <label for="radio001-4" class="form-fake-label">
+              SSP3-7.0
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio001-5" name="radio001" value="" class="form-fake-input">
+            <label for="radio001-5" class="form-fake-label">
+              SSP5-8.5
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-flex" data-form-style="round-box-light" data-form-h="40" data-item-size="40">
+          <div class="form-fake-button">
+            <input type="radio" id="radio005-1" name="radio005" value="" class="form-fake-input">
+            <label for="radio005-1" class="form-fake-label">
+              연별
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio005-2" name="radio005" value="" class="form-fake-input" checked>
+            <label for="radio005-2" class="form-fake-label">
+              계절별
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio005-3" name="radio005" value="" class="form-fake-input">
+            <label for="radio005-3" class="form-fake-label">
+              월별
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-flex" data-form-style="round-box-list" data-form-h="40" data-item-size="58">
+          <div class="form-fake-button">
+            <input type="radio" id="radio006-1" name="radio006" value="" class="form-fake-input" checked>
+            <label for="radio006-1" class="form-fake-label">
+              <i class="icon-aspect-screen-left" data-size="26" aria-label="왼쪽 선택"></i>
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio006-2" name="radio006" value="" class="form-fake-input">
+            <label for="radio006-2" class="form-fake-label">
+              <i class="icon-aspect-screen-right" data-size="26" aria-label="오른쪽 선택"></i>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-grid" data-form-style="square-list-type" data-gap="3" data-col="4">
+          <div class="form-fake-button">
+            <input type="radio" id="radio002-1" name="radio002" value="" class="form-fake-input">
+            <label for="radio002-1" class="form-fake-label"  data-form-h="40">
+              현재
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio002-2" name="radio002" value="" class="form-fake-input">
+            <label for="radio002-2" class="form-fake-label" data-form-h="40">
+              SSP1-2.6
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio002-3" name="radio002" value="" class="form-fake-input">
+            <label for="radio002-3" class="form-fake-label" data-form-h="40">
+              SSP2-4.5
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio002-4" name="radio002" value="" class="form-fake-input">
+            <label for="radio002-4" class="form-fake-label" data-form-h="40">
+              SSP3-7.0
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio002-5" name="radio002" value="" class="form-fake-input">
+            <label for="radio002-5" class="form-fake-label" data-form-h="40">
+              SSP5-8.5
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-grid" data-form-style="round-list-type" data-gap="3" data-col="4">
+          <div class="form-fake-button">
+            <input type="radio" id="radio003-1" name="radio003" value="" class="form-fake-input">
+            <label for="radio003-1" class="form-fake-label"  data-form-h="32">
+              평균기온
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio003-2" name="radio003" value="" class="form-fake-input">
+            <label for="radio003-2" class="form-fake-label" data-form-h="32">
+              최고기온
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio003-3" name="radio003" value="" class="form-fake-input">
+            <label for="radio003-3" class="form-fake-label" data-form-h="32">
+              강수량
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio003-4" name="radio003" value="" class="form-fake-input">
+            <label for="radio003-4" class="form-fake-label" data-form-h="32">
+              상대습도
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-flex" data-form-style="round-list-type" data-gap="3" data-col="auto">
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-1" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-1" class="form-fake-label"  data-form-h="32">
+              폭염일수
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-2" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-2" class="form-fake-label" data-form-h="32">
+              여름일수
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-3" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-3" class="form-fake-label" data-form-h="32">
+              열대야일수
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-4" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-4" class="form-fake-label" data-form-h="32">
+              일교차
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-5" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-5" class="form-fake-label" data-form-h="32">
+              식물성장기간
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-6" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-6" class="form-fake-label" data-form-h="32">
+              온난일
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-7" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-7" class="form-fake-label" data-form-h="32">
+              온난일계속기간
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-8" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-8" class="form-fake-label" data-form-h="32">
+              최대온난일계속기간
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-9" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-9" class="form-fake-label" data-form-h="32">
+              온난야
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-10" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-10" class="form-fake-label" data-form-h="32">
+              일최고기온연최대
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio004-11" name="radio004" value="" class="form-fake-input">
+            <label for="radio004-11" class="form-fake-label" data-form-h="32">
+              일최저기온연최대
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-grid" data-form-style="line-list-type" data-col="1">
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-1" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-1" class="form-fake-label"  data-form-h="46" data-font-size="16-800">
+              평균기온
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-2" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-2" class="form-fake-label" data-form-h="46" data-font-size="16-800">
+              최고기온
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-3" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-3" class="form-fake-label" data-form-h="46" data-font-size="16-800">
+              최저기온
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-4" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-4" class="form-fake-label" data-form-h="46" data-font-size="16-800">
+              강수량
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-5" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-5" class="form-fake-label" data-form-h="46" data-font-size="16-800">
+              상대습도
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-6" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-6" class="form-fake-label" data-form-h="46" data-font-size="16-800">
+              풍속
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio007-7" name="radio007" value="" class="form-fake-input">
+            <label for="radio007-7" class="form-fake-label" data-form-h="46" data-font-size="16-800">
+              일사량
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-grid" data-form-style="line-list-type" data-col="2">
+          <div class="form-fake-button">
+            <input type="radio" id="radio008-1" name="radio008" value="" class="form-fake-input">
+            <label for="radio008-1" class="form-fake-label"  data-form-h="44" data-font-size="12-800">
+              <i class="in-square-area"></i>1KM
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio008-2" name="radio008" value="" class="form-fake-input">
+            <label for="radio008-2" class="form-fake-label" data-form-h="44" data-font-size="12-800">
+              <i class="in-round-area"></i>1KM
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio008-3" name="radio008" value="" class="form-fake-input">
+            <label for="radio008-3" class="form-fake-label" data-form-h="44" data-font-size="12-800">
+              <i class="in-square-area"></i>10KM
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio008-4" name="radio008" value="" class="form-fake-input">
+            <label for="radio008-4" class="form-fake-label" data-form-h="44" data-font-size="12-800">
+              <i class="in-round-area"></i>10KM
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio008-5" name="radio008" value="" class="form-fake-input">
+            <label for="radio008-5" class="form-fake-label" data-form-h="44" data-font-size="12-800">
+              <i class="in-square-area"></i>20KM
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio008-6" name="radio008" value="" class="form-fake-input">
+            <label for="radio008-6" class="form-fake-label" data-form-h="44" data-font-size="12-800">
+              <i class="in-round-area"></i>20KM
+            </label>
+          </div>
+        </div>
+
+        <div class="form-fake-group-grid" data-form-style="text-type" data-col="1">
+          <div class="form-fake-button">
+            <input type="radio" id="radio009-1" name="radio009" value="" class="form-fake-input">
+            <label for="radio009-1" class="form-fake-label" data-form-h="28">
+              폭염일수
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio009-2" name="radio009" value="" class="form-fake-input">
+            <label for="radio009-2" class="form-fake-label" data-form-h="28">
+              여름일수
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio009-3" name="radio009" value="" class="form-fake-input">
+            <label for="radio009-3" class="form-fake-label" data-form-h="28">
+              열대야일수
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio009-4" name="radio009" value="" class="form-fake-input">
+            <label for="radio009-4" class="form-fake-label" data-form-h="28">
+              일교차
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio009-5" name="radio009" value="" class="form-fake-input">
+            <label for="radio009-5" class="form-fake-label" data-form-h="28">
+              식물성장기간
+            </label>
+          </div>
+          <div class="form-fake-button">
+            <input type="radio" id="radio009-6" name="radio009" value="" class="form-fake-input">
+            <label for="radio009-6" class="form-fake-label" data-form-h="28">
+              온난일
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <p class="guide-sub-title">Switch</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="form-element-switch" data-size="28">
+          <input type="checkbox" id="btn-switch" disabled />
+          <label for="btn-switch">
+            <span class="txt-uncheck">꺼짐</span>
+            <span class="txt-checked">켜짐</span>
+          </label>
+        </div>
+        <div class="form-element-switch" data-size="28">
+          <input type="checkbox" id="btn-switch1" />
+          <label for="btn-switch1">
+            <span class="txt-uncheck">꺼짐</span>
+            <span class="txt-checked">켜짐</span>
+          </label>
+        </div>
+        <div class="form-element-switch" data-size="36">
+          <input type="checkbox" id="btn-switch2" />
+          <label for="btn-switch2">
+            <span class="txt-uncheck">꺼짐</span>
+            <span class="txt-checked">켜짐</span>
+          </label>
+        </div>
+      </div>
+      <p class="guide-sub-title">Input</p>
+      <div class="guide-item-wrap type-col">
+        <div class="form-input-box" data-size="42">
+          <div class="form-input-grid">
+            <i class="icon-aspect-search-b" data-size="24"></i>
+            <input type="search" class="form-element-input" data-width="full" data-style="no-line" data-size="40" placeholder="플레이스홀더" />
+          </div>
+        </div>
+
+        <input type="text" class="form-element-input" data-width="full" data-size="46" placeholder="플레이스홀더" />
+      </div>
+      <p class="guide-sub-title">Textarea</p>
+      <div class="guide-item-wrap type-col">
+        <div class="form-textarea-box">
+          <textarea name="" id="textarea1" cols="30" rows="10" class="form-element-textarea" data-style="no-line" placeholder="로그인 후 댓글을 입력하실 수 있습니다."></textarea>
+          <span class="textarea-data-vite">
+            <span class="textarea-vite-value">0</span> / 200
+          </span>
+        </div>
+      </div>
+      <p class="guide-sub-title">Dropdown</p>
+      <div class="guide-item-wrap type-col">
+        <select class="ui-select" data-select-h="32" data-select-theme="light" data-select-radius="full">
+          <option value="1">2025년</option>
+          <option value="2">2026년</option>
+          <option value="3">2027년</option>
+        </select>
+
+        <select class="ui-select" data-select-h="40" data-select-theme="dark" data-select-radius="4">
+          <option value="1">2025년</option>
+          <option value="2">2026년</option>
+          <option value="3">2027년</option>
+        </select>
+      </div>
+    </div>
+    <!--<div class="guide-group">
+        <p class="guide-title">FOLDING</p>
+    </div>-->
+    <div class="guide-group">
+      <p class="guide-title">TABLE</p>
+      <div>
+        <table class="table-1">
+          <thead>
+          <tr>
+            <th></th>
+            <th scope="col">현재기후<br /><span class="text-13-800">(2000 - 2019)</span></th>
+            <th scope="col">21세기 전반기<br /><span class="text-13-800">(2021 - 2040)</span></th>
+            <th scope="col">21세기 중반기<br /><span class="text-13-800">(2041 - 2060)</span></th>
+            <th scope="col">21세기 후반기<br /><span class="text-13-800">(2081 - 2100)</span></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th scope="row">SSP1 - 2.6</th>
+            <td>26.8°</td>
+            <td>30.8°</td>
+            <td>30.8°</td>
+            <td>30.8°</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="guide-group">
+      <p class="guide-title">ICON</p>
+      <p class="guide-sub-title">LNB Icon</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="guide-item">
+          <i class="icon-aspect-lnb1" data-size="24"></i>
+          <span>icon-aspect-lnb1</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb1" data-size="24"></i>
+          <span>icon-aspect-lnb2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb3" data-size="24"></i>
+          <span>icon-aspect-lnb3</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb4" data-size="24"></i>
+          <span>icon-aspect-lnb4</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb5" data-size="24"></i>
+          <span>icon-aspect-lnb5</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb6" data-size="24"></i>
+          <span>icon-aspect-lnb6</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb7" data-size="24"></i>
+          <span>icon-aspect-lnb7</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb8" data-size="24"></i>
+          <span>icon-aspect-lnb8</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-lnb9" data-size="24"></i>
+          <span>icon-aspect-lnb9</span>
+        </div>
+      </div>
+      <p class="guide-sub-title">Color Icon</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="guide-item">
+          <i class="icon-aspect-sunny-snowing" data-size="24"></i>
+          <span>icon-aspect-sunny-snowing</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-bloodtype" data-size="24"></i>
+          <span>icon-aspect-bloodtype</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-bloodtype2" data-size="24"></i>
+          <span>icon-aspect-bloodtype2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-dew-point" data-size="24"></i>
+          <span>icon-aspect-dew-point</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-average-temperature" data-size="24"></i>
+          <span>icon-aspect-average-temperature</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-minimum-temperature" data-size="24"></i>
+          <span>icon-aspect-minimum-temperature</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-high-temperature" data-size="24"></i>
+          <span>icon-aspect-high-temperature</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-humidity" data-size="24"></i>
+          <span>icon-aspect-humidity</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-rainfall" data-size="24"></i>
+          <span>icon-aspect-rainfall</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-air" data-size="24"></i>
+          <span>icon-aspect-air</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-scenario" data-size="24"></i>
+          <span>icon-aspect-scenario</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-past" data-size="24"></i>
+          <span>icon-aspect-past</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-past2" data-size="24"></i>
+          <span>icon-aspect-past2</span>
+        </div>
+
+      </div>
+      <p class="guide-sub-title">Main Icon</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="guide-item">
+          <i class="icon-aspect-main-n01" data-size="24"></i>
+          <span>icon-aspect-main-n01</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n02" data-size="24"></i>
+          <span>icon-aspect-main-n02</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n03" data-size="24"></i>
+          <span>icon-aspect-main-n03</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n04" data-size="24"></i>
+          <span>icon-aspect-main-n04</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n05" data-size="24"></i>
+          <span>icon-aspect-main-n05</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n06" data-size="24"></i>
+          <span>icon-aspect-main-n06</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n07" data-size="24"></i>
+          <span>icon-aspect-main-n07</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n08" data-size="24"></i>
+          <span>icon-aspect-main-n08</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n09" data-size="24"></i>
+          <span>icon-aspect-main-n09</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n10" data-size="24"></i>
+          <span>icon-aspect-main-n10</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n11" data-size="24"></i>
+          <span>icon-aspect-main-n11</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-n12" data-size="24"></i>
+          <span>icon-aspect-main-n12</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-tab1" data-size="24"></i>
+          <span>icon-aspect-tab1</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-tab2" data-size="24"></i>
+          <span>icon-aspect-tab2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-tab3" data-size="24"></i>
+          <span>icon-aspect-tab3</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-tab1-on" data-size="24"></i>
+          <span>icon-aspect-tab1-on</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-tab2-on" data-size="24"></i>
+          <span>icon-aspect-tab2-on</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-tab3-on" data-size="24"></i>
+          <span>icon-aspect-tab3-on</span>
+        </div>
+
+        <div class="guide-item">
+          <i class="icon-aspect-main-img1" data-size="24"></i>
+          <span>icon-aspect-main-img1</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-img2" data-size="24"></i>
+          <span>icon-aspect-main-img2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-main-img3" data-size="24"></i>
+          <span>icon-aspect-main-img3</span>
+        </div>
+
+        <div class="guide-item">
+          <i class="main-logo-1"></i>
+          <span>main-logo-1</span>
+        </div>
+        <div class="guide-item">
+          <i class="main-logo-2"></i>
+          <span>main-logo-2</span>
+        </div>
+        <div class="guide-item">
+          <i class="main-logo-3"></i>
+          <span>main-logo-3</span>
+        </div>
+        <div class="guide-item">
+          <i class="main-logo-4"></i>
+          <span>main-logo-4</span>
+        </div>
+      </div>
+      <p class="guide-sub-title">Weather Icon</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="guide-item">
+          <i class="icon-aspect-NB01" data-size="24"></i>
+          <span>icon-aspect-NB01</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB02" data-size="24"></i>
+          <span>icon-aspect-NB02</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB03" data-size="24"></i>
+          <span>icon-aspect-NB03</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB04" data-size="24"></i>
+          <span>icon-aspect-NB04</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB05" data-size="24"></i>
+          <span>icon-aspect-NB05</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB06" data-size="24"></i>
+          <span>icon-aspect-NB06</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB07" data-size="24"></i>
+          <span>icon-aspect-NB07</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB08" data-size="24"></i>
+          <span>icon-aspect-NB08</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB09" data-size="24"></i>
+          <span>icon-aspect-NB09</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB10" data-size="24"></i>
+          <span>icon-aspect-NB10</span>
+        </div>
+
+        <div class="guide-item">
+          <i class="icon-aspect-NB11" data-size="24"></i>
+          <span>icon-aspect-NB11</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB12" data-size="24"></i>
+          <span>icon-aspect-NB12</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB13" data-size="24"></i>
+          <span>icon-aspect-NB13</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB14" data-size="24"></i>
+          <span>icon-aspect-NB14</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB15" data-size="24"></i>
+          <span>icon-aspect-NB15</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB16" data-size="24"></i>
+          <span>icon-aspect-NB16</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB17" data-size="24"></i>
+          <span>icon-aspect-NB17</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB18" data-size="24"></i>
+          <span>icon-aspect-NB18</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB19" data-size="24"></i>
+          <span>icon-aspect-NB19</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB20" data-size="24"></i>
+          <span>icon-aspect-NB20</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-NB21" data-size="24"></i>
+          <span>icon-aspect-NB21</span>
+        </div>
+      </div>
+      <p class="guide-sub-title">Content Icon</p>
+      <div class="guide-item-wrap gap-20">
+        <div class="guide-item">
+          <i class="icon-aspect-blank" data-size="24"></i>
+          <span>icon-aspect-blank</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-reload" data-size="24"></i>
+          <span>icon-aspect-reload</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-q" data-size="24"></i>
+          <span>icon-aspect-q</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-star" data-size="24"></i>
+          <span>icon-aspect-star</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-star-on" data-size="24"></i>
+          <span>icon-aspect-star-on</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-down" data-size="24"></i>
+          <span>icon-aspect-down</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-location" data-size="24"></i>
+          <span>icon-aspect-location</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-error" data-size="24"></i>
+          <span>icon-aspect-error</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-setting" data-size="24"></i>
+          <span>icon-aspect-setting</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-menu" data-size="24"></i>
+          <span>icon-aspect-menu</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-info-round" data-size="24"></i>
+          <span>icon-aspect-info-round</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-arrow-r" data-size="24"></i>
+          <span>icon-aspect-arrow-r</span>
+        </div>
+
+
+
+        <div class="guide-item">
+          <i class="icon-aspect-map1" data-size="24"></i>
+          <span>icon-aspect-map1</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map2" data-size="24"></i>
+          <span>icon-aspect-map2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map3" data-size="24"></i>
+          <span>icon-aspect-map3</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map4" data-size="24"></i>
+          <span>icon-aspect-map4</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map5" data-size="24"></i>
+          <span>icon-aspect-map5</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-aws" data-size="24"></i>
+          <span>icon-aspect-aws</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-asos" data-size="24"></i>
+          <span>icon-aspect-asos</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map6" data-size="24"></i>
+          <span>icon-aspect-map6</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map7" data-size="24"></i>
+          <span>icon-aspect-map7</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map8" data-size="24"></i>
+          <span>icon-aspect-map8</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map9" data-size="24"></i>
+          <span>icon-aspect-map9</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map10" data-size="24"></i>
+          <span>icon-aspect-map10</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map11" data-size="24"></i>
+          <span>icon-aspect-map11</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map12" data-size="24"></i>
+          <span>icon-aspect-map12</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map13" data-size="24"></i>
+          <span>icon-aspect-map13</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-map14" data-size="24"></i>
+          <span>icon-aspect-map14</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-minus" data-size="24"></i>
+          <span>icon-aspect-minus</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-plus" data-size="24"></i>
+          <span>icon-aspect-plus</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-plus2" data-size="24"></i>
+          <span>icon-aspect-plus2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-refresh" data-size="24"></i>
+          <span>icon-aspect-refresh</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-avg" data-size="24"></i>
+          <span>icon-aspect-avg</span>
+        </div>
+         <div class="guide-item">
+          <i class="icon-aspect-danger" data-size="24"></i>
+          <span>icon-aspect-danger</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-down" data-size="24"></i>
+          <span>icon-aspect-down</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-home" data-size="24"></i>
+          <span>icon-aspect-home</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-breadcrumbs-arrow" data-size="24"></i>
+          <span>icon-aspect-breadcrumbs-arrow</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-close" data-size="24"></i>
+          <span>icon-aspect-close</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-close2" data-size="24"></i>
+          <span>icon-aspect-close2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-close-small" data-size="24"></i>
+          <span>icon-aspect-close-small</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-circle-down" data-size="24"></i>
+          <span>icon-aspect-circle-down</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-settings" data-size="24"></i>
+          <span>icon-aspect-settings</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-contrast" data-size="24"></i>
+          <span>icon-aspect-contrast</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-expand-circle" data-size="24"></i>
+          <span>icon-aspect-expand-circle</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-search" data-size="24"></i>
+          <span>icon-aspect-search</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-search-b" data-size="24"></i>
+          <span>icon-aspect-search-b</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-reset" data-size="24"></i>
+          <span>icon-aspect-reset</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-reset2" data-size="24"></i>
+          <span>icon-aspect-reset2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-division" data-size="24"></i>
+          <span>icon-aspect-division</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-division2" data-size="24"></i>
+          <span>icon-aspect-division2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-link" data-size="24"></i>
+          <span>icon-aspect-link</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-unlink" data-size="24"></i>
+          <span>icon-aspect-unlink</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-range" data-size="24"></i>
+          <span>icon-aspect-range</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-screen-left" data-size="24"></i>
+          <span>icon-aspect-screen-left</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-screen-right" data-size="24"></i>
+          <span>icon-aspect-screen-right</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-arrow-more" data-size="24"></i>
+          <span>icon-aspect-arrow-more</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-arrow-right" data-size="24"></i>
+          <span>icon-aspect-arrow-right</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-notice" data-size="24"></i>
+          <span>icon-aspect-notice</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-notice2" data-size="24"></i>
+          <span>icon-aspect-notice2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-select-arrow" data-size="24"></i>
+          <span>icon-aspect-select-arrow</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-m-filter" data-size="24"></i>
+          <span>icon-aspect-m-filter</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-calendar" data-size="24"></i>
+          <span>icon-aspect-calendar</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-web" data-size="24"></i>
+          <span>icon-aspect-web</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-prev" data-size="24"></i>
+          <span>icon-aspect-prev</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-next" data-size="24"></i>
+          <span>icon-aspect-next</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-join1" data-size="24"></i>
+          <span>icon-aspect-join1</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-join2" data-size="24"></i>
+          <span>icon-aspect-join2</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-join3" data-size="24"></i>
+          <span>icon-aspect-join3</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-exclamation" data-size="24"></i>
+          <span>icon-aspect-exclamation</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-del" data-size="24"></i>
+          <span>icon-aspect-del</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-write" data-size="24"></i>
+          <span>icon-aspect-write</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-more" data-size="24"></i>
+          <span>icon-aspect-more</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-t" data-size="24"></i>
+          <span>icon-aspect-t</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-download" data-size="24"></i>
+          <span>icon-aspect-download</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-article" data-size="24"></i>
+          <span>icon-aspect-article</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-round-help" data-size="24"></i>
+          <span>icon-aspect-round-help</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-touch" data-size="24"></i>
+          <span>icon-aspect-touch</span>
+        </div>
+        <div class="guide-item">
+          <i class="icon-aspect-add" data-size="24"></i>
+          <span>icon-aspect-add</span>
+        </div>
+
+        <div class="guide-item">
+          <i class="icon-q"></i>
+          <span>icon-q</span>
+        </div>
+
+
+        <div class="guide-item dark">
+          <i class="icon-q-w"></i>
+          <span>icon-q-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-home-w" data-size="24"></i>
+          <span>icon-aspect-home-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-select-arrow-w" data-size="24"></i>
+          <span>icon-aspect-select-arrow-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-breadcrumbs-arrow-w" data-size="24"></i>
+          <span>icon-aspect-breadcrumbs-arrow-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-stacks" data-size="24"></i>
+          <span>icon-aspect-stacks</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-split-scene" data-size="24"></i>
+          <span>icon-aspect-split-scene</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-close2-w" data-size="24"></i>
+          <span>icon-aspect-close2-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-close3-w" data-size="24"></i>
+          <span>icon-aspect-close3-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-filter-w" data-size="24"></i>
+          <span>icon-aspect-filter-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-play" data-size="24"></i>
+          <span>icon-aspect-play</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-stop" data-size="24"></i>
+          <span>icon-aspect-stop</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-pause" data-size="24"></i>
+          <span>icon-aspect-pause</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-swap-vert-w" data-size="24"></i>
+          <span>icon-aspect-swap-vert-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-query-stats-w" data-size="24"></i>
+          <span>icon-aspect-query-stats-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-download-w" data-size="24"></i>
+          <span>icon-aspect-download-w</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-login" data-size="24"></i>
+          <span>icon-aspect-login</span>
+        </div>
+        <div class="guide-item dark">
+          <i class="icon-aspect-logout" data-size="24"></i>
+          <span>icon-aspect-logout</span>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </main>
+  <footer class="footer" data-id="footer"></footer>
+</div>
+
+<script type="module">
+  import { UX } from '../resources/js-2026/ui-common.js';
+  UX.init();
+
+  const rangeInput = new UX.RangeSlider({
+      id: 'rangeInput',
+      range: 19,
+      tooltip: true,
+  });
+</script>
+
+<!-- Toast Notification -->
+<div id="icon-toast">
+  <i data-icon="ico_step_done" data-icon-size="18" data-icon-color="white"></i>
+  <span id="icon-toast-msg">복사되었습니다!</span>
+</div>
+
+<script>
+  // 1. 클립보드 복사 함수
+  function copyIconCode(shortName) {
+    const code = 'data-icon="' + shortName + '"';
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('"' + code + '" 복사 완료!');
+    }).catch(() => {
+      showToast('복사 실패');
+    });
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('icon-toast');
+    const toastMsg = document.getElementById('icon-toast-msg');
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2000);
+  }
+
+  // 2. 실시간 검색 필터
+  const searchInput = document.getElementById('icon-search-input');
+  const cards = document.querySelectorAll('.icon-card');
+  const totalCountEl = document.getElementById('icon-total-count');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      let visible = 0;
+      cards.forEach(c => {
+        const name = c.dataset.name.toLowerCase();
+        const short = c.dataset.short.toLowerCase();
+        if (!q || name.includes(q) || short.includes(q)) {
+          c.style.display = 'flex';
+          visible++;
+        } else {
+          c.style.display = 'none';
+        }
+      });
+      if (totalCountEl) totalCountEl.textContent = visible;
+    });
+  }
+
+  // 3. 크기 변경
+  const sizeChips = document.querySelectorAll('#size-chip-group .btn-chip');
+  sizeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      sizeChips.forEach(c => c.classList.remove('is-active'));
+      chip.classList.add('is-active');
+      const s = chip.dataset.val;
+      document.querySelectorAll('.guide-icon-target').forEach(ic => {
+        ic.setAttribute('data-icon-size', s);
+      });
+    });
+  });
+
+  // 4. 색상 변경
+  const colorDots = document.querySelectorAll('#color-dot-group .color-dot');
+  colorDots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      colorDots.forEach(d => d.classList.remove('is-active'));
+      dot.classList.add('is-active');
+      const color = dot.dataset.color;
+      document.querySelectorAll('.guide-icon-target').forEach(ic => {
+        if (color) {
+          ic.setAttribute('data-icon-color', color);
+        } else {
+          ic.removeAttribute('data-icon-color');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

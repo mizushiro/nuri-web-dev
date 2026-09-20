@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>날씨 예보 - 메인</title>
+
+  <!-- 기존코드 -->
+  <link href="./resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+  <link href="./resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
+  <script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
+  <script src="./resources/js/lodash.min.js"></script>
+  <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script src="./resources/js/clipboard.min.js"></script>
+  <script src="./resources/js/moment-with-locales.js"></script>
+  <script src="./resources/js/moment-timezone.js"></script>
+  <script src="./resources/js/jquery-3.5.0.min.js"></script>
+  <script src="./resources/js/jquery-ui.min.js"></script>
+  <script src="./resources/js/iscroll-probe.js"></script>
+  <script src="./resources/js/scrollbooster.min.js"></script>
+  <script src="./resources/js/slick.min.js"></script>
+  <script src="./resources/js/mustache.min.js"></script>
+  <script src="./resources/js/store.modern.min.js"></script>
+  <script src="./resources/js/object-assign.js"></script>
+  <script src="./resources/js/highcharts.js"></script>
+  <script src="./resources/js/fn.js?ver=202607091110"></script>
+  <script>
+    window.appBase = "\/w\/";
+    window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+    window.vmapBaseParam = "HIDEMENU=Y";
+    window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+    var hashParam = null;
+  </script>
+  <link rel="stylesheet" href="/wgis-nuri/css/ol.css?ver=202607091110">
+  <link rel="stylesheet" href="/wgis-nuri/css/kmap.css?ver=202607091110">
+  <script src="./resources/lib/fetch.umd-3.6.1.min.js?ver=202607091110"></script>
+  <script src="./resources/lib/promise-polyfill-8.min.js?ver=202607091110"></script>
+  <script src="./resources/lib/babel-polyfill-7.12.1.min.js?ver=202607091110"></script>
+  <script src="./resources/lib/abortcontroller-polyfill-1.7.1.min.js?ver=202607091110"></script>
+  <script src="./resources/lib/vshrt-rain-fetch.js?ver=202607091110"></script>
+  <script src="./wgis-nuri/js/proj4/proj4.js?ver=202607091110"></script>
+  <script src="./resources/lib/v6.5.0-dist/ol.bb.js?ver=202607091110"></script>
+  <script src="./resources/js/kmap.bb.js?ver=202607091110"></script>
+  <script src="./wgis-nuri/js/common/windy.js?ver=202607091110"></script>
+  <script src="./resources/lib/vue/vue.min.js?ver=202607091110"></script>
+  <link rel="stylesheet" href="./resources/lib/kmap/legend.css?ver=202607091110">
+  <script src="./resources/lib/kmap/dfsLegends.js?ver=202607091110"></script>
+  <script src="./resources/lib/kmap/legend.js?ver=202607091110"></script>
+  <script src="./resources/lib/kmap/kmap_overlay.js?ver=202607091110"></script>
+  <link href="./resources/css-2021/weather-local.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="./resources/bangjae/bangjae.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="/m/popup_layer/m_popup_wnuri.css?ver=202607091110">
+  <style>
+    .m_notice-dialog-footer input[type="checkbox"] {
+      -webkit-appearance: checkbox;
+    }
+  </style>
+  <script>
+    window.forestfireEnabled = false;
+    window.winterEnabled = false;
+    window.marineAccidentEnabled = false;
+    window.typhoonEnabled = false;
+    window.typhoonTabNumber = 0;
+  </script>
+  <script src="./resources/js/app-2021/my-point-slider.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/dong-searchbox.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/bookmark-dropdown.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/today-warning.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/today-bangjae.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/eqk-warning.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/typhoon-info.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/heatwave-warning.js?ver=202607091110"></script>
+  <link href="./resources/css/drop-banner.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <script src="./resources/js/drop-banner.js?ver=202607091110"></script>
+  <link href="./resources/css/layer-banner3.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <script src="./resources/js/layer-banner3.js?ver=202607091110"></script>
+  <script src="./resources/js/banners.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/index-sns.js?ver=202607091110"></script>
+  <script src="/repositary/config/main-config.js?ver=202607091110"></script>
+  <style>
+    .cmp-main-wrn {
+      top: 65px;
+      z-index: 99;
+    }
+
+    @media screen and (max-width:1100px) {
+      .cmp-main-wrn {
+        top: 49px;
+      }
+    }
+
+    .cmp-main-bangjae {
+      top: 65px;
+      z-index: 99;
+    }
+
+    @media screen and (max-width:1100px) {
+      .cmp-main-wrn {
+        top: 49px;
+      }
+
+      .cmp-main-bangjae {
+        top: 49px;
+      }
+    }
+  </style>
+
+  <!-- 신규코드 -->
+  <link rel="stylesheet" href="./resources/css-2026/krds.min.css">
+  <link rel="stylesheet" href="./resources/css-2026/plugin/swiper-bundle.min.css">
+  <link rel="stylesheet" href="./resources/css-2026/custom.css">
+  <link rel="stylesheet" href="./resources/css-2026/icon.css">
+</head>
+
+
+
+
+
+
+<body>
+  <div>
+    <!-- header -->
+    <header class="krds-header"></header>
+    <!-- //header -->
+
+    <main class="nr__main">
+      <div class="nr__critical-alerts">
+        <a href="#">
+          오늘(9월 15일) 동해시평지, 삼척시평지 등 중대경보 발효! (폭염정보 확인)
+        </a>
+      </div>
+      <section class="nr__main-sec nr__sec1" data-bg="gray">
+        <div class="nr__main-head">
+          <div class="nr__main-tab">
+            <input type="radio" name="nrTab" id="nrTab01" class="sr-only" checked>
+            <label for="nrTab01">날씨</label>
+            <input type="radio" name="nrTab" id="nrTab02" class="sr-only">
+            <label for="nrTab02">전국</label>
+            <input type="radio" name="nrTab" id="nrTab03" class="sr-only">
+            <label for="nrTab03">태풍</label>
+            <input type="radio" name="nrTab" id="nrTab04" class="sr-only">
+            <label for="nrTab04">폭염</label>
+          </div>
+
+          <div class="nr__main-notice">
+            <button type="button" aria-expanded="false" aria-controls="notice-content-1">
+              <span class="nr__main-notice--title">
+                <span class="icon-aspect-error" data-size="20"></span> 방재속보 발표</span>
+              <span class="icon-aspect-down-red" data-size="20"></span>
+            </button>
+            <button type="button" aria-expanded="false" aria-controls="notice-content-2">
+              <span class="nr__main-notice--title">
+                <span class="icon-aspect-error" data-size="20"></span> 전국특보 발효중</span>
+              <span class="icon-aspect-down-red" data-size="20"></span>
+            </button>
+          </div>
+          <div id="notice-content-1" class="nr__main-notice-content" role="region" aria-label="방재속보 발표 내용">
+            <button type="button" class="nr__notice-close-btn" aria-label="닫기">
+              <i class="icon-aspect-close2" data-size="30"></i>
+            </button>
+            방재속보 내용
+          </div>
+          <div id="notice-content-2" class="nr__main-notice-content" role="region" aria-label="전국특보 발효중 내용">
+            <button type="button" class="nr__notice-close-btn" aria-label="닫기">
+              <i class="icon-aspect-close2" data-size="30"></i>
+            </button>
+            전국특보 발효중 내용
+          </div>
+        </div>
+        <div class="nr__main-wrap">
+
+
+          <!-- 검색 지동 정보 -->
+          <div class="nr__main-group nr__map-weather-group">
+            <div class="nr__map-weather-wrap">
+              <!-- 좌측: 검색 및 지도 영역 -->
+              <div class="nr__map-col">
+                <!-- 검색 바 -->
+                <div class="nr__map-search-bar">
+                  <div class="nr__map-search-input-wrap">
+                    <input type="text" class="nr__map-search-input" placeholder="주요지명으로 입력" title="주요지명 검색">
+                    <button type="button" class="nr__map-search-btn" aria-label="검색">
+                      <i class="icon-aspect-search" data-size="24" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <button type="button" class="nr__map-search-filter-btn">읍면동 선택</button>
+                </div>
+
+                <!-- 지도 영역 (빈 영역) -->
+                <div class="nr__map-area" data-map="desktop" role="region" aria-label="날씨 지도">
+                  <div class="kmap-app">
+                    <div class="map-layer-toggles">
+                      <a href="#" data-role="toggle-radar-fct"><span>초단기강수예측</span></a>
+                      <!-- <a href="#" data-role="toggle-sfc"><span>관측</span></a> -->
+                      <a href="#" data-role="toggle-wrn"><span>특보</span></a>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-yesterday"><span>어제</span></a>
+                        <div>
+                          <a href="#" data-role="toggle-yesterday-temp"><span>최고/최저</span></a>
+                          <a href="#" data-role="toggle-yesterday-rain"><span>강수</span>
+                            <div class="tcor-btn">
+                              <p class="tcor">
+                                <span class="red cont-none">일강수</span>: 어제 관측된 강수량<br>
+                                <span class="blue cont-none">적설</span>: 어제 하루동안 내린 눈이 가장 많이 쌓였을 때의 높이
+                              </p>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-current-obs" class="on" title="선택됨"><span>1시간관측</span></a>
+                        <div>
+                          <a href="#" data-role="toggle-current-obs-wtemp" class="on" title="선택됨"><span>날씨/기온</span></a>
+                          <a href="#" data-role="toggle-current-obs-rain"><span>강수</span>
+                            <div class="tcor-btn">
+                              <p class="tcor">
+                                <span class="red cont-none">일강수</span>: 오늘 관측된 강수량<br>
+                                <span class="blue cont-none">적설</span>: 기간에 관계없이 쌓여 있는 눈의 높이
+                              </p>
+                            </div>
+                          </a>
+                          <a href="#" data-role="toggle-current-obs-wind"><span>풍향/풍속</span></a>
+                        </div>
+                      </div>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-current-now"><span>현재날씨</span></a>
+                        <div>
+                          <a href="#" data-role="toggle-current-now-wtemp"><span>강수유무/기온</span></a>
+                          <a href="#" data-role="toggle-current-now-windrain"><span>1시간강수량/풍향/풍속</span></a>
+                        </div>
+                      </div>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-daily-forecast"><span>예보</span></a>
+                        <div><a href="#" data-role="toggle-daily-forecast"
+                            data-ef="0"><span>20(일)</span><span>오후</span></a><a href="#"
+                            data-role="toggle-daily-forecast" data-ef="1"><span>21(월)</span><span>오전</span></a><a
+                            href="#" data-role="toggle-daily-forecast"
+                            data-ef="2"><span>21(월)</span><span>오후</span></a><a href="#"
+                            data-role="toggle-daily-forecast" data-ef="3"><span>22(화)</span><span>오전</span></a><a
+                            href="#" data-role="toggle-daily-forecast"
+                            data-ef="4"><span>22(화)</span><span>오후</span></a><a href="#"
+                            data-role="toggle-daily-forecast" data-ef="5"><span>23(수)</span><span>오전</span></a><a
+                            href="#" data-role="toggle-daily-forecast"
+                            data-ef="6"><span>23(수)</span><span>오후</span></a><a href="#" class="on"
+                            data-role="toggle-daily-forecast" data-ef="7"><span>24(목)</span><span>오전</span></a><a
+                            href="#" data-role="toggle-daily-forecast" data-ef="8"><span>24(목)</span><span>오후</span></a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="map-layer-iconguide on">
+                      <a href="#" class="sym-btn with-txt iconguide pop-open" data-pop-name="open-iconguide-pop">날씨기호
+                        설명</a>
+                    </div>
+                    <div class="map-layer-buttons">
+                      <a href="https://www.weather.go.kr/wgis-nuri/html/map.html" data-role="open-wgis"
+                        title="새창열림"><span>날씨지도 새창열기</span></a>
+                    </div>
+                    <div class="map-layer-tm on">
+                      <p>09.20.(일) 19:00 갱신</p>
+                    </div>
+                    <!--
+                    <div id="legend" class="legend-position"><div class="legend"><div class="legendWrap"><div class="co"><div style="width: 10px; height: 14.5833px; background: rgb(51, 51, 51);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 3, 144);"></div><div style="width: 10px; height: 14.5833px; background: rgb(76, 78, 177);"></div><div style="width: 10px; height: 14.5833px; background: rgb(179, 180, 222);"></div><div style="width: 10px; height: 14.5833px; background: rgb(147, 0, 228);"></div><div style="width: 10px; height: 14.5833px; background: rgb(179, 41, 255);"></div><div style="width: 10px; height: 14.5833px; background: rgb(201, 105, 255);"></div><div style="width: 10px; height: 14.5833px; background: rgb(224, 169, 255);"></div><div style="width: 10px; height: 14.5833px; background: rgb(180, 0, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(210, 0, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(255, 50, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(255, 102, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(204, 170, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(224, 185, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(249, 205, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(255, 220, 31);"></div><div style="width: 10px; height: 14.5833px; background: rgb(255, 225, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 90, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 140, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 190, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 255, 0);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 51, 245);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 155, 245);"></div><div style="width: 10px; height: 14.5833px; background: rgb(0, 200, 255);"></div></div> <div class="no dense"><span>110</span><span>90</span><span>80</span><span>70</span><span>60</span><span>50</span><span>40</span><span>30</span><span>25</span><span>20</span><span>15</span><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span><span>0.5</span><span>0.1</span><span>0</span></div></div> <div class="unit">mm/h</div></div></div>
+                    <div class="map wrap" id="map" style="position: relative; background-color: rgb(200, 226, 236);">
+                      <div class="ol-viewport ol-touch"
+                        style="position: relative; overflow: hidden; width: 100%; height: 100%;">
+                        <div class="ol-unselectable ol-layers"
+                          style="position: absolute; width: 100%; height: 100%; z-index: 0;">
+                          <div class="ol-layer" style="position: absolute; width: 100%; height: 100%;"><canvas
+                              width="480" height="428"
+                              style="position: absolute; left: 0px; transform-origin: left top; transform: matrix(1, 0, 0, 1, 0, 0);"></canvas>
+                          </div>
+                          <div class="ol-layer" style="position: absolute; width: 100%; height: 100%;"><canvas
+                              width="600" height="535"
+                              style="position: absolute; left: 0px; transform-origin: left top; transform: matrix(0.8, 0, 0, 0.8, 0, 0);"></canvas>
+                          </div>
+                        </div>
+                        <div class="ol-overlaycontainer"
+                          style="position: absolute; z-index: 0; width: 100%; height: 100%; pointer-events: none;">
+                        </div>
+                        <div class="ol-overlaycontainer-stopevent"
+                          style="position: absolute; z-index: 0; width: 100%; height: 100%; pointer-events: none;">
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(492px, 155px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22520"
+                                data-type="buoy">강릉</button>
+                              <span class="buoySection"><span class="value">3.5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.8<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(77px, 189px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22522"
+                                data-type="buoy">연평도</button>
+                              <span class="buoySection"><span class="value">4.2</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.4<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(545px, 259px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22523"
+                                data-type="buoy">죽변</button>
+                              <span class="buoySection"><span class="value">7.1</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.9<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(165px, 493px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22510"
+                                data-type="buoy">위도동부</button>
+                              <span class="buoySection"><span class="value">8.3</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">1.0<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(150px, 368px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22446"
+                                data-type="buoy">내파수도</button>
+                              <span class="buoySection"><span class="value">NaN</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.6<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(526px, 205px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22311"
+                                data-type="buoy">삼척</button>
+                              <span class="buoySection"><span class="value">5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.9<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(438px, 77px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22310"
+                                data-type="buoy">고성</button>
+                              <span class="buoySection"><span class="value">1.7</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.7<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(-50px, 275px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22306"
+                                data-type="buoy">서해151</button>
+                              <span class="buoySection"><span class="value">-</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">-<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(554px, 65px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22305"
+                                data-type="buoy">동해57</button>
+                              <span class="buoySection"><span class="value">3.5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.6<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(170px, 260px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22303"
+                                data-type="buoy">풍도</button>
+                              <span class="buoySection"><span class="value">6.5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.5<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(97px, 490px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22186"
+                                data-type="buoy">부안</button>
+                              <span class="buoySection"><span class="value">7.6</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.7<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(50px, 270px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22185"
+                                data-type="buoy">인천</button>
+                              <span class="buoySection"><span class="value">7.6</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.6<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(89px, 399px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22108"
+                                data-type="buoy">외연도</button>
+                              <span class="buoySection"><span class="value">7.8</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.5<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(122px, 248px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22101"
+                                data-type="buoy">덕적도</button>
+                              <span class="buoySection"><span class="value">6.3</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.5<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(174px, 455px);">
+                            <div class="buoy seaBuoy"><button class="buoyName" data-id="22474"
+                                data-type="seaBuoy">군산</button>
+                              <span class="buoySection"><span class="value">1.0</span><span class="unit">
+                                  m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(558px, 495px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="963"
+                                data-type="lhaws">이덕서</button>
+                              <span class="buoySection"><span class="value">7.9</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(151px, 497px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="958"
+                                data-type="lhaws">갈매여</button>
+                              <span class="buoySection"><span class="value">9.7</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(148px, 440px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="957"
+                                data-type="lhaws">십이동파</button>
+                              <span class="buoySection"><span class="value">7.6</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(117px, 319px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="956"
+                                data-type="lhaws">가대암</button>
+                              <span class="buoySection"><span class="value">7</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(168px, 234px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="955"
+                                data-type="lhaws">서수도</button>
+                              <span class="buoySection"><span class="value">5.8</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class="ol-rotate ol-unselectable ol-control ol-hidden" style="pointer-events: auto;">
+                            <button class="ol-rotate-reset" type="button" title="Reset rotation"><span
+                                class="ol-compass" style="transform: rotate(0rad);">⇧</span></button>
+                          </div>
+                          <div class="ol-attribution ol-unselectable ol-control ol-collapsed"
+                            style="pointer-events: auto; display: none;">
+                            <ul></ul><button type="button" title="Attributions"><span
+                                class="ol-attribution-expand">i</span></button>
+                          </div>
+                          <div class="ol-zoom ol-unselectable ol-control" style="pointer-events: auto;"><button
+                              class="ol-zoom-in" type="button" title="확대">+</button><button class="ol-zoom-out"
+                              type="button" title="축소">−</button></div>
+                          <div class="ol-scale-line ol-unselectable" style="pointer-events: auto;">
+                            <div class="ol-scale-line-inner" style="width: 69px;">50 km</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ctrl">
+                        <div style="height: 61px;"><button type="button" id="ctrlD" title="거리재기" class="jsico"
+                            data-status="inactive"><img
+                              src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiDQoJIHk9IjBweCIgd2lkdGg9IjMwcHgiIGhlaWdodD0iMzBweCIgdmlld0JveD0iLTMgLTMgMzAgMzAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgLTMgLTMgMzAgMzAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+DQo8cG9seWdvbiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjE4LjQ5NSw3LjgzMyAxOC40OTUsMTAuMzA0IDE3LjUxMSwxMC4zMDQgMTcuNTExLDcuODMzIDE1LjYyOCw3LjgzMyAxNS42MjgsMTAuMzA0IDE0LjY0NCwxMC4zMDQgDQoJMTQuNjQ0LDcuODMzIDEyLjc2MSw3LjgzMyAxMi43NjEsMTIuMzEyIDExLjc3NiwxMi4zMTIgMTEuNzc2LDcuODMzIDguODg5LDcuODMzIDguODg5LDEwLjMwNCA3LjkwNCwxMC4zMDQgNy45MDQsNy44MzMgDQoJNi4wMjIsNy44MzMgNi4wMjIsMTAuMzA0IDUuMDM4LDEwLjMwNCA1LjAzOCw3LjgzMyAyLjI1LDcuODMzIDIuMjUsMTYuMDQxIDIxLjc5MiwxNi4wNDEgMjEuNzkyLDcuODMzICIvPg0KPC9zdmc+DQo="
+                              alt="거리재기" width="30px"></button><button type="button" id="ctrlM" title="지도"
+                            class="jsico"><img
+                              src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiDQoJIHk9IjBweCIgd2lkdGg9IjMwcHgiIGhlaWdodD0iMzBweCIgdmlld0JveD0iLTMgLTMgMzAgMzAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgLTMgLTMgMzAgMzAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHJlY3QgZmlsbD0ibm9uZSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIi8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMTQuMDE1LDE4LjkxM0w5Ljk4NSwxOS45MlY1LjIzOGw0LjAyOS0xLjA4MVYxOC45MTN6IE04LjY0Miw0Ljg5N0w2LjczLDQuMTAzDQoJQzUuNzA0LDMuNjc0LDQuNTIzLDQuMTU5LDQuMDk1LDUuMTg3QzMuOTkzLDUuNDMzLDMuOTM5LDUuNjk1LDMuOTM5LDUuOTYydjEyLjU5N2w0LjcwMiwxLjM0NFY0Ljg5N3ogTTE4LjYyOCw1LjAzMkwxNS43MDUsNC4wNQ0KCWMtMC4xMTMtMC4wMzYtMC4yMjktMC4wNjMtMC4zNDctMC4wNzl2MTQuOTM4bDQuNzAzLDEuMTQ1VjYuOTU4YzAtMC44OS0wLjU4My0xLjY3Mi0xLjQzNC0xLjkzVjUuMDMyeiIvPg0KPC9zdmc+DQo="
+                              alt="지도" width="30px"></button>
+                          <div id="mapDialog" class="layer" style="bottom: 10px; right: 50px; display: none;">
+                            <ul class="">
+                              <li>
+                                <label>
+                                  <label class="switch">
+                                    <input type="checkbox" data-key="New_baroemap" checked="checked">
+                                    <span class="slider round"></span>
+                                  </label>
+                                  거리지도
+                                </label>
+                              </li>
+                              <li>
+                                <label>
+                                  <label class="switch">
+                                    <input type="checkbox" data-key="WhiteMap">
+                                    <span class="slider round"></span>
+                                  </label>
+                                  백지도
+                                </label>
+                              </li>
+                            </ul><button type="button" id="ctrlClose" class="close">레이어 닫기</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    -->
+                  </div>
+                </div>
+                <!-- //지도 영역 (빈 영역) -->
+              </div>
+
+              <!-- 우측: 날씨 상세 카드 -->
+              <div class="nr__weather-detail-card">
+                <!-- 카드 상단 헤더 -->
+                <div class="nr__weather-card-top">
+                  <div class="nr__weather-location-bar">
+                    <!-- 위치 아이콘 버튼 -->
+                    <button type="button" class="nr__btn-location-target" aria-label="현재 위치로 이동">
+                      <i class="icon-location-target" data-size="20" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="nr__drop-wrap nr__loc-dropdown">
+                      <button type="button" class="nr__drop-btn nr__loc-dropdown-btn" aria-controls="loc-dropdown-menu"
+                        aria-haspopup="true" aria-expanded="false">
+                        <span class="nr__loc-main-title">
+                          <span class="nr__loc-name">인천광역시 중구 전동</span>
+                          <span class="nr__loc-sub-title">주요지명검색 : <span class="nr__loc-sub-name">송월초등학교</span></span>
+                        </span>
+                        <i class="icon-aspect-down" aria-hidden="true"></i>
+                      </button>
+
+                      <div id="loc-dropdown-menu" class="nr__drop-menu nr__loc-dropdown-menu"
+                        data-position="bottom-right" style="display: none;">
+                        <ul class="nr__drop-list">
+                          <li>
+                            <button type="button" class="nr__item-link">
+                              <i class="icon-location-pin" aria-hidden="true"></i>
+                              <span class="nr__item-name">청계천</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button type="button" class="nr__item-link">
+                              <i class="icon-location-pin" aria-hidden="true"></i>
+                              <span class="nr__item-name">송월초등학교</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="nr__top-action-line" aria-hidden="true"></span>
+
+                  <!-- 헤더 우측 액션 (구분선, 즐겨찾기, 도움말) -->
+                  <div class="nr__weather-top-actions">
+                    <button type="button" class="nr__btn-top-action nr__btn-star" aria-label="즐겨찾기"
+                      aria-pressed="false">
+                      <i class="icon-star" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="nr__btn-top-action nr__drop-btn" aria-controls="air-star-help"
+                      aria-haspopup="dialog" aria-expanded="false" aria-label="도움말">
+                      <i class="icon-aspect-q" data-size="20" aria-hidden="true"></i>
+                    </button>
+
+                    <div id="air-star-help" class="nr__drop-menu nr__air-tooltip-layer" data-position="bottom-right"
+                      role="dialog" aria-modal="true" aria-labelledby="air-info-pm25-title" style="display: none;">
+                      <div class="nr__air-tooltip-header">
+                        <div class="nr__air-tooltip-title-wrap">
+                          <span class="nr__air-tooltip-icon">?</span>
+                          <strong class="nr__air-tooltip-title" id="air-info-pm25-title">도움말</strong>
+                        </div>
+                        <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                          <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                      <div class="nr__air-tooltip-desc">
+                        별표를 누르면 관심지역으로 등록 또는 삭제할 수 있습니다.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="nr__weather-card-content">
+                  <!-- 갱신 시간 -->
+                  <div class="nr__weather-update-bar">
+                    <button type="button" class="nr__btn-refresh" aria-label="새로고침">
+                      <i class="icon-refresh" aria-hidden="true"></i>
+                    </button>
+                    <span class="nr__update-time">02.12.(목) 09:30 현재</span>
+                  </div>
+
+                  <!-- 날씨 요약 (기온, 체감, 어제비교) -->
+                  <div class="nr__weather-summary">
+                    <div class="nr__weather-main-temp">
+                      <div class="nr__weather-symbol">
+                        <div data-icon-weather="NB01">
+                          <span class="sr-only">맑음</span>
+                        </div>
+                      </div>
+                      <div class="nr__weather-temp-num">
+                        <strong class="nr__temp-val">20.7</strong><span class="nr__temp-deg">℃</span>
+                      </div>
+                    </div>
+                    <div class="nr__weather-summary-line"></div>
+                    <div class="nr__weather-sub-temp">
+                      <div class="nr__feels-like">체감 <strong>26℃</strong></div>
+                      <div class="nr__compare-temp">어제보다 <strong>-24°</strong> <span class="nr__text-highlight"
+                          data-state="up">높아요</span></div>
+                    </div>
+                  </div>
+
+                  <!-- 기상 지표 배지 3종 -->
+                  <div class="nr__weather-chips">
+                    <div class="nr__weather-chip">
+                      <i class="icon-aspect-humidity" data-size="20" aria-hidden="true"></i>
+                      <span class="nr__chip-label">습도</span>
+                      <strong class="nr__chip-val">63%</strong>
+                    </div>
+                    <div class="nr__weather-chip">
+                      <i class="icon-aspect-wind" data-size="20" aria-hidden="true"></i>
+                      <span class="nr__chip-label">바람</span>
+                      <strong class="nr__chip-val">남동 2.5m/s</strong>
+                    </div>
+                    <div class="nr__weather-chip">
+                      <i class="icon-aspect-rainfall" data-size="20" aria-hidden="true"></i>
+                      <span class="nr__chip-label">1시간강수량</span>
+                      <strong class="nr__chip-val">8 mm</strong>
+                    </div>
+                  </div>
+
+                  <!-- 일출/일몰 및 바로가기 바 -->
+                  <div class="nr__weather-sun-bar">
+                    <div class="nr__sun-times">
+                      <span class="nr__sun-item">
+                        <i class="icon-aspect-sunrise" data-size="20" aria-hidden="true"></i>
+                        일출 <strong>05:06</strong>
+                      </span>
+                      <span class="nr__sun-divider" aria-hidden="true">|</span>
+                      <span class="nr__sun-item">
+                        <i class="icon-aspect-sunset" data-size="20" aria-hidden="true"></i>
+                        일몰 <strong>19:42</strong>
+                      </span>
+                    </div>
+                    <div class="nr__sun-links">
+                      <a href="#none" class="nr__btn-pill-gray">날씨해설 바로가기</a>
+                      <a href="#none" class="nr__btn-pill-gray">강수 체감영상</a>
+                    </div>
+                  </div>
+
+                  <!-- 특보 알림 박스 -->
+                  <div class="nr__weather-alert-box">
+                    <p class="nr__alert-msg">해당지역에 발효중인 특보가 없습니다.</p>
+                  </div>
+
+                  <!-- 대기질 원형 게이지 차트 3종 (기존 컴포넌트 재사용) -->
+                  <div class="nr__card-air-gauges">
+                    <div class="nr__air-quality-gauges">
+                      <!-- 1. 초미세먼지 PM2.5 -->
+                      <div class="nr__air-gauge-item">
+                        <div class="nr__gauge-chart">
+                          <svg viewBox="0 0 100 100" class="nr__gauge-circle" aria-hidden="true">
+                            <circle cx="50" cy="50" r="40" class="nr__gauge-track"></circle>
+                            <circle cx="50" cy="50" r="40" class="nr__gauge-progress nr__gauge-blue"
+                              style="stroke-dasharray: 251.2; stroke-dashoffset: 180;"></circle>
+                            <circle cx="50" cy="10" r="2.8" class="nr__gauge-dot"></circle>
+                          </svg>
+                          <div class="nr__gauge-content">
+                            <strong class="nr__gauge-val">12</strong>
+                            <div class="nr__gauge-line"></div>
+                            <span class="nr__gauge-unit">μg/m³</span>
+                          </div>
+                        </div>
+                        <div class="nr__gauge-info">
+                          <div class="nr__gauge-title">초미세먼지 <span class="nr__gauge-sub">PM2.5</span></div>
+                          <div class="nr__gauge-status status-good">
+                            <span class="nr__status-text">좋음</span>
+                            <button type="button" class="nr__drop-btn nr__btn-status-help" aria-controls="air-info-pm25"
+                              aria-haspopup="dialog" aria-expanded="false" aria-label="초미세먼지 기준 안내">
+                              <span class="icon-aspect-q" data-size="16"></span>
+                            </button>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- 2. 미세먼지 PM10 -->
+                      <div class="nr__air-gauge-item">
+                        <div class="nr__gauge-chart">
+                          <svg viewBox="0 0 100 100" class="nr__gauge-circle" aria-hidden="true">
+                            <circle cx="50" cy="50" r="40" class="nr__gauge-track"></circle>
+                            <circle cx="50" cy="50" r="40" class="nr__gauge-progress nr__gauge-blue"
+                              style="stroke-dasharray: 251.2; stroke-dashoffset: 145;"></circle>
+                            <circle cx="50" cy="10" r="2.8" class="nr__gauge-dot"></circle>
+                          </svg>
+                          <div class="nr__gauge-content">
+                            <strong class="nr__gauge-val">28</strong>
+                            <div class="nr__gauge-line"></div>
+                            <span class="nr__gauge-unit">μg/m³</span>
+                          </div>
+                        </div>
+                        <div class="nr__gauge-info">
+                          <div class="nr__gauge-title">미세먼지 <span class="nr__gauge-sub">PM10</span></div>
+                          <div class="nr__gauge-status status-good">
+                            <span class="nr__status-text">좋음</span>
+                            <button type="button" class="nr__drop-btn nr__btn-status-help" aria-controls="air-info-pm10"
+                              aria-haspopup="dialog" aria-expanded="false" aria-label="미세먼지 기준 안내">
+                              <span class="icon-aspect-q" data-size="16"></span>
+                            </button>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- 3. 오존 O3 -->
+                      <div class="nr__air-gauge-item">
+                        <div class="nr__gauge-chart">
+                          <svg viewBox="0 0 100 100" class="nr__gauge-circle" aria-hidden="true">
+                            <circle cx="50" cy="50" r="40" class="nr__gauge-track"></circle>
+                            <circle cx="50" cy="50" r="40" class="nr__gauge-progress nr__gauge-green"
+                              style="stroke-dasharray: 251.2; stroke-dashoffset: 160;"></circle>
+                            <circle cx="50" cy="10" r="2.8" class="nr__gauge-dot"></circle>
+                          </svg>
+                          <div class="nr__gauge-content">
+                            <strong class="nr__gauge-val">0.037</strong>
+                            <div class="nr__gauge-line"></div>
+                            <span class="nr__gauge-unit">ppm</span>
+                          </div>
+                        </div>
+                        <div class="nr__gauge-info">
+                          <div class="nr__gauge-title">오존 <span class="nr__gauge-sub">O₃</span></div>
+                          <div class="nr__gauge-status status-green">
+                            <span class="nr__status-text">좋음</span>
+                            <button type="button" class="nr__drop-btn nr__btn-status-help" aria-controls="air-info-o3"
+                              aria-haspopup="dialog" aria-expanded="false" aria-label="오존 기준 안내">
+                              <span class="icon-aspect-q" data-size="16"></span>
+                            </button>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- dropdown content -->
+                      <div id="air-info-pm25" class="nr__drop-menu nr__air-tooltip-layer" data-position="bottom-left"
+                        role="dialog" aria-modal="true" aria-labelledby="air-info-pm25-title" style="display: none;">
+                        <div class="nr__air-tooltip-header">
+                          <div class="nr__air-tooltip-title-wrap">
+                            <span class="nr__air-tooltip-icon">?</span>
+                            <strong class="nr__air-tooltip-title" id="air-info-pm25-title">초미세먼지(µg/m³)</strong>
+                          </div>
+                          <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                            <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="nr__air-tooltip-desc">
+                          입자의 크기가 2.5µg/m³ 이하인 먼지
+                        </div>
+                        <hr />
+                        <div class="nr__air-grade-box">
+                          <div class="nr__air-grade-labels">
+                            <span class="grade-item">좋음(0~15)</span>
+                            <span class="grade-item">보통(16~35)</span>
+                            <span class="grade-item">나쁨(36~75)</span>
+                            <span class="grade-item">매우나쁨(76~)</span>
+                          </div>
+                          <div class="nr__air-grade-bar">
+                            <span class="bar-step step-good"></span>
+                            <span class="bar-step step-normal"></span>
+                            <span class="bar-step step-bad"></span>
+                            <span class="bar-step step-very-bad"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="air-info-pm10" class="nr__drop-menu nr__air-tooltip-layer" data-position="bottom-center"
+                        role="dialog" aria-modal="true" aria-labelledby="air-info-pm10-title" style="display: none;">
+                        <div class="nr__air-tooltip-header">
+                          <div class="nr__air-tooltip-title-wrap">
+                            <span class="nr__air-tooltip-icon">?</span>
+                            <strong class="nr__air-tooltip-title" id="air-info-pm10-title">미세먼지(µg/m³)</strong>
+                          </div>
+                          <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                            <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="nr__air-tooltip-desc">
+                          입자의 크기가 10µg/m³ 이하인 먼지
+                        </div>
+                        <hr />
+                        <div class="nr__air-grade-box">
+                          <div class="nr__air-grade-labels">
+                            <span class="grade-item">좋음(0~30)</span>
+                            <span class="grade-item">보통(31~80)</span>
+                            <span class="grade-item">나쁨(81~150)</span>
+                            <span class="grade-item">매우나쁨(151~)</span>
+                          </div>
+                          <div class="nr__air-grade-bar">
+                            <span class="bar-step step-good"></span>
+                            <span class="bar-step step-normal"></span>
+                            <span class="bar-step step-bad"></span>
+                            <span class="bar-step step-very-bad"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="air-info-o3" class="nr__drop-menu nr__air-tooltip-layer" data-position="bottom-right"
+                        role="dialog" aria-modal="true" aria-labelledby="air-info-o3-title" style="display: none;">
+                        <div class="nr__air-tooltip-header">
+                          <div class="nr__air-tooltip-title-wrap">
+                            <span class="nr__air-tooltip-icon">?</span>
+                            <strong class="nr__air-tooltip-title" id="air-info-o3-title">오존(ppm)</strong>
+                          </div>
+                          <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                            <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="nr__air-tooltip-desc">
+                          대기 중 오존(O₃) 농도 기준
+                        </div>
+                        <hr />
+                        <div class="nr__air-grade-box">
+                          <div class="nr__air-grade-labels">
+                            <span class="grade-item">좋음(0~0.03)</span>
+                            <span class="grade-item">보통(0.031~0.09)</span>
+                            <span class="grade-item">나쁨(0.091~0.15)</span>
+                            <span class="grade-item">매우나쁨(0.151~)</span>
+                          </div>
+                          <div class="nr__air-grade-bar">
+                            <span class="bar-step step-good"></span>
+                            <span class="bar-step step-normal"></span>
+                            <span class="bar-step step-bad"></span>
+                            <span class="bar-step step-very-bad"></span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <!-- 대기질 출처 텍스트 -->
+                    <div class="nr__air-quality-source">
+                      <p>명륜동측정소(도시대기) 06.09.(화) 09:00 기준</p>
+                      <p>정보출처: 대기질정보(한국환경공단), 일출일몰정보(한국천문연구원)</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 지도 영역 (빈 영역) -->
+                <div class="nr__map-area" data-map="mobile" role="region" aria-label="날씨 지도">
+                  <div class="kmap-app">
+                    <div class="map-layer-toggles">
+                      <a href="#" data-role="toggle-radar-fct"><span>초단기강수예측</span></a>
+                      <!-- <a href="#" data-role="toggle-sfc"><span>관측</span></a> -->
+                      <a href="#" data-role="toggle-wrn"><span>특보</span></a>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-yesterday"><span>어제</span></a>
+                        <div>
+                          <a href="#" data-role="toggle-yesterday-temp"><span>최고/최저</span></a>
+                          <a href="#" data-role="toggle-yesterday-rain"><span>강수</span>
+                            <div class="tcor-btn">
+                              <p class="tcor">
+                                <span class="red cont-none">일강수</span>: 어제 관측된 강수량<br>
+                                <span class="blue cont-none">적설</span>: 어제 하루동안 내린 눈이 가장 많이 쌓였을 때의 높이
+                              </p>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-current-obs" class="on" title="선택됨"><span>1시간관측</span></a>
+                        <div>
+                          <a href="#" data-role="toggle-current-obs-wtemp" class="on" title="선택됨"><span>날씨/기온</span></a>
+                          <a href="#" data-role="toggle-current-obs-rain"><span>강수</span>
+                            <div class="tcor-btn">
+                              <p class="tcor">
+                                <span class="red cont-none">일강수</span>: 오늘 관측된 강수량<br>
+                                <span class="blue cont-none">적설</span>: 기간에 관계없이 쌓여 있는 눈의 높이
+                              </p>
+                            </div>
+                          </a>
+                          <a href="#" data-role="toggle-current-obs-wind"><span>풍향/풍속</span></a>
+                        </div>
+                      </div>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-current-now"><span>현재날씨</span></a>
+                        <div>
+                          <a href="#" data-role="toggle-current-now-wtemp"><span>강수유무/기온</span></a>
+                          <a href="#" data-role="toggle-current-now-windrain"><span>1시간강수량/풍향/풍속</span></a>
+                        </div>
+                      </div>
+                      <div class="map-layer-toggles-tab">
+                        <a href="#" data-role="toggle-daily-forecast"><span>예보</span></a>
+                        <div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="map-layer-iconguide on">
+                      <a href="#" class="sym-btn with-txt iconguide pop-open" data-pop-name="open-iconguide-pop">날씨기호
+                        설명</a>
+                    </div>
+                    <div class="map-layer-buttons">
+                      <a href="https://www.weather.go.kr/wgis-nuri/html/map.html" data-role="open-wgis"
+                        title="새창열림"><span>날씨지도 새창열기</span></a>
+                    </div>
+                    <div class="map-layer-tm on">
+                      <p>09.20.(일) 19:00 갱신</p>
+                    </div>
+                    <div id="legend" class="legend-position">
+                      <!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+                    </div>
+                    <div class="map wrap" id="map" style="position: relative; background-color: rgb(200, 226, 236);">
+                      <div class="ol-viewport ol-touch"
+                        style="position: relative; overflow: hidden; width: 100%; height: 100%;">
+                        <div class="ol-unselectable ol-layers"
+                          style="position: absolute; width: 100%; height: 100%; z-index: 0;">
+                          <div class="ol-layer" style="position: absolute; width: 100%; height: 100%;"><canvas
+                              width="480" height="428"
+                              style="position: absolute; left: 0px; transform-origin: left top; transform: matrix(1, 0, 0, 1, 0, 0);"></canvas>
+                          </div>
+                          <div class="ol-layer" style="position: absolute; width: 100%; height: 100%;"><canvas
+                              width="600" height="535"
+                              style="position: absolute; left: 0px; transform-origin: left top; transform: matrix(0.8, 0, 0, 0.8, 0, 0);"></canvas>
+                          </div>
+                        </div>
+                        <div class="ol-overlaycontainer"
+                          style="position: absolute; z-index: 0; width: 100%; height: 100%; pointer-events: none;">
+                        </div>
+                        <div class="ol-overlaycontainer-stopevent"
+                          style="position: absolute; z-index: 0; width: 100%; height: 100%; pointer-events: none;">
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(492px, 155px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22520"
+                                data-type="buoy">강릉</button>
+                              <span class="buoySection"><span class="value">3.5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.8<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(77px, 189px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22522"
+                                data-type="buoy">연평도</button>
+                              <span class="buoySection"><span class="value">4.2</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.4<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(545px, 259px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22523"
+                                data-type="buoy">죽변</button>
+                              <span class="buoySection"><span class="value">7.1</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.9<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(165px, 493px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22510"
+                                data-type="buoy">위도동부</button>
+                              <span class="buoySection"><span class="value">8.3</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">1.0<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(150px, 368px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22446"
+                                data-type="buoy">내파수도</button>
+                              <span class="buoySection"><span class="value">NaN</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.6<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(526px, 205px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22311"
+                                data-type="buoy">삼척</button>
+                              <span class="buoySection"><span class="value">5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.9<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(438px, 77px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22310"
+                                data-type="buoy">고성</button>
+                              <span class="buoySection"><span class="value">1.7</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.7<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(-50px, 275px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22306"
+                                data-type="buoy">서해151</button>
+                              <span class="buoySection"><span class="value">-</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">-<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(554px, 65px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22305"
+                                data-type="buoy">동해57</button>
+                              <span class="buoySection"><span class="value">3.5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.6<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(170px, 260px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22303"
+                                data-type="buoy">풍도</button>
+                              <span class="buoySection"><span class="value">6.5</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.5<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(97px, 490px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22186"
+                                data-type="buoy">부안</button>
+                              <span class="buoySection"><span class="value">7.6</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.7<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(50px, 270px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22185"
+                                data-type="buoy">인천</button>
+                              <span class="buoySection"><span class="value">7.6</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.6<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(89px, 399px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22108"
+                                data-type="buoy">외연도</button>
+                              <span class="buoySection"><span class="value">7.8</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.5<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(122px, 248px);">
+                            <div class="buoy weaBuoy"><button class="buoyName" data-id="22101"
+                                data-type="buoy">덕적도</button>
+                              <span class="buoySection"><span class="value">6.3</span><span class="unit">
+                                  m/s</span></span>
+                              <span class="buoySection">0.5<span class="unit"> m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(174px, 455px);">
+                            <div class="buoy seaBuoy"><button class="buoyName" data-id="22474"
+                                data-type="seaBuoy">군산</button>
+                              <span class="buoySection"><span class="value">1.0</span><span class="unit">
+                                  m</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(558px, 495px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="963"
+                                data-type="lhaws">이덕서</button>
+                              <span class="buoySection"><span class="value">7.9</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(151px, 497px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="958"
+                                data-type="lhaws">갈매여</button>
+                              <span class="buoySection"><span class="value">9.7</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(148px, 440px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="957"
+                                data-type="lhaws">십이동파</button>
+                              <span class="buoySection"><span class="value">7.6</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(117px, 319px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="956"
+                                data-type="lhaws">가대암</button>
+                              <span class="buoySection"><span class="value">7</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class=""
+                            style="position: absolute; pointer-events: auto; transform: translate(-50%, -50%) translate(168px, 234px);">
+                            <div class="buoy lhaws"><button class="buoyName" data-id="955"
+                                data-type="lhaws">서수도</button>
+                              <span class="buoySection"><span class="value">5.8</span><span class="unit">
+                                  m/s</span></span>
+                            </div>
+                          </div>
+                          <div class="ol-rotate ol-unselectable ol-control ol-hidden" style="pointer-events: auto;">
+                            <button class="ol-rotate-reset" type="button" title="Reset rotation"><span
+                                class="ol-compass" style="transform: rotate(0rad);">⇧</span></button>
+                          </div>
+                          <div class="ol-attribution ol-unselectable ol-control ol-collapsed"
+                            style="pointer-events: auto; display: none;">
+                            <ul></ul><button type="button" title="Attributions"><span
+                                class="ol-attribution-expand">i</span></button>
+                          </div>
+                          <div class="ol-zoom ol-unselectable ol-control" style="pointer-events: auto;"><button
+                              class="ol-zoom-in" type="button" title="확대">+</button><button class="ol-zoom-out"
+                              type="button" title="축소">−</button></div>
+                          <div class="ol-scale-line ol-unselectable" style="pointer-events: auto;">
+                            <div class="ol-scale-line-inner" style="width: 69px;">50 km</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ctrl">
+                        <div style="height: 61px;"><button type="button" id="ctrlD" title="거리재기" class="jsico"
+                            data-status="inactive"><img
+                              src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiDQoJIHk9IjBweCIgd2lkdGg9IjMwcHgiIGhlaWdodD0iMzBweCIgdmlld0JveD0iLTMgLTMgMzAgMzAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgLTMgLTMgMzAgMzAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAsMGgyNHYyNEgwVjB6Ii8+DQo8cG9seWdvbiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjE4LjQ5NSw3LjgzMyAxOC40OTUsMTAuMzA0IDE3LjUxMSwxMC4zMDQgMTcuNTExLDcuODMzIDE1LjYyOCw3LjgzMyAxNS42MjgsMTAuMzA0IDE0LjY0NCwxMC4zMDQgDQoJMTQuNjQ0LDcuODMzIDEyLjc2MSw3LjgzMyAxMi43NjEsMTIuMzEyIDExLjc3NiwxMi4zMTIgMTEuNzc2LDcuODMzIDguODg5LDcuODMzIDguODg5LDEwLjMwNCA3LjkwNCwxMC4zMDQgNy45MDQsNy44MzMgDQoJNi4wMjIsNy44MzMgNi4wMjIsMTAuMzA0IDUuMDM4LDEwLjMwNCA1LjAzOCw3LjgzMyAyLjI1LDcuODMzIDIuMjUsMTYuMDQxIDIxLjc5MiwxNi4wNDEgMjEuNzkyLDcuODMzICIvPg0KPC9zdmc+DQo="
+                              alt="거리재기" width="30px"></button><button type="button" id="ctrlM" title="지도"
+                            class="jsico"><img
+                              src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IuugiOydtOyWtF8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiDQoJIHk9IjBweCIgd2lkdGg9IjMwcHgiIGhlaWdodD0iMzBweCIgdmlld0JveD0iLTMgLTMgMzAgMzAiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgLTMgLTMgMzAgMzAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHJlY3QgZmlsbD0ibm9uZSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIi8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMTQuMDE1LDE4LjkxM0w5Ljk4NSwxOS45MlY1LjIzOGw0LjAyOS0xLjA4MVYxOC45MTN6IE04LjY0Miw0Ljg5N0w2LjczLDQuMTAzDQoJQzUuNzA0LDMuNjc0LDQuNTIzLDQuMTU5LDQuMDk1LDUuMTg3QzMuOTkzLDUuNDMzLDMuOTM5LDUuNjk1LDMuOTM5LDUuOTYydjEyLjU5N2w0LjcwMiwxLjM0NFY0Ljg5N3ogTTE4LjYyOCw1LjAzMkwxNS43MDUsNC4wNQ0KCWMtMC4xMTMtMC4wMzYtMC4yMjktMC4wNjMtMC4zNDctMC4wNzl2MTQuOTM4bDQuNzAzLDEuMTQ1VjYuOTU4YzAtMC44OS0wLjU4My0xLjY3Mi0xLjQzNC0xLjkzVjUuMDMyeiIvPg0KPC9zdmc+DQo="
+                              alt="지도" width="30px"></button>
+                          <div id="mapDialog" class="layer" style="bottom: 10px; right: 50px; display: none;">
+                            <ul class="">
+                              <li>
+                                <label>
+                                  <label class="switch">
+                                    <input type="checkbox" data-key="New_baroemap" checked="checked">
+                                    <span class="slider round"></span>
+                                  </label>
+                                  거리지도
+                                </label>
+                              </li>
+                              <li>
+                                <label>
+                                  <label class="switch">
+                                    <input type="checkbox" data-key="WhiteMap">
+                                    <span class="slider round"></span>
+                                  </label>
+                                  백지도
+                                </label>
+                              </li>
+                            </ul><button type="button" id="ctrlClose" class="close">레이어 닫기</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- //지도 영역 (빈 영역) -->
+
+                <!-- 가까운 관측지점 섹션 -->
+                <div class="nr__station-section">
+                  <!-- 관측지점 헤더 바 -->
+                  <div class="nr__station-header">
+                    <div class="nr__station-title-group">
+                      <span class="nr__station-label">가까운 관측지점</span>
+                      <strong class="nr__station-name">인천광역시 중구 전동</strong>
+                    </div>
+                    <div class="nr__station-action-group">
+                      <div class="nr__station-btns" role="tablist" aria-label="관측지점 정보 구분">
+                        <button type="button" class="nr__btn-station-chip active" role="tab" id="station-tab-1"
+                          aria-selected="true" aria-controls="station-panel-1">실황</button>
+                        <button type="button" class="nr__btn-station-chip" role="tab" id="station-tab-2"
+                          aria-selected="false" aria-controls="station-panel-2">극값 1</button>
+                        <button type="button" class="nr__btn-station-chip" role="tab" id="station-tab-3"
+                          aria-selected="false" aria-controls="station-panel-3">극값 2</button>
+                        <button type="button" class="nr__btn-station-chip" role="tab" id="station-tab-4"
+                          aria-selected="false" aria-controls="station-panel-4">지점정보</button>
+                      </div>
+                      <span class="nr__station-time">06.09.(화) 14:35 현재</span>
+                    </div>
+                  </div>
+
+                  <!-- 관측지점 테이블 -->
+                  <div class="nr__station-tab-content active" id="station-panel-1" role="tabpanel"
+                    aria-labelledby="station-tab-1">
+                    <div class="nr__station-table-wrap">
+                      <table class="nr__station-table">
+                        <caption>실황 자료</caption>
+                        <colgroup>
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: 5rem;">
+                          <col style="width: 5rem;">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th scope="col">기온(체감)</th>
+                            <th scope="col">바람</th>
+                            <th scope="col">습도</th>
+                            <th scope="col">일강수</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>29.9℃(28.0℃)</td>
+                            <td>북북서 1.6m/s</td>
+                            <td>36%</td>
+                            <td>-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <p class="nr__station-note">※ 조회한 위치에서 가장 가까운 지점의 관측자료입니다.</p>
+                  </div>
+
+                  <div class="nr__station-tab-content" id="station-panel-2" role="tabpanel"
+                    aria-labelledby="station-tab-2">
+                    <div class="nr__station-table-wrap">
+                      <table class="nr__station-table">
+                        <caption>극값1 자료</caption>
+                        <colgroup>
+                          <col style="width: 4rem;">
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: 5rem;">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th scope="col" rowspan="2" class="nr__th-cate">구분</th>
+                            <th scope="colgroup" colspan="4" class="nr__th-group">기온</th>
+                            <th scope="col" rowspan="2" class="nr__th-rain">일강수</th>
+                          </tr>
+                          <tr>
+                            <th scope="col" class="nr__line-l">아침최저</th>
+                            <th scope="col">낮최고</th>
+                            <th scope="col">일최저</th>
+                            <th scope="col">일최고</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">1월</th>
+                            <td>14.1℃ <span class="nr__sub-time">(05:17)</span></td>
+                            <td>25.1℃ <span class="nr__sub-time">(11:55)</span></td>
+                            <td>14.1℃ <span class="nr__sub-time">(05:17)</span></td>
+                            <td>25.9℃ <span class="nr__sub-time">(12:55)</span></td>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">2월</th>
+                            <td>17.5℃ <span class="nr__sub-time">(04:05)</span></td>
+                            <td>24.5℃ <span class="nr__sub-time">(14:55)</span></td>
+                            <td>16.6℃ <span class="nr__sub-time">(23:45)</span></td>
+                            <td>24.5℃ <span class="nr__sub-time">(14:55)</span></td>
+                            <td>-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p class="nr__station-note">※ 오늘 극값은 현재 시간을 기준으로 제공됩니다.</p>
+                  </div>
+
+                  <div class="nr__station-tab-content" id="station-panel-3" role="tabpanel"
+                    aria-labelledby="station-tab-3">
+                    <div class="nr__station-table-wrap">
+                      <table class="nr__station-table">
+                        <caption>극값2 자료</caption>
+                        <colgroup>
+                          <col style="width: 4rem;">
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th scope="col" rowspan="2" class="nr__th-cate">구분</th>
+                            <th scope="colgroup" colspan="2" class="nr__th-group">풍속</th>
+                            <th scope="colgroup" colspan="2" class="nr__th-group">습도</th>
+                          </tr>
+                          <tr>
+                            <th scope="col" class="nr__line-l">최대(시각)</th>
+                            <th scope="col">최대 순간(시각)</th>
+                            <th scope="col">일최저(시각)</th>
+                            <th scope="col">일최고(시각)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">오늘</th>
+                            <td>3m/s <span class="nr__sub-time">(05:17)</span></td>
+                            <td>3m/s <span class="nr__sub-time">(11:55)</span></td>
+                            <td>34.4% <span class="nr__sub-time">(05:17)</span></td>
+                            <td>34.4% <span class="nr__sub-time">(12:55)</span></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">어제</th>
+                            <td>3m/s <span class="nr__sub-time">(05:17)</span></td>
+                            <td>3m/s <span class="nr__sub-time">(11:55)</span></td>
+                            <td>34.4% <span class="nr__sub-time">(05:17)</span></td>
+                            <td>34.4% <span class="nr__sub-time">(12:55)</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p class="nr__station-note">※ 오늘 극값은 현재 시간을 기준으로 제공됩니다.</p>
+                  </div>
+
+                  <div class="nr__station-tab-content" id="station-panel-4" role="tabpanel"
+                    aria-labelledby="station-tab-4">
+                    <div class="nr__station-table-wrap">
+                      <table class="nr__station-table">
+                        <caption>지점정보 자료</caption>
+                        <colgroup>
+                          <col style="width: auto;">
+                          <col style="width: auto;">
+                          <col style="width: 7rem;">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th scope="col">지점명</th>
+                            <th scope="col">위치</th>
+                            <th scope="col">설치고도</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>서울특별시 동작구 신대방동</td>
+                            <td>37.49°N, 126.91°E</td>
+                            <td>42m</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="nr__main-sec nr__sec2">
+        <div class="nr__main-wrap">
+          <div class="nr__main-group">
+            <div class="nr__main-head">
+              <h3 class="nr__main-title">일별 예보</h3>
+            </div>
+
+            <!-- 스와이퍼 콘텐츠 -->
+            <div class="nr__weather-swiper-container">
+              <div class="swiper nr__weather-swiper">
+                <div class="swiper-wrapper">
+                  <!-- 데이터 json 형식으로 받아올 예정 -->
+                </div>
+              </div>
+              <!-- 좌우 이동 버튼 (클릭 시 1개씩 이동) -->
+              <button type="button" class="nr__weather-swiper-prev swiper-button-prev" aria-label="이전 일기예보"></button>
+              <button type="button" class="nr__weather-swiper-next swiper-button-next" aria-label="다음 일기예보"></button>
+            </div>
+          </div>
+
+          <!-- 시간별 예보 -->
+          <div class="nr__main-group" id="hourly-forecast-sec">
+            <div class="nr__main-head">
+              <div class="nr__main-head-item" data-gap="3">
+                <h3 class="nr__main-title">시간별 예보</h3>
+                <div class="nr__hourly-interval-group">
+                  <button type="button" class="nr__hourly-interval-btn" data-interval="3">3시간 간격</button>
+                  <button type="button" class="nr__hourly-interval-btn active" data-interval="1">1시간 간격</button>
+                </div>
+              </div>
+
+              <!-- Desktop Toolbar (1024px 초과 화면 노출) -->
+              <div class="nr__main-head-item nr__desktop-only" data-gap="3">
+                <div class="nr__main-head-item">
+                  <button type="button" class="nr__hourly-info-btn">시계열예보안내</button>
+                  <button type="button" class="nr__hourly-info-btn">최근발표시각</button>
+                  <button type="button" class="nr__hourly-info-btn">날씨기호 설명</button>
+                </div>
+
+                <div class="nr__main-head-line"></div>
+
+                <!-- View Mode Switcher -->
+                <div class="nr__hourly-view-switcher">
+                  <button type="button" class="nr__hourly-view-btn active" data-view="mode1" aria-label="선형 차트 보기">
+                    <span data-icon="legend-1"></span>
+                  </button>
+                  <button type="button" class="nr__hourly-view-btn" data-view="mode2" aria-label="막대 차트 보기">
+                    <span data-icon="legend-2"></span>
+                  </button>
+                  <button type="button" class="nr__hourly-view-btn" data-view="mode3" aria-label="리스트 보기">
+                    <span data-icon="legend-3"></span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Mobile Settings Dropdown (1024px 이하 노출) -->
+              <div class="nr__drop-wrap nr__hourly-settings-dropdown nr__mobile-only">
+                <button type="button" class="nr__drop-btn nr__hourly-settings-btn" aria-controls="hourly-settings-menu"
+                  aria-label="시간별 예보 형태 설정" aria-expanded="false" aria-haspopup="true">
+                  <span data-icon="setting" class="nr__icon-setting"></span>
+                </button>
+                <div id="hourly-settings-menu" class="nr__drop-menu nr__hourly-settings-menu"
+                  data-position="bottom-right" style="display: none;">
+                  <ul class="nr__drop-list">
+                    <li><button type="button" class="nr__item-link active" data-view="mode1">혼합형태</button></li>
+                    <li><button type="button" class="nr__item-link" data-view="mode2">그래프형태</button></li>
+                    <li><button type="button" class="nr__item-link" data-view="mode3">표형태</button></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="nr__hourly-forecast-container">
+              <!-- Content Container (Rendered dynamically) -->
+              <div id="hourly-forecast-content"></div>
+            </div>
+
+            <!-- Mobile Hourly Bottom Actions (시계열예보안내, 최근발표시각 - 1024px 이하 노출) -->
+            <div class="nr__hourly-bottom-actions nr__mobile-only">
+              <button type="button" class="nr__hourly-pill-btn">시계열예보안내</button>
+              <button type="button" class="nr__hourly-pill-btn">최근발표시각</button>
+            </div>
+          </div>
+
+          <!-- 대기질 정보 (1024px 이하 모바일 노출) -->
+          <div class="nr__main-group nr__air-quality-group" id="air-quality-sec">
+            <div class="nr__main-head">
+              <h3 class="nr__main-title">대기질 정보</h3>
+            </div>
+            <div class="nr__air-quality-card">
+              <div class="nr__air-quality-gauges">
+                <!-- 1. 초미세먼지 PM2.5 -->
+                <div class="nr__air-gauge-item">
+                  <div class="nr__gauge-chart">
+                    <svg viewBox="0 0 100 100" class="nr__gauge-circle" aria-hidden="true">
+                      <circle cx="50" cy="50" r="40" class="nr__gauge-track"></circle>
+                      <circle cx="50" cy="50" r="40" class="nr__gauge-progress nr__gauge-blue"
+                        style="stroke-dasharray: 251.2; stroke-dashoffset: 180;"></circle>
+                      <circle cx="50" cy="10" r="2.8" class="nr__gauge-dot"></circle>
+                    </svg>
+                    <div class="nr__gauge-content">
+                      <strong class="nr__gauge-val">12</strong>
+                      <div class="nr__gauge-line"></div>
+                      <span class="nr__gauge-unit">μg/m³</span>
+                    </div>
+                  </div>
+                  <div class="nr__gauge-info">
+                    <div class="nr__gauge-title">초미세먼지 <span class="nr__gauge-sub">PM2.5</span></div>
+                    <div class="nr__gauge-status status-good">
+                      <span class="nr__status-text">좋음</span>
+                      <button type="button" class="nr__drop-btn nr__btn-status-help" aria-controls="air-info-pm25-m"
+                        aria-haspopup="dialog" aria-expanded="false" aria-label="초미세먼지 기준 안내">
+                        <span class="icon-aspect-q" data-size="16"></span>
+                      </button>
+                      <div id="air-info-pm25-m" class="nr__drop-menu nr__air-tooltip-layer" data-position="bottom-left"
+                        role="dialog" aria-modal="true" aria-labelledby="air-info-pm25-m-title" style="display: none;">
+                        <div class="nr__air-tooltip-header">
+                          <div class="nr__air-tooltip-title-wrap">
+                            <span class="nr__air-tooltip-icon">?</span>
+                            <strong class="nr__air-tooltip-title" id="air-info-pm25-m-title">초미세먼지(µg/m³)</strong>
+                          </div>
+                          <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                            <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="nr__air-tooltip-desc">
+                          입자의 크기가 2.5µg/m³ 이하인 먼지
+                        </div>
+                        <div class="nr__air-grade-box">
+                          <div class="nr__air-grade-labels">
+                            <span class="grade-item">좋음(0~15)</span>
+                            <span class="grade-item">보통(16~35)</span>
+                            <span class="grade-item">나쁨(36~75)</span>
+                            <span class="grade-item">매우나쁨(76~)</span>
+                          </div>
+                          <div class="nr__air-grade-bar">
+                            <span class="bar-step step-good"></span>
+                            <span class="bar-step step-normal"></span>
+                            <span class="bar-step step-bad"></span>
+                            <span class="bar-step step-very-bad"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. 미세먼지 PM10 -->
+                <div class="nr__air-gauge-item">
+                  <div class="nr__gauge-chart">
+                    <svg viewBox="0 0 100 100" class="nr__gauge-circle" aria-hidden="true">
+                      <circle cx="50" cy="50" r="40" class="nr__gauge-track"></circle>
+                      <circle cx="50" cy="50" r="40" class="nr__gauge-progress nr__gauge-blue"
+                        style="stroke-dasharray: 251.2; stroke-dashoffset: 145;"></circle>
+                      <circle cx="50" cy="10" r="2.8" class="nr__gauge-dot"></circle>
+                    </svg>
+                    <div class="nr__gauge-content">
+                      <strong class="nr__gauge-val">28</strong>
+                      <div class="nr__gauge-line"></div>
+                      <span class="nr__gauge-unit">μg/m³</span>
+                    </div>
+                  </div>
+                  <div class="nr__gauge-info">
+                    <div class="nr__gauge-title">미세먼지 <span class="nr__gauge-sub">PM10</span></div>
+                    <div class="nr__gauge-status status-good">
+                      <span class="nr__status-text">좋음</span>
+                      <button type="button" class="nr__drop-btn nr__btn-status-help" aria-controls="air-info-pm10-m"
+                        aria-haspopup="dialog" aria-expanded="false" aria-label="미세먼지 기준 안내">
+                        <span class="icon-aspect-q" data-size="16"></span>
+                      </button>
+                      <div id="air-info-pm10-m" class="nr__drop-menu nr__air-tooltip-layer"
+                        data-position="bottom-center" role="dialog" aria-modal="true"
+                        aria-labelledby="air-info-pm10-m-title" style="display: none;">
+                        <div class="nr__air-tooltip-header">
+                          <div class="nr__air-tooltip-title-wrap">
+                            <span class="nr__air-tooltip-icon">?</span>
+                            <strong class="nr__air-tooltip-title" id="air-info-pm10-m-title">미세먼지(µg/m³)</strong>
+                          </div>
+                          <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                            <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="nr__air-tooltip-desc">
+                          입자의 크기가 10µg/m³ 이하인 먼지
+                        </div>
+                        <div class="nr__air-grade-box">
+                          <div class="nr__air-grade-labels">
+                            <span class="grade-item">좋음(0~30)</span>
+                            <span class="grade-item">보통(31~80)</span>
+                            <span class="grade-item">나쁨(81~150)</span>
+                            <span class="grade-item">매우나쁨(151~)</span>
+                          </div>
+                          <div class="nr__air-grade-bar">
+                            <span class="bar-step step-good"></span>
+                            <span class="bar-step step-normal"></span>
+                            <span class="bar-step step-bad"></span>
+                            <span class="bar-step step-very-bad"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. 오존 O3 -->
+                <div class="nr__air-gauge-item">
+                  <div class="nr__gauge-chart">
+                    <svg viewBox="0 0 100 100" class="nr__gauge-circle" aria-hidden="true">
+                      <circle cx="50" cy="50" r="40" class="nr__gauge-track"></circle>
+                      <circle cx="50" cy="50" r="40" class="nr__gauge-progress nr__gauge-green"
+                        style="stroke-dasharray: 251.2; stroke-dashoffset: 160;"></circle>
+                      <circle cx="50" cy="10" r="2.8" class="nr__gauge-dot"></circle>
+                    </svg>
+                    <div class="nr__gauge-content">
+                      <strong class="nr__gauge-val">0.037</strong>
+                      <div class="nr__gauge-line"></div>
+                      <span class="nr__gauge-unit">ppm</span>
+                    </div>
+                  </div>
+                  <div class="nr__gauge-info">
+                    <div class="nr__gauge-title">오존 <span class="nr__gauge-sub">O₃</span></div>
+                    <div class="nr__gauge-status status-green">
+                      <span class="nr__status-text">좋음</span>
+                      <button type="button" class="nr__drop-btn nr__btn-status-help" aria-controls="air-info-o3-m"
+                        aria-haspopup="dialog" aria-expanded="false" aria-label="오존 기준 안내">
+                        <span class="icon-aspect-q" data-size="16"></span>
+                      </button>
+                      <div id="air-info-o3-m" class="nr__drop-menu nr__air-tooltip-layer" data-position="bottom-right"
+                        role="dialog" aria-modal="true" aria-labelledby="air-info-o3-m-title" style="display: none;">
+                        <div class="nr__air-tooltip-header">
+                          <div class="nr__air-tooltip-title-wrap">
+                            <span class="nr__air-tooltip-icon">?</span>
+                            <strong class="nr__air-tooltip-title" id="air-info-o3-m-title">오존(ppm)</strong>
+                          </div>
+                          <button type="button" class="nr__air-tooltip-close nr__tooltip-close" aria-label="도움말 닫기">
+                            <i class="icon-aspect-close" data-size="16" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="nr__air-tooltip-desc">
+                          대기 중 오존(O₃) 농도 기준
+                        </div>
+                        <div class="nr__air-grade-box">
+                          <div class="nr__air-grade-labels">
+                            <span class="grade-item">좋음(0~0.030)</span>
+                            <span class="grade-item">보통(0.031~0.090)</span>
+                            <span class="grade-item">나쁨(0.091~0.150)</span>
+                            <span class="grade-item">매우나쁨(0.151~)</span>
+                          </div>
+                          <div class="nr__air-grade-bar">
+                            <span class="bar-step step-good"></span>
+                            <span class="bar-step step-normal"></span>
+                            <span class="bar-step step-bad"></span>
+                            <span class="bar-step step-very-bad"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 하단 정보 바 -->
+              <div class="nr__air-quality-bottom">
+                <button type="button" class="nr__btn-weather-legend">날씨기호 설명</button>
+                <div class="nr__air-source-info">
+                  <p class="nr__source-station">방문측정소(도시대기) 09.09 [월] 09:00 기준</p>
+                  <p class="nr__source-org">제공: 한국환경공단</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="nr__main-sec nr__sec3" data-bg="gray">
+        <div class="nr__main-wrap nr__main-media">
+          <!-- 상단 미디어 / SNS 카드 (4종) -->
+          <div class="nr__main-media-card">
+            <ul class="nr__main-media-list">
+              <!-- Item 1: 옙TV(기상청 예보TV) -->
+              <li class="nr__main-media-item active">
+                <a href="#none" class="nr__media-link" title="옙TV(기상청 예보TV) 바로가기">
+                  <div class="nr__media-thumb">
+                    <img src="./resources/images/ph_media_1.jpg" alt="옙TV 예보관 리포트 썸네일">
+                  </div>
+                  <div class="nr__media-content">
+                    <div class="nr__media-channel">
+                      <i class="main-logo-1" aria-label="예보관 리포트"></i>
+                    </div>
+                    <strong class="nr__media-title">웹TV(기상청 예보TV)</strong>
+                    <p class="nr__media-desc">안녕하세요 기상청 예보관 김성수입니다. 이번 영상의 중점사항은 강수와 강풍 및 풍랑입니다.</p>
+                  </div>
+                </a>
+              </li>
+
+              <!-- Item 2: 대한민국 기상청 유튜브 -->
+              <li class="nr__main-media-item">
+                <a href="#none" class="nr__media-link" title="대한민국 기상청 유튜브 바로가기">
+                  <div class="nr__media-thumb">
+                    <img src="./resources/images/ph_media_2.jpg" alt="대한민국 기상청 유튜브 썸네일">
+                  </div>
+                  <div class="nr__media-content">
+                    <div class="nr__media-channel">
+                      <i class="main-logo-2" aria-label="YouTube"></i>
+                    </div>
+                    <strong class="nr__media-title">대한민국 기상청</strong>
+                    <p class="nr__media-desc">국민주권정부 출범 1년, 기상청은 이렇게 달라졌습니다.</p>
+                  </div>
+                </a>
+              </li>
+
+              <!-- Item 3: 기상청 이야기 블로그 -->
+              <li class="nr__main-media-item">
+                <a href="#none" class="nr__media-link" title="기상청 이야기 블로그 바로가기">
+                  <div class="nr__media-thumb">
+                    <img src="./resources/images/ph_media_4.png" alt="기상청 이야기 블로그 썸네일">
+                  </div>
+                  <div class="nr__media-content">
+                    <div class="nr__media-channel">
+                      <i class="main-logo-3" aria-label="blog"></i>
+                    </div>
+                    <strong class="nr__media-title">기상청 이야기</strong>
+                    <p class="nr__media-desc">더 쉽고 더 가까워진 태풍정보, 2026년 태풍정보 서비스가 달라집니다.</p>
+                  </div>
+                </a>
+              </li>
+
+              <!-- Item 4: 대한민국 기상청 X -->
+              <li class="nr__main-media-item">
+                <a href="#none" class="nr__media-link" title="대한민국 기상청 X 바로가기">
+                  <div class="nr__media-thumb">
+                    <img src="./resources/images/ph_media_1.jpg" alt="대한민국 기상청 X 썸네일">
+                  </div>
+                  <div class="nr__media-content">
+                    <div class="nr__media-channel">
+                      <i class="main-logo-4" aria-label="X"></i>
+                    </div>
+                    <strong class="nr__media-title">대한민국 기상청</strong>
+                    <p class="nr__media-desc">2026년 6월 9일 5시 기준 예보관 리포트입니다.</p>
+                  </div>
+                </a>
+              </li>
+            </ul>
+
+            <!-- Mobile Media Nav Buttons (< >) -->
+            <div class="nr__media-nav-wrap nr__mobile-only">
+              <button type="button" class="nr__media-nav-btn prev" aria-label="이전 영상">
+              </button>
+              <button type="button" class="nr__media-nav-btn next" aria-label="다음 영상">
+              </button>
+            </div>
+          </div>
+
+          <!-- 하단 서비스 바로가기 & 퀵링크 카드 -->
+          <div class="nr__main-services-card">
+            <!-- 좌측 배너 3종 -->
+            <div class="nr__main-services-banners">
+              <!-- Banner 1: 온열질환자 발생위험 예측 -->
+              <a href="#none" class="nr__service-banner-item" title="온열질환자 발생위험 예측 바로가기">
+                <div class="nr__banner-inner">
+                  <div class="nr__banner-icon-wrap">
+                    <i class="icon-aspect-main-img1 nr__banner-mascot" data-size="56" aria-hidden="true"></i>
+                  </div>
+                  <div class="nr__banner-text-wrap">
+                    <span class="nr__banner-category">온열질환자</span>
+                    <strong class="nr__banner-title">발생위험 예측</strong>
+                  </div>
+                </div>
+                <i class="nr__banner-arrow" aria-hidden="true">
+                  <span class="icon-aspect-arrow-r" data-size="16"></span>
+                </i>
+              </a>
+
+              <!-- Banner 2: 날씨누리 알리미 공지방 -->
+              <a href="#none" class="nr__service-banner-item" title="날씨누리 알리미 공지방 바로가기">
+                <div class="nr__banner-inner">
+                  <div class="nr__banner-icon-wrap">
+                    <i class="icon-aspect-main-img2 nr__banner-mascot" data-size="56" aria-hidden="true"></i>
+                  </div>
+                  <div class="nr__banner-text-wrap">
+                    <span class="nr__banner-category">날씨누리</span>
+                    <strong class="nr__banner-title">알리미 공지방</strong>
+                  </div>
+                </div>
+                <i class="nr__banner-arrow" aria-hidden="true">
+                  <span class="icon-aspect-arrow-r" data-size="16"></span>
+                </i>
+              </a>
+
+              <!-- Banner 3: 내 손안에 기상정보 기상청 날씨알리미 -->
+              <a href="#none" class="nr__service-banner-item" title="내 손안에 기상정보 기상청 날씨알리미 바로가기">
+                <div class="nr__banner-inner">
+                  <div class="nr__banner-icon-wrap">
+                    <i class="icon-aspect-main-img3 nr__banner-mascot" data-size="56" aria-hidden="true"></i>
+                  </div>
+                  <div class="nr__banner-text-wrap">
+                    <span class="nr__banner-category">내 손안에 기상정보</span>
+                    <strong class="nr__banner-title">기상청 날씨알리미</strong>
+                  </div>
+                </div>
+                <i class="nr__banner-arrow" aria-hidden="true">
+                  <span class="icon-aspect-arrow-r" data-size="16"></span>
+                </i>
+              </a>
+            </div>
+          </div>
+
+          <div class="nr__main-services-card">
+            <!-- 우측 퀵링크 12종 -->
+            <div class="nr__main-services-quick">
+              <ul class="nr__quick-links-grid">
+                <!-- Row 1 -->
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="밀물·썰물 정보 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n01" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">밀물·썰물 정보</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="해와 달이 뜨고지는 시간 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n02" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">해와 달이<br>뜨고지는 시간</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="기후정보포털 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n03" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">기후정보포털</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="기상자료 개방포털 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n04" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">기상자료<br>개방포털</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="기상기후 빅데이터 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n05" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">기상기후<br>빅데이터</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="대기질 예·경보 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n06" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">대기질 예·경보</span>
+                  </a>
+                </li>
+
+                <!-- Row 2 -->
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="날씨해설(유튜브) 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n07" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">날씨해설<br>(유튜브)</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="기상청 행정누리집 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n08" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">기상청<br>행정누리집</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="산악날씨 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n09" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">산악날씨</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="한강홍수통제소 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n10" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">한강홍수통제소</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="해양기상 정보포털 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n11" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">해양기상<br>정보포털</span>
+                  </a>
+                </li>
+                <li class="nr__quick-link-item">
+                  <a href="#none" class="nr__quick-link-btn" title="항공기상청 바로가기">
+                    <div class="nr__quick-icon-circle">
+                      <i class="icon-aspect-main-n12" data-size="32" aria-hidden="true"></i>
+                    </div>
+                    <span class="nr__quick-link-name">항공기상청</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- footer -->
+    <footer class="krds-footer"></footer>
+    <!-- //footer -->
+  </div>
+
+  <!-- 기존 코드 -->
+  <script src="./resources/js/com.ui-2021.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/app-config.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/app-init.js?ver=202607091110"></script>
+  <script src="./resources/js/kmap-wrap.js?ver=202607091110"></script>
+  <script src="./resources/js/global.js?ver=202607091110"></script>
+  <script src="./resources/js/app-2021/app-index.js?ver=202607091110"></script>
+  <script src="./resources/bangjae/bangjae_eqk.js?ver=202607091110"></script>
+  <script>
+    var indexSNS = new IndexSNS("index-sns");
+    function applySnsConfig(config) {
+      indexSNS.refresh(config);
+    }
+    var BannerDrawer = new BannerDrawer("index-banners");
+    weatherUI.slickChange2('.sns-list');
+  </script>
+  <script src="https://www.kma.go.kr/repositary/sns/sns-config-wnuri.js?ver=202609170850"></script>
+  <script src="/common/cookie.js?ver=202607091110"></script>
+  <script src="/repositary/bangjae/popup.js?ver=202607091110"></script>
+  <script src="/repositary/bangjae/popup_nuri_txt.js?ver=202607091110"></script>
+  <script src="/repositary/bangjae/popup_nuri_img.js?ver=202607091110"></script>
+  <script>
+    (function ($, window, document) {
+      if (isMobileEnv()) {
+        $('#swtc').attr("href", "http://www.khoa.go.kr/swtc/mobile.do");
+      }
+    })(jQuery, window, document);
+  </script>
+  <script src="./resources/js/special/special-config-lib.js?ver=202607091110"></script>
+  <script src="https://www.kma.go.kr/repositary/special/special-config.js?ver=202607091110"></script>
+  <script src="./resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+  <noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+      height="0" /></noscript>
+  <script src="./resources/js/UserScriptConf.js"></script>
+
+  <!-- 신규 코드 -->
+  <script src="./resources/js-2026/krds.min.js"></script>
+  <script src="./resources/js-2026/plugin/swiper-bundle.min.js"></script>
+  <script type="module">
+    import { UX } from './resources/js-2026/ui-common.js';
+    import { uiForecastExe } from './resources/js-2026/component/ui-forecast.js';
+
+    UX.init();
+
+    fetch('./resources/json/weather.json')
+      .then(res => res.json())
+      .then(data => {
+        uiForecastExe(data, {
+          // 외부 차트 스크립트 커스텀 옵션 예시 (미지정 시 ui-forecast-chart.js 기본 SVG 차트 실행)
+          /*
+          renderTempChart: (layer, context, validDates) => console.log('기온 차트 커스텀', layer, context),
+          renderRainChart: (layer, context, validDates) => console.log('강수확률 차트 커스텀', layer, context),
+          renderWindChart: (layer, context, validDates) => console.log('풍향/풍속 차트 커스텀', layer, context),
+          renderHumidityChart: (layer, context, validDates) => console.log('습도 차트 커스텀', layer, context),
+          */
+        });
+      });
+  </script>
+</body>
+
+</html>
