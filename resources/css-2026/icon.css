@@ -512,3 +512,16 @@
 .icon-aspect-main-n10 {background-image:url("../img/icon/icon-aspect-main-n10.svg")}
 .icon-aspect-main-n11 {background-image:url("../img/icon/icon-aspect-main-n11.svg")}
 .icon-aspect-main-n12 {background-image:url("../img/icon/icon-aspect-main-n12.svg")}
+
+.ico-wa{
+  width:8.8rem;
+  height: 6rem;
+  background-image: url(../img/common/footer_logos_wa.png);
+  background-size: contain;
+}
+.ico-131{
+  width:16.3rem;
+  height: 6rem;
+  background-image: url(../img/common/footer_logos_131.png);
+  background-size: contain;
+}

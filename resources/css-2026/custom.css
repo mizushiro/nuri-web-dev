@@ -26,6 +26,19 @@
 .nr__desktop-only { display: flex !important; }
 .nr__mobile-only { display: none !important; }
 
+/* Accessibility Helper */
+.nr__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Scoped Inner Container (Avoid breaking legacy .inner) */
 .krds-header .inner,
 .krds-footer .inner,
@@ -105,13 +118,147 @@
 
 .krds-footer {
   background-color: #DBE1E9;
+  width: 100%;
 }
 
-.krds-footer .f-logo {
-  background-image: url(../img/common/logo-weather.svg);
-  background-size: contain;
+/* --------------------------------------------------------------------------
+   Footer (.krds-footer)
+   -------------------------------------------------------------------------- */
+.nr__footer-quick {
+  background-color: #DBE1E9;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 1.8rem 0;
+}
+
+.nr__footer-quick .nr__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8rem;
+  max-width:128rem;
+}
+
+.nr__footer-quick-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #727272;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.5;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: color 0.15s ease;
+}
+
+.nr__footer-quick-link:hover {
+  color: #020618;
+}
+
+/* 풋터 본문 영역 */
+.nr__footer-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 4rem;
+  padding: 4rem 0 5.2rem;
+  max-width:128rem;
+}
+
+/* 기상청 로고 */
+.nr__footer-logo {
+  flex-shrink: 0;
   width: 15.1rem;
   height: 6rem;
+  background-image: url(../img/common/logo-weather.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: left top;
+  margin-top: 0.2rem;
+}
+
+/* 풋터 본문 콘텐츠 (주소/안내 + 우측 마크) */
+.nr__footer-cnt {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 3.2rem;
+}
+
+/* 정보 텍스트 블록 */
+.nr__footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  flex: 1;
+}
+
+.nr__footer-info-text {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: #727272;
+  margin: 0;
+  word-break: keep-all;
+  letter-spacing: -0.015em;
+}
+
+/* 우측 인증 마크 및 콜센터 영역 */
+.nr__footer-marks {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2.8rem;
+  flex-shrink: 0;
+}
+
+.nr__footer-mark-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.nr__footer-mark-item:hover {
+  opacity: 0.85;
+}
+
+/* 전화 링크는 데스크톱에서 비활성화 (모바일 전용) */
+.nr__footer-mark-item[href^="tel:"] {
+  pointer-events: none;
+  cursor: default;
+}
+
+.nr__footer-mark-item[href^="tel:"]:hover {
+  opacity: 1;
+}
+
+/* WA 웹 접근성 인증 마크 */
+.nr__footer-ico-wa {
+  display: block;
+  width: 7.2rem;
+  height: 5rem;
+  background-image: url(../img/common/footer_logos_wa.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+/* 131 기상콜센터 */
+.nr__footer-ico-131 {
+  display: block;
+  width: 11.2rem;
+  height: 4.8rem;
+  background-image: url(../img/common/footer_logos_131.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
 
 /* --------------------------------------------------------------------------
@@ -290,7 +437,7 @@
   transform: translateY(1rem);
   position: absolute;
   top: 100%;
-  left: 0; 
+  left: 0;
   background-color: #f7ebeb;
   width: 100%;
   padding: 1.6rem;
@@ -2724,7 +2871,7 @@
 .nr__map-area .map-layer-toggles-tab a.on + div {
 	display: flex;
 	gap:0.4rem;
-	left:0; 
+	left:0;
 }
 .nr__map-area .map-layer-toggles-tab > a{
 	display: flex;
@@ -3016,7 +3163,7 @@
   letter-spacing: -0.03em;
   line-height: 1.2;
 	width: 100%;
-	
+
 }
 
 .nr__loc-dropdown-btn .icon-aspect-down {
@@ -3385,7 +3532,15 @@
   top: 1.8rem;
   left: 50%;
   width: auto;
-	transform: translate(-50%, 0);
+  transform: translate(-50%, -1.2rem);
+}
+.nr__toast--card-top.is-show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.nr__toast--card-top.is-hide {
+  opacity: 0;
+  transform: translate(-50%, -1.2rem);
 }
 
 /* 전역 상단 중앙 토스트 */
@@ -3446,8 +3601,15 @@
     left: 1.2rem;
     right: 1.2rem;
     padding: 1rem 1.4rem;
+    transform: translateY(-1.2rem);
   }
-  
+  .nr__toast--card-top.is-show {
+    transform: translateY(0);
+  }
+  .nr__toast--card-top.is-hide {
+    transform: translateY(-1.2rem);
+  }
+
   .nr__toast-message {
     font-size: 1.4rem;
   }
@@ -3878,7 +4040,7 @@ font-size: 1.4rem;
 	border-left:0
 }
 .nr__station-table .nr__line-l {border-left: 1px solid #E0E6EF !important;}
-	
+
 
 .nr__station-table .nr__sub-time {
   font-size: 1.1rem;
@@ -3958,7 +4120,7 @@ font-size: 1.4rem;
   }
 
 	.krds-header .header-slogan {
-		display: none;	
+		display: none;
 	}
 	.krds-header .inner {
 		max-width: 100%;
@@ -4019,6 +4181,13 @@ font-size: 1.4rem;
 		left: 1.6rem;
 		right:1.6rem;
 		width: auto;
+		transform: translateY(-1.2rem);
+	}
+	.nr__toast--card-top.is-show {
+		transform: translateY(0);
+	}
+	.nr__toast--card-top.is-hide {
+		transform: translateY(-1.2rem);
 	}
 	.nr__weather-card-content .nr__card-air-gauges {
 		display: none;
@@ -4036,4 +4205,58 @@ font-size: 1.4rem;
 	.nr__map-area[data-map="desktop"] {
 		display: none;
 	}
+
+	/* 풋터 반응형 (1024px 이하) */
+	.nr__footer-quick {
+		padding: 1.4rem 1.6rem;
+	}
+	.nr__footer-quick .nr__inner {
+		gap: 1.2rem 2rem;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+  .nr__footer-logo {
+    width:7.5rem;
+    height:3rem;
+  }
+	.nr__footer-quick-link {
+		font-size: 1.4rem;
+	}
+	.nr__footer-body {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 1.6rem;
+		padding: 3.2rem 1.6rem 6rem;
+	}
+	.nr__footer-cnt {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2.4rem;
+		width: 100%;
+	}
+	.nr__footer-info-text {
+		font-size: 1.3rem;
+		line-height: 1.6;
+	}
+	.nr__footer-marks {
+		align-items: center;
+		gap: 2rem;
+	}
+  .nr__footer-ico-wa {
+    width:4.4rem;
+    height:3rem;
+  }
+  .nr__footer-ico-131 {
+    height:3rem;
+    width:8.1rem;
+  }
+
+  /* 모바일(1024px 이하): 전화 링크 활성화 */
+  .nr__footer-mark-item[href^="tel:"] {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .nr__footer-mark-item[href^="tel:"]:hover {
+    opacity: 0.85;
+  }
 }

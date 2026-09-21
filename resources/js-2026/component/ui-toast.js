@@ -22,13 +22,14 @@ export class Toast {
     const {
       target = document.body,
       duration = 3000,
-      type = 'warning',
-      position = 'card-top',
+      type = "warning",
+      position = "card-top",
       icon = null,
-      onClose = null
+      onClose = null,
     } = options;
 
-    const parentEl = typeof target === 'string' ? document.querySelector(target) : target;
+    const parentEl =
+      typeof target === "string" ? document.querySelector(target) : target;
     if (!parentEl) return null;
 
     // 기존 활성화된 토스트가 있다면 타이머 해제 및 제거
@@ -46,10 +47,10 @@ export class Toast {
       icon,
       onClose: () => {
         this.instances.delete(parentEl);
-        if (typeof onClose === 'function') {
-          onClose();
+        if (typeof onClose === "function") {
+          // onClose();
         }
-      }
+      },
     });
 
     this.instances.set(parentEl, toast);
@@ -62,7 +63,8 @@ export class Toast {
    * @param {string|HTMLElement} [target=document.body]
    */
   static hide(target = document.body) {
-    const parentEl = typeof target === 'string' ? document.querySelector(target) : target;
+    const parentEl =
+      typeof target === "string" ? document.querySelector(target) : target;
     if (!parentEl) return;
 
     const instance = this.instances.get(parentEl);
@@ -89,7 +91,7 @@ class ToastItem {
     if (this.customIcon) return this.customIcon;
 
     switch (this.type) {
-      case 'warning':
+      case "warning":
         // 시안 맞춤 노란 원 + 느낌표 아이콘
         return `
           <span class="nr__toast-icon nr__toast-icon--warning" aria-hidden="true">
@@ -100,7 +102,7 @@ class ToastItem {
             </svg>
           </span>
         `;
-      case 'success':
+      case "success":
         return `
           <span class="nr__toast-icon nr__toast-icon--success" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +111,7 @@ class ToastItem {
             </svg>
           </span>
         `;
-      case 'error':
+      case "error":
         return `
           <span class="nr__toast-icon nr__toast-icon--error" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -118,7 +120,7 @@ class ToastItem {
             </svg>
           </span>
         `;
-      case 'info':
+      case "info":
       default:
         return `
           <span class="nr__toast-icon nr__toast-icon--info" aria-hidden="true">
@@ -133,10 +135,10 @@ class ToastItem {
   }
 
   create() {
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     el.className = `nr__toast nr__toast--${this.position} nr__toast--${this.type}`;
-    el.setAttribute('role', 'status');
-    el.setAttribute('aria-live', 'polite');
+    el.setAttribute("role", "status");
+    el.setAttribute("aria-live", "polite");
 
     el.innerHTML = `
       <div class="nr__toast-inner">
@@ -146,7 +148,7 @@ class ToastItem {
     `;
 
     // 클릭 시 즉시 닫기
-    el.addEventListener('click', () => this.destroy(true));
+    el.addEventListener("click", () => this.destroy(true));
 
     return el;
   }
@@ -157,7 +159,7 @@ class ToastItem {
 
     // 강제 리플로우 후 표시 클래스 추가하여 애니메이션 트리거
     void this.element.offsetWidth;
-    this.element.classList.add('is-show');
+    this.element.classList.add("is-show");
 
     if (this.duration > 0) {
       this.timer = setTimeout(() => {
@@ -175,14 +177,16 @@ class ToastItem {
     if (!this.element) return;
 
     if (animated) {
-      this.element.classList.remove('is-show');
-      this.element.classList.add('is-hide');
+      this.element.classList.remove("is-show");
+      this.element.classList.add("is-hide");
 
       const handleTransitionEnd = () => {
         this.removeElement();
       };
 
-      this.element.addEventListener('transitionend', handleTransitionEnd, { once: true });
+      this.element.addEventListener("transitionend", handleTransitionEnd, {
+        once: true,
+      });
       // 트랜지션 미발생 대비 fallback
       setTimeout(handleTransitionEnd, 350);
     } else {
@@ -195,7 +199,7 @@ class ToastItem {
       this.element.parentNode.removeChild(this.element);
     }
     this.element = null;
-    if (typeof this.onClose === 'function') {
+    if (typeof this.onClose === "function") {
       this.onClose();
     }
   }
