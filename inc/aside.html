@@ -1,0 +1,103 @@
+<!-- 사이드바(LNB) 네비게이션 영역 -->
+<nav class="nr__aside-nav" aria-label="사이드 메뉴">
+  <!-- 1. 사이드바 대제목 (특보 · 예보) -->
+  <div class="nr__aside-header">
+    <h2 class="nr__aside-title">
+      <a href="/w/special-report/overall.do" class="nr__aside-title-link">특보 · 예보</a>
+    </h2>
+  </div>
+
+  <!-- 2. 2Depth 메뉴 리스트 및 3Depth 서브메뉴 -->
+  <div class="nr__aside-body">
+    <ul class="nr__aside-depth2-list">
+      <!-- 2Depth 1: 기상 특보 -->
+      <li class="nr__aside-depth2-item">
+        <a href="/w/special-report/overall.do" class="nr__aside-depth2-link" data-id="special-report">기상 특보</a>
+      </li>
+
+      <!-- 2Depth 2: 기상 예보 (현재 활성화된 2뎁스) -->
+      <li class="nr__aside-depth2-item is-active">
+        <a href="/w/forecast/ocean.do" class="nr__aside-depth2-link active" data-id="weather-forecast" aria-current="page">기상 예보</a>
+
+        <!-- 3Depth 서브메뉴 패널 (연한 파스텔 블루 박스) -->
+        <div class="nr__aside-panel">
+          <!-- 서브 그룹 1 -->
+          <ul class="nr__aside-depth3-group">
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/commentary.do" class="nr__aside-depth3-link">날씨해설·웹TV</a>
+            </li>
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/overall.do" class="nr__aside-depth3-link">예보 종합</a>
+            </li>
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/notice.do" class="nr__aside-depth3-link">예보 통보문</a>
+            </li>
+          </ul>
+
+          <!-- 서브 그룹 2 -->
+          <ul class="nr__aside-depth3-group">
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/ocean.do" class="nr__aside-depth3-link active" aria-current="page">해상 예보</a>
+            </li>
+            <li class="nr__aside-depth3-item">
+              <a href="https://marine.kma.go.kr" target="_blank" title="새창열림" class="nr__aside-depth3-link">
+                <span>해양기상기후정보포털</span>
+                <svg class="nr__aside-icon-external" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </li>
+          </ul>
+
+          <!-- 서브 그룹 3 -->
+          <ul class="nr__aside-depth3-group">
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/energy.do" class="nr__aside-depth3-link">에너지기상 요약정보</a>
+            </li>
+          </ul>
+
+          <!-- 서브 그룹 4 -->
+          <ul class="nr__aside-depth3-group">
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/life.do" class="nr__aside-depth3-link">공항·산악·생활</a>
+            </li>
+            <li class="nr__aside-depth3-item">
+              <a href="https://heat.kma.go.kr" target="_blank" title="새창열림" class="nr__aside-depth3-link">
+                <span>온열질환예측정보</span>
+                <svg class="nr__aside-icon-external" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </li>
+          </ul>
+
+          <!-- 서브 그룹 5 -->
+          <ul class="nr__aside-depth3-group">
+            <li class="nr__aside-depth3-item">
+              <a href="/w/forecast/guide.do" class="nr__aside-depth3-link">이용안내</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 3. 하단 배너 카드 (기상청 누리집) -->
+  <div class="nr__aside-footer">
+    <a href="https://www.kma.go.kr/kma/" target="_blank" title="새창열림" class="nr__aside-banner">
+      <span class="nr__aside-banner-icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#0088FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="#0088FF" fill-opacity="0.15" stroke="#0088FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="8" y1="7" x2="16" y2="7" stroke="#0088FF" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="8" y1="11" x2="14" y2="11" stroke="#0088FF" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="nr__aside-banner-text">기상청 누리집</span>
+    </a>
+  </div>
+</nav>

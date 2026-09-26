@@ -1,0 +1,121 @@
+{
+  "categories": [
+    {
+      "id": "forecast",
+      "title": "특보 · 예보",
+      "link": "/w/special-report/overall.do",
+      "depth2": [
+        {
+          "id": "special-report",
+          "title": "기상 특보",
+          "link": "/w/special-report/overall.do",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "special-all", "title": "특보(종합)", "link": "/w/special-report/overall.do" },
+                { "id": "special-notice", "title": "특보 통보문", "link": "/w/special-report/notice.do" },
+                { "id": "special-impact", "title": "영향예보", "link": "/w/special-report/impact.do" },
+                { "id": "special-fog", "title": "안개정보", "link": "/w/special-report/fog.do" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "weather-forecast",
+          "title": "기상 예보",
+          "link": "/w/forecast/ocean.do",
+          "isActive": true,
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "forecast-tv", "title": "날씨해설·웹TV", "link": "/w/forecast/commentary.do" },
+                { "id": "forecast-summary", "title": "예보 종합", "link": "/w/forecast/overall.do" },
+                { "id": "forecast-notice", "title": "예보 통보문", "link": "/w/forecast/notice.do" }
+              ]
+            },
+            {
+              "items": [
+                { "id": "forecast-ocean", "title": "해상 예보", "link": "/w/forecast/ocean.do", "isActive": true },
+                { "id": "ocean-portal", "title": "해양기상기후정보포털", "link": "https://marine.kma.go.kr", "isExternal": true }
+              ]
+            },
+            {
+              "items": [
+                { "id": "energy-info", "title": "에너지기상 요약정보", "link": "/w/forecast/energy.do" }
+              ]
+            },
+            {
+              "items": [
+                { "id": "airport-life", "title": "공항·산악·생활", "link": "/w/forecast/life.do" },
+                { "id": "heat-illness", "title": "온열질환예측정보", "link": "https://heat.kma.go.kr", "isExternal": true }
+              ]
+            },
+            {
+              "items": [
+                { "id": "forecast-guide", "title": "이용안내", "link": "/w/forecast/guide.do" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "current-weather",
+      "title": "현재날씨",
+      "link": "/w/weather/now.do",
+      "depth2": [
+        {
+          "id": "weather-map",
+          "title": "날씨 지도",
+          "link": "/w/weather/map.do"
+        },
+        {
+          "id": "weather-land",
+          "title": "육상",
+          "link": "/w/weather/land.do",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "land-current", "title": "현재 날씨", "link": "/w/weather/land/current.do" },
+                { "id": "land-obs", "title": "도시별 관측", "link": "/w/weather/land/obs.do" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "weather-ocean",
+          "title": "해상",
+          "link": "/w/weather/sea.do"
+        }
+      ]
+    },
+    {
+      "id": "severe-weather",
+      "title": "위험기상",
+      "link": "/w/typhoon/now.do",
+      "depth2": [
+        {
+          "id": "typhoon",
+          "title": "태풍",
+          "link": "/w/typhoon/now.do"
+        },
+        {
+          "id": "dust",
+          "title": "황사",
+          "link": "/w/dust/now.do"
+        },
+        {
+          "id": "heatwave",
+          "title": "폭염",
+          "link": "/w/heatwave/now.do"
+        }
+      ]
+    }
+  ],
+  "quickBanner": {
+    "title": "기상청 누리집",
+    "link": "https://www.kma.go.kr/kma/",
+    "isExternal": true,
+    "icon": "book"
+  }
+}
