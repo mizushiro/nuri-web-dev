@@ -178,9 +178,9 @@ export const weatherSwiperExe = (data) => {
   const swiperTarget = document.querySelector('.nr__weather-swiper');
   if (swiperTarget) {
     weatherSwiperInstance = new Swiper(swiperTarget, {
-      slidesPerView: 6,
+      slidesPerView: 2,
       slidesPerGroup: 1, // 버튼 클릭 시 하나씩 이동
-      spaceBetween: 12,
+      spaceBetween: 12, 
       navigation: {
         nextEl: '.nr__weather-swiper-next',
         prevEl: '.nr__weather-swiper-prev',
@@ -346,7 +346,24 @@ export const hourlyForecastExe = (data, options = {}) => {
           <span class="icon-aspect-info-round" data-size="22"></span>
         </button>
         <div id="hourly-info-tooltip" class="nr__drop-menu nr__tooltip-layer" data-position="bottom-left" role="tooltip" style="display: none;">
-          <div class="nr__tooltip-body">툴팁내용</div>
+          <div class="nr__tooltip-body nr__hourly-help">
+            <div class="nr__hourly-help-img"></div>
+            <div class="nr__hourly-help-cont">
+              <h4>예보 요소별 시간 안내(1시간 간격)</h4>
+              <ul>
+                <li><b>시각 :</b> 01시 기준 예시</li>
+                <li><b>날씨 :</b> 이전 1시간(00시~01시)의 날씨</li>
+                <li><b>기온 :</b> 01시 기준 예시</li>
+                <li><b>체감온도 :</b> 01시 정시 체감온도</li>
+                <li><b>강수량 :</b> 이전 1시간(00시~01시) 강수량<br />
+                ※ ‘~1’은 1mm미만(예상강수량<1)을 나타냄</li>
+                <li><b>강수강도 :</b> 이전 1시간(00시~01시) 강수량 또는 신적설을 텍스트 기반 체감도 높은 정보로 표출</li>
+                <li><b>강수확률 :</b> 이전 1시간(00시~01시) 강수확률</li>
+                <li><b>바람 :</b> 01시 정시 바람(풍향 및 강도, 풍속)</li>
+                <li><b>습도 :</b> 01시 정시 습도</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -673,9 +690,10 @@ export const hourlyForecastExe = (data, options = {}) => {
 
   // 뷰 모드 변경 처리 함수
   const switchViewMode = (newMode) => {
+    if (!newMode) return;
     currentViewMode = newMode;
 
-    // 데스크탑 버튼 동기화
+    // 1. 데스크탑 버튼 동기화
     const viewBtns = document.querySelectorAll('.nr__hourly-view-btn');
     viewBtns.forEach(b => {
       if (b.dataset.view === newMode) {
@@ -685,9 +703,34 @@ export const hourlyForecastExe = (data, options = {}) => {
       }
     });
 
-    // 모바일 드롭다운 동기화
+    // 2. 모바일 드롭다운 메뉴 아이템 동기화
+    const mobileViewBtns = document.querySelectorAll('.nr__hourly-settings-menu .nr__item-link');
+    mobileViewBtns.forEach(b => {
+      if (b.dataset.view === newMode) {
+        b.classList.add('active');
+        b.setAttribute('aria-selected', 'true');
+      } else {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      }
+    });
+
+    // 3. 모바일 드롭다운 인스턴스 동기화 및 닫기
     if (settingsDropdownInstance) {
-      settingsDropdownInstance.setActiveView(newMode);
+      if (typeof settingsDropdownInstance.setActiveView === 'function') {
+        settingsDropdownInstance.setActiveView(newMode);
+      }
+      if (typeof settingsDropdownInstance.close === 'function') {
+        settingsDropdownInstance.close(false);
+      }
+    } else {
+      const menu = document.getElementById('hourly-settings-menu');
+      const trigger = document.querySelector('.nr__hourly-settings-btn');
+      if (menu) menu.style.display = 'none';
+      if (trigger) {
+        trigger.classList.remove('active');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
     }
 
     renderComponent();
@@ -721,6 +764,17 @@ export const hourlyForecastExe = (data, options = {}) => {
     });
   });
 
+  // 모바일 뷰 모드 드롭다운 메뉴 아이템 이벤트 바인딩 (피씨형과 동일한 이벤트 적용)
+  const mobileViewBtns = document.querySelectorAll('.nr__hourly-settings-menu .nr__item-link');
+  mobileViewBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
+      const mode = this.dataset.view;
+      if (mode) {
+        switchViewMode(mode);
+      }
+    });
+  });
+
   // 모바일 설정 드롭다운 초기화
   const settingsDropdownEl = document.querySelector('.nr__hourly-settings-dropdown, .nr__hourly-settings-btn');
   if (settingsDropdownEl) {
@@ -729,6 +783,9 @@ export const hourlyForecastExe = (data, options = {}) => {
         switchViewMode(selectedMode);
       }
     });
+    if (settingsDropdownInstance && typeof settingsDropdownInstance.setActiveView === 'function') {
+      settingsDropdownInstance.setActiveView(currentViewMode);
+    }
   }
 };
 

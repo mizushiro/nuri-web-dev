@@ -48,11 +48,17 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
 
   if (!dropBtn || !dropMenu) return null;
 
-  // 중복 초기화 방지
+  // 중복 초기화 방지 및 콜백 갱신
   if (dropBtn._dropdownInitialized && dropBtn._dropdownInstance) {
+    if (typeof options.onSelect === 'function' && typeof dropBtn._dropdownInstance.setOnSelect === 'function') {
+      dropBtn._dropdownInstance.setOnSelect(options.onSelect);
+    }
     return dropBtn._dropdownInstance;
   }
   if (dropMenu._dropdownInitialized && dropMenu._dropdownInstance) {
+    if (typeof options.onSelect === 'function' && typeof dropMenu._dropdownInstance.setOnSelect === 'function') {
+      dropMenu._dropdownInstance.setOnSelect(options.onSelect);
+    }
     return dropMenu._dropdownInstance;
   }
 
@@ -71,7 +77,8 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
   }
 
   const items = Array.from(dropMenu.querySelectorAll('.nr__item-link, .item-link'));
-  const { onSelect = null, position = null, hoverDelay = 150 } = options;
+  let currentOnSelect = typeof options.onSelect === 'function' ? options.onSelect : null;
+  const { position = null, hoverDelay = 150 } = options;
 
   // data-tooltip="true" 여부 확인 (버튼 또는 메뉴에 지정)
   const isTooltip = dropBtn.dataset.tooltip === 'true'
@@ -355,8 +362,8 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
 
     close(true);
 
-    if (typeof onSelect === 'function') {
-      onSelect(item.dataset.view || item.value || item.textContent.trim(), item);
+    if (typeof currentOnSelect === 'function') {
+      currentOnSelect(item.dataset.view || item.value || item.textContent.trim(), item);
     }
   };
 
@@ -473,6 +480,9 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
     selectItem,
     setPosition: applyPosition,
     updatePosition,
+    setOnSelect: (cb) => {
+      currentOnSelect = typeof cb === 'function' ? cb : null;
+    },
     setActiveView: (viewMode) => {
       const match = items.find(i => i.dataset.view === viewMode);
       if (match) {
@@ -659,3 +669,110 @@ export const initNoticeDropdown = (options = {}) => {
     getActiveIndex: () => activeIndex,
   };
 };
+
+/**
+ * 전국특보 팝업 내부 기상특보 / 예비특보 탭 전환 제어 함수 (initSpecialReportTabs)
+ * 탭 버튼 클릭 및 키보드 좌우 탐색 시 대응하는 패널을 토글합니다.
+ */
+export const initSpecialReportTabs = () => {
+  const tabsContainer = document.querySelector('.nr__special-report-tabs');
+  if (!tabsContainer) return null;
+
+  const tabBtns = Array.from(tabsContainer.querySelectorAll('.nr__special-report-tab-btn'));
+  const panels = Array.from(document.querySelectorAll('.nr__special-report-panel'));
+  if (!tabBtns.length) return null;
+
+  const activateTab = (targetBtn) => {
+    tabBtns.forEach((btn) => {
+      btn.classList.remove('is-active');
+      btn.setAttribute('aria-selected', 'false');
+    });
+    panels.forEach((panel) => {
+      panel.classList.remove('is-active');
+      panel.setAttribute('hidden', '');
+    });
+
+    targetBtn.classList.add('is-active');
+    targetBtn.setAttribute('aria-selected', 'true');
+
+    const panelId = targetBtn.getAttribute('aria-controls');
+    const targetPanel = panelId ? document.getElementById(panelId) : null;
+    if (targetPanel) {
+      targetPanel.classList.add('is-active');
+      targetPanel.removeAttribute('hidden');
+    }
+  };
+
+  tabBtns.forEach((btn, idx) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      activateTab(btn);
+    });
+
+    btn.addEventListener('keydown', (e) => {
+      let nextIdx = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        nextIdx = (idx + 1) % tabBtns.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        nextIdx = (idx - 1 + tabBtns.length) % tabBtns.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        nextIdx = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        nextIdx = tabBtns.length - 1;
+      }
+
+      if (nextIdx >= 0) {
+        tabBtns[nextIdx].focus();
+        activateTab(tabBtns[nextIdx]);
+      }
+    });
+  });
+
+  return {
+    activateTab,
+  };
+};
+
+/**
+ * 방재속보 및 전국특보 도움말 버튼 툴팁 제어 함수 (initNoticeHelpTooltips)
+ * 호버(CSS) 외에 터치 디바이스 및 키보드 인터랙션을 보강합니다.
+ */
+export const initNoticeHelpTooltips = () => {
+  const helpBtns = document.querySelectorAll('.nr__notice-help-btn');
+  if (!helpBtns.length) return null;
+
+  helpBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      // 툴팁 내부 링크나 텍스트 클릭 시 이벤트 버블링 방지
+      if (e.target.closest('.tcor')) {
+        e.stopPropagation();
+        return;
+      }
+      e.stopPropagation();
+      const isActive = btn.classList.contains('is-active');
+      helpBtns.forEach((b) => b.classList.remove('is-active'));
+      if (!isActive) {
+        btn.classList.add('is-active');
+      }
+    });
+  });
+
+  // 바깥 클릭 시 모든 도움말 툴팁 active 해제
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nr__notice-help-btn')) {
+      helpBtns.forEach((b) => b.classList.remove('is-active'));
+    }
+  });
+
+  // ESC 키 누를 때 툴팁 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      helpBtns.forEach((b) => b.classList.remove('is-active'));
+    }
+  });
+};
+

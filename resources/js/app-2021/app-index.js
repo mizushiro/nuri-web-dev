@@ -406,6 +406,7 @@
             });
             $('#local-weather').on('click', '[data-dong-code]', function(e) {
 				var dongCode = $(this).attr('data-dong-code');
+                console.log('dongCode', dongCode)
 				$.ajax({
 	                url: appPrefix + '/rest/zone/dongInfo.do',
 	                data: { dong: dongCode },
@@ -1118,13 +1119,44 @@
                 $('.cmp-vismap').removeClass('show-iconguide');
             }
         }
+                function getMockJsonUrl(filename) {
+            var isFile = window.location.protocol === 'file:';
+            var base = isFile ? '.' : (window.appBase && window.appBase !== '/' ? window.appBase : '');
+            return (base ? base : '') + '/resources/json/' + filename;
+        }
+
+        function fetchLayerData(url, mockFilename, options) {
+            var isLocal = window.location.protocol === 'file:' || 
+                          window.location.hostname === 'localhost' || 
+                          window.location.hostname === '127.0.0.1';
+            var ajaxOpts = Object.assign({ dataType: 'json' }, options || {});
+            var mockUrl = mockFilename ? getMockJsonUrl(mockFilename) : null;
+
+            // 로컬 퍼블리싱/개발 환경에서는 기상청 WAF 403 차단 및 CORS 방지를 위해 Mock 파일 우선 로드
+            if (isLocal && mockUrl) {
+                return $.ajax(Object.assign({}, ajaxOpts, { url: mockUrl })).catch(function(err) {
+                    console.warn('로컬 Mock 데이터 로드 실패, 원본 URL 시도:', mockUrl, err);
+                    return $.ajax(Object.assign({}, ajaxOpts, { url: url }));
+                });
+            }
+
+            // 운영 환경이거나 원격인 경우 실제 URL 호출 후 실패(403 Forbidden, CORS 등) 시 Fallback으로 Mock 파일 로드
+            return $.ajax(Object.assign({}, ajaxOpts, { url: url })).catch(function(err) {
+                if (mockUrl) {
+                    console.warn('API 요청 실패 (403/CORS 등), Mock 데이터로 대체합니다:', url, err);
+                    return $.ajax(Object.assign({}, ajaxOpts, { url: mockUrl }));
+                }
+                return $.Deferred().reject(err).promise();
+            });
+        }
+
         function toggleWrnLayer(show) {
             if(!vmap) return;
             if(!show) {
                 vmap.setWrn(null);
                 KMAP_getLegend(vmap).setLegend("wrn", false);
             } else {
-                $.ajax({ url: getWgisBaseUrl() + '/wrn?date=', dataType: 'json' }).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/wrn?date=', 'map-wrn.json').then(function(data) {
                     vmap.setWrn(data);
                     // 범례 생성
                     var l = data.reduce(function(l, v) {
@@ -1143,7 +1175,7 @@
             if(!show) {
                 
             } else {
-                $.ajax({ url: appPrefix + '/renew2021/rest/main/yesterday-weather.do', dataType: 'json'}).then(function(result) {
+                fetchLayerData(appPrefix + '/renew2021/rest/main/yesterday-weather.do', 'map-yesterday.json').then(function(result) {
                     var data = result.data;
                     var date = moment(result.tm,'YYYYMMDD').format('YYYY-MM-DDTHH:mm:ss');
                     var list = _.map(data, function(d) {
@@ -1171,7 +1203,7 @@
             if(!show) {
                  
             } else {
-                $.ajax({ url: appPrefix + '/renew2021/rest/main/yesterday-weather.do', dataType: 'json'}).then(function(result) {
+                fetchLayerData(appPrefix + '/renew2021/rest/main/yesterday-weather.do', 'map-yesterday.json').then(function(result) {
                     var data = result.data;
                     var date = moment(result.tm,'YYYYMMDD').format('YYYY-MM-DDTHH:mm:ss');
                     var list = _.map(data, function(d) {
@@ -1200,7 +1232,7 @@
             if(!show) {
                 
             } else {
-                $.ajax({ url: appPrefix + '/renew2021/rest/main/current-weather-obs.do', dataType: 'json'}).then(function(result) {
+                fetchLayerData(appPrefix + '/renew2021/rest/main/current-weather-obs.do', 'map-obs.json').then(function(result) {
                     var data = result.data;
                     var date = moment(result.tm,'YYYYMMDDHHmm').format('YYYY-MM-DDTHH:mm:ss');
                     var list = _.map(data, function(d) {
@@ -1231,7 +1263,7 @@
             if(!show) {
                 
             } else {
-                $.ajax({ url: appPrefix + '/renew2021/rest/main/current-weather-obs.do', dataType: 'json'}).then(function(result) {
+                fetchLayerData(appPrefix + '/renew2021/rest/main/current-weather-obs.do', 'map-obs.json').then(function(result) {
                     var data = result.data;
                     var date = moment(result.tm,'YYYYMMDDHHmm').format('YYYY-MM-DDTHH:mm:ss');
                     var list = _.map(data, function(d) {
@@ -1260,7 +1292,7 @@
             if(!show) {
                 
             } else {
-                $.ajax({ url: appPrefix + '/renew2021/rest/main/current-weather-obs.do', dataType: 'json'}).then(function(result) {
+                fetchLayerData(appPrefix + '/renew2021/rest/main/current-weather-obs.do', 'map-obs.json').then(function(result) {
                     var data = result.data;
                     var date = moment(result.tm,'YYYYMMDDHHmm').format('YYYY-MM-DDTHH:mm:ss');
                     var list = _.map(data, function(d) {
@@ -1456,7 +1488,7 @@
                 vmap.removeObs('seaBuoy');
             } else {
                 // 등표 
-                $.ajax({ url: getWgisBaseUrl() + '/aws/lhaws?date=', dataType: 'json'}).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/aws/lhaws?date=', 'map-lhaws.json').then(function(data) {
                     vmap.setObs(data, {
                         type: 'lhaws',
                         visible: true, 
@@ -1466,7 +1498,7 @@
                     });
                 });
                 // 부이 
-                $.ajax({ url: getWgisBaseUrl() + '/aws/buoy?date=', dataType: 'json'}).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/aws/buoy?date=', 'map-buoy.json').then(function(data) {
                     vmap.setObs(data, {
                         type: 'buoy', 
                         visible: true,
@@ -1476,7 +1508,7 @@
                     });
                 });
                 // 파고부이 
-                $.ajax({ url: getWgisBaseUrl() + '/aws/seaBuoy?date=', dataType: 'json'}).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/aws/seaBuoy?date=', 'map-seabuoy.json').then(function(data) {
                     vmap.setObs(data, {
                         type: 'seaBuoy',
                         visible: true, 
@@ -1503,9 +1535,10 @@
                 var count = 0;
                 var visible = true;
                 awsUrl.forEach(function(url) {
-                    $.ajax({ url: url, dataType: 'json', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
+                    fetchLayerData(url, 'map-obs.json', { headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
+                        var obsList = Array.isArray(data) ? data : (data && data.data ? data.data : []);
                         if(result != null) {
-                            result = result.concat(data);
+                            result = result.concat(obsList);
                         } else {
                             result = data;
                         }
@@ -1534,7 +1567,7 @@
                     });
                 });*/
                 // 등표 
-                $.ajax({ url: getWgisBaseUrl() + '/aws/lhaws?date=', dataType: 'json', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/aws/lhaws?date=', 'map-lhaws.json', { headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
                     vmap.setObs(data, {
                         type: 'lhaws',
                         visible: true, 
@@ -1544,7 +1577,7 @@
                     });
                 });
                 // 부이 
-                $.ajax({ url: getWgisBaseUrl() + '/aws/buoy?date=', dataType: 'json', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/aws/buoy?date=', 'map-buoy.json', { headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
                     vmap.setObs(data, {
                         type: 'buoy', 
                         visible: true,
@@ -1554,7 +1587,7 @@
                     });
                 });
                 // 파고부이 
-                $.ajax({ url: getWgisBaseUrl() + '/aws/seaBuoy?date=', dataType: 'json', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
+                fetchLayerData(getWgisBaseUrl() + '/aws/seaBuoy?date=', 'map-seabuoy.json', { headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}}).then(function(data) {
                     vmap.setObs(data, {
                         type: 'seaBuoy',
                         visible: true, 

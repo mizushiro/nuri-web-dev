@@ -355,7 +355,6 @@
         });
         
         requestCurrentImages().then(function(data) {
-            //console.log('requestCurrentImages', data);
             if(data.length == 2) {
                 if(data[0].url) $('<img>').attr('src', appPrefix + data[0].url).attr('alt', data[0].alt).appendTo($('#radar-image .image-item').eq(0));
                 if(data[1].url) $('<img>').attr('src', appPrefix + data[1].url).attr('alt', data[1].alt).appendTo($('#radar-image .image-item').eq(1));

@@ -28,9 +28,25 @@ export class Toast {
       onClose = null,
     } = options;
 
-    const parentEl =
+    let parentEl =
       typeof target === "string" ? document.querySelector(target) : target;
-    if (!parentEl) return null;
+    if (!parentEl) {
+      parentEl = document.body;
+    }
+
+    // parentEl이 document.body이고 위치 옵션이 card-top인 경우 전역 top-center로 자동 전환 (옵션 위치가 명시되지 않은 경우)
+    let actualPosition = position;
+    if (parentEl === document.body && position === "card-top" && !options.position) {
+      actualPosition = "top-center";
+    }
+
+    // 타겟 요소가 body가 아니고 computed position이 static이면 relative 부여하여 토스트가 타겟 내부에 위치하도록 보장
+    if (parentEl !== document.body) {
+      const computedPos = window.getComputedStyle(parentEl).position;
+      if (computedPos === "static") {
+        parentEl.style.position = "relative";
+      }
+    }
 
     // 기존 활성화된 토스트가 있다면 타이머 해제 및 제거
     const prevInstance = this.instances.get(parentEl);
@@ -43,7 +59,7 @@ export class Toast {
       message,
       duration,
       type,
-      position,
+      position: actualPosition,
       icon,
       onClose: () => {
         this.instances.delete(parentEl);
@@ -64,7 +80,7 @@ export class Toast {
    */
   static hide(target = document.body) {
     const parentEl =
-      typeof target === "string" ? document.querySelector(target) : target;
+      (typeof target === "string" ? document.querySelector(target) : target) || document.body;
     if (!parentEl) return;
 
     const instance = this.instances.get(parentEl);
