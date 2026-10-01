@@ -9,6 +9,8 @@ import {
 import { Toast, showToast } from "./component/ui-toast.js";
 import { initMap } from "./component/ui-map.js";
 import { initAsideMenu } from "./component/ui-aside.js";
+import { initHeaderMenu } from "./component/ui-header.js";
+import { uiForecastExe } from "./component/ui-forecast.js";
 
 export const UX = {
   loadContent,
@@ -19,9 +21,16 @@ export const UX = {
   initAllDropdowns,
   initMap,
   initAsideMenu,
+  initHeaderMenu,
+  uiForecastExe,
+  noticeDropdown: null,
+  openNotice: (target) => UX.noticeDropdown?.open(target) ?? window.openNotice?.(target),
+  closeNotice: (restoreFocus) => UX.noticeDropdown?.close(restoreFocus) ?? window.closeNotice?.(restoreFocus),
+  toggleNotice: (target) => UX.noticeDropdown?.toggle(target) ?? window.toggleNotice?.(target),
+  clearNoticeTodayCookie: () => UX.noticeDropdown?.clearHideToday?.() ?? window.clearNoticeTodayCookie?.(),
   Toast,
   showToast,
-  init: (name) => {
+  init: (name, options = {}) => {
     console.log(name);
     const type = name;
     const global = "UI";
@@ -43,8 +52,12 @@ export const UX = {
         src: type === 'main' ? "./inc/header.html" : "../inc/header.html",
         insert: true,
       })
-        .then(() => {
+        .then(async () => {
           console.log("header load");
+          const dep1 = nrHeader.dataset.dep1 ? nrHeader.dataset.dep1 : undefined;
+          const dep2 = nrHeader.dataset.dep2 ? nrHeader.dataset.dep2 : undefined;
+          const dep3 = nrHeader.dataset.dep3 ? nrHeader.dataset.dep3 : undefined;
+          await initHeaderMenu({ dep1, dep2, dep3 });
           UX.initMobileNav();
         })
         .catch((err) => console.error("Error loading header content:", err));
@@ -61,20 +74,11 @@ export const UX = {
         .catch((err) => console.error("Error loading footer content:", err));
     }
     if (nrAside) {
-      // aside.html 불러온 후 JSON 기반 메뉴 렌더링 및 이벤트 초기화
-      loadContent({
-        area: nrAside,
-        src: type === 'main' ? "./inc/aside.html" : "../inc/aside.html",
-        insert: false,
-      })
-        .then(() => {
-          console.log("aside load");
-          initAsideMenu();
-        })
-        .catch((err) => {
-          console.error("Error loading aside content:", err);
-          initAsideMenu();
-        });
+      // data 속성이 명시되어 있지 않으면 undefined를 전달하여 URL 자동 매칭이 동작하도록 함
+      const dep1 = nrAside.dataset.dep1 ? nrAside.dataset.dep1 : undefined;
+      const dep2 = nrAside.dataset.dep2 ? nrAside.dataset.dep2 : undefined;
+      const dep3 = nrAside.dataset.dep3 ? nrAside.dataset.dep3 : undefined;
+      initAsideMenu({ dep1, dep2, dep3 });
     }
     if (nrLinks) {
       nrLinks.forEach((nrLink) => {
@@ -90,36 +94,107 @@ export const UX = {
       });
     }
 
-      // 모바일 미디어 카드 이전/다음 네비게이션
-      UX.initMediaNav();
-  
-      // 메인 방재속보/전국특보 드롭다운 초기화
-      UX.initNoticeDropdown();
-  
-      // 전국특보 팝업 기상특보/예비특보 탭 전환 초기화
-      initSpecialReportTabs();
-  
-      // 방재속보 및 전국특보 도움말 툴팁 초기화
-      initNoticeHelpTooltips();
-  
-      // 검색 지도 정보 지역 드롭다운 초기화
-      UX.initLocationDropdown();
-  
-      // 페이지 내 모든 드롭다운 및 툴팁 자동 초기화 (data-tooltip="true"면 툴팁, 아니면 클릭 드롭다운)
-      initAllDropdowns();
-  
-      // 관측지점 필터 칩 토글 초기화
-      UX.initStationTabs();
-  
-      // 즐겨찾기 버튼 및 토스트 초기화
-      UX.initBookmark();
-  
-      // 반응형 날씨 지도 초기화 (desktop/mobile 모드 대응)
-      initMap();
-  
-      // 메인 상단 탭 선택 시 body data-tab-select 연동
-      UX.initMainTabs();
+    // 페이지 내 모든 범용 드롭다운 및 툴팁 자동 초기화
+    initAllDropdowns();
 
+    // 메인 페이지일 경우 메인 전용 UI 자동 초기화
+    if (type === "main") {
+      UX.initMain(options);
+    }
+  },
+
+  /**
+   * 메인 페이지 전용 UI 및 컨트롤러 초기화 (UX.init('main') 시 자동 호출)
+   */
+  initMain: (options = {}) => {
+    // 1. 방재속보/전국특보 드롭다운 초기화 (기본: 방재속보 0번 오픈)
+    const defaultOpen = options.defaultOpen !== undefined ? options.defaultOpen : 0;
+    UX.noticeDropdown = UX.initNoticeDropdown({ defaultOpen });
+
+    // 전역 UI 객체 연동 (콘솔 및 인라인 스크립트에서도 제어 가능하도록)
+    if (typeof window !== "undefined") {
+      window.noticeDropdown = UX.noticeDropdown;
+      window.openNotice = UX.openNotice;
+      window.closeNotice = UX.closeNotice;
+      window.toggleNotice = UX.toggleNotice;
+      window.clearNoticeTodayCookie = UX.clearNoticeTodayCookie;
+      if (window.UI) {
+        window.UI.noticeDropdown = UX.noticeDropdown;
+        window.UI.openNotice = UX.openNotice;
+        window.UI.closeNotice = UX.closeNotice;
+        window.UI.toggleNotice = UX.toggleNotice;
+        window.UI.clearNoticeTodayCookie = UX.clearNoticeTodayCookie;
+      }
+    }
+
+    // 2. 전국특보 팝업 기상특보/예비특보 탭 전환 & 도움말 툴팁
+    UX.initSpecialReportTabs();
+    UX.initNoticeHelpTooltips();
+
+    // 3. 메인 상단 탭 (날씨/전국/태풍/폭염) 연동
+    UX.initMainTabs();
+
+    // 4. 모바일 미디어 카드 이전/다음 네비게이션
+    UX.initMediaNav();
+
+    // 5. 검색 지도 정보 지역 드롭다운
+    UX.initLocationDropdown();
+
+    // 6. 관측지점 필터 칩 토글
+    UX.initStationTabs();
+
+    // 7. 관심지역 즐겨찾기 버튼 & 토스트 알림
+    UX.initBookmark();
+
+    // 8. 반응형 날씨 지도 초기화
+    UX.initMap();
+
+    // 9. 타임바 슬라이더 진행률 제어
+    UX.initMainTimebar();
+
+    // 10. 예보 데이터 로드 및 차트/테이블 렌더링
+    UX.initForecastData(options.forecastOptions);
+
+    return UX.noticeDropdown;
+  },
+
+  /**
+   * 지도 타임바 슬라이더 진행률 CSS 커스텀 속성(--progress) 동기화
+   */
+  initMainTimebar: () => {
+    const rangeInput = document.querySelector(
+      ".nr__map-area .kmap-app .timebar .range",
+    );
+    if (!rangeInput) return;
+
+    const updateRangeProgress = () => {
+      const min = Number(rangeInput.min) || 0;
+      const max = Number(rangeInput.max) || 100;
+      const val = Number(rangeInput.value) || 0;
+      const percentage = ((val - min) / (max - min)) * 100;
+      rangeInput.style.setProperty("--progress", `${percentage}%`);
+    };
+
+    rangeInput.addEventListener("input", updateRangeProgress);
+    updateRangeProgress();
+  },
+
+  /**
+   * 날씨 예보 JSON 데이터 비동기 로드 및 예보 뷰(차트/테이블) 렌더링
+   */
+  initForecastData: (chartOptions = {}) => {
+    return fetch("./resources/json/weather.json")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        uiForecastExe(data, chartOptions);
+        return data;
+      })
+      .catch((err) => {
+        console.error("날씨 예보 데이터 로드 오류:", err);
+      });
   },
   
 
@@ -327,6 +402,10 @@ export const UX = {
       backdrop.addEventListener("click", closeMenu);
     }
 
+    // 중복 등록 방지 (단 1회만 이벤트 위임 바인딩)
+    if (mobileNav.dataset.navInitialized === "true") return;
+    mobileNav.dataset.navInitialized = "true";
+
     // ESC 키로 닫기
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && mobileNav.classList.contains("is-open")) {
@@ -334,25 +413,23 @@ export const UX = {
       }
     });
 
-    // 1Depth 탭 전환
-    const tabBtns = mobileNav.querySelectorAll(
-      ".nr__mobile-tab-btn, .menu-wrap .gnb-main-trigger",
-    );
-    const subLists = mobileNav.querySelectorAll(
-      ".nr__mobile-sub-list, .submenu-wrap .gnb-sub-list",
-    );
-
-    tabBtns.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+    // 이벤트 위임을 통한 모바일 메뉴 인터랙션 통합 처리
+    mobileNav.addEventListener("click", (e) => {
+      // 1. 1Depth 탭 전환
+      const tabBtn = e.target.closest(".nr__mobile-tab-btn, .menu-wrap .gnb-main-trigger");
+      if (tabBtn) {
         e.preventDefault();
+        const tabBtns = mobileNav.querySelectorAll(".nr__mobile-tab-btn, .menu-wrap .gnb-main-trigger");
+        const subLists = mobileNav.querySelectorAll(".nr__mobile-sub-list, .submenu-wrap .gnb-sub-list");
+
         tabBtns.forEach((b) => {
           b.classList.remove("active");
           b.setAttribute("aria-selected", "false");
         });
-        btn.classList.add("active");
-        btn.setAttribute("aria-selected", "true");
+        tabBtn.classList.add("active");
+        tabBtn.setAttribute("aria-selected", "true");
 
-        const targetId = btn.getAttribute("href")?.replace("#", "");
+        const targetId = tabBtn.getAttribute("href")?.replace("#", "");
         if (targetId) {
           subLists.forEach((list) => {
             if (list.id === targetId) {
@@ -363,51 +440,43 @@ export const UX = {
             }
           });
         }
-      });
-    });
+        return;
+      }
 
-    // 2Depth has-depth3 아코디언 토글
-    const depth3Triggers = mobileNav.querySelectorAll(
-      ".nr__mobile-sub-link.has-depth3, .gnb-sub-trigger.has-depth3",
-    );
-    depth3Triggers.forEach((trigger) => {
-      trigger.addEventListener("click", (e) => {
+      // 2. 2Depth has-depth3 아코디언 토글
+      const depth3Trigger = e.target.closest(".nr__mobile-sub-link.has-depth3, .gnb-sub-trigger.has-depth3");
+      if (depth3Trigger) {
         e.preventDefault();
-        const isOpen = trigger.classList.toggle("active");
-        trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
-        const wrap = trigger.nextElementSibling;
+        const isOpen = depth3Trigger.classList.toggle("active");
+        depth3Trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        const wrap = depth3Trigger.nextElementSibling;
         if (wrap) {
           wrap.classList.toggle("is-open", isOpen);
         }
-      });
-    });
+        return;
+      }
 
-    // 3Depth has-depth4 아코디언/팝업 토글
-    const depth4Triggers = mobileNav.querySelectorAll(
-      ".nr__mobile-depth3-link.has-depth4, .depth3-trigger.has-depth4",
-    );
-    depth4Triggers.forEach((trigger) => {
-      trigger.addEventListener("click", (e) => {
+      // 3. 3Depth has-depth4 토글
+      const depth4Trigger = e.target.closest(".nr__mobile-depth3-link.has-depth4, .depth3-trigger.has-depth4");
+      if (depth4Trigger) {
         e.preventDefault();
-        const wrap = trigger.nextElementSibling;
+        const wrap = depth4Trigger.nextElementSibling;
         if (wrap) {
           wrap.classList.add("is-open");
         }
-      });
-    });
+        return;
+      }
 
-    // 4Depth 닫기 및 이전 버튼
-    const depth4CloseBtns = mobileNav.querySelectorAll(
-      ".nr__trigger-close, .nr__trigger-prev, .trigger-close, .trigger-prev",
-    );
-    depth4CloseBtns.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+      // 4. 4Depth 닫기 및 이전 버튼
+      const depth4CloseBtn = e.target.closest(".nr__trigger-close, .nr__trigger-prev, .trigger-close, .trigger-prev");
+      if (depth4CloseBtn) {
         e.preventDefault();
-        const depth4Wrap = btn.closest(".nr__mobile-depth4-wrap, .depth4-wrap");
+        const depth4Wrap = depth4CloseBtn.closest(".nr__mobile-depth4-wrap, .depth4-wrap");
         if (depth4Wrap) {
           depth4Wrap.classList.remove("is-open");
         }
-      });
+        return;
+      }
     });
   },
 };

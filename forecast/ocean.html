@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko" class=" localstorage">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+	<title>해상 예보 - 기상청 날씨누리</title>
+
+	<link rel="shortcut icon" href="../logo_mark.png">
+	<link rel="apple-touch-icon-precomposed" href="../logo_mark.png">
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/w/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY">
+
+	<link href="../resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="../resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+	<link href="../resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
+	<script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
+	<script src="../resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="../resources/js/clipboard.min.js"></script>
+	<script src="../resources/js/moment-with-locales.js"></script>
+	<script src="../resources/js/moment-timezone.js"></script>
+	<script src="../resources/js/jquery-3.5.0.min.js"></script>
+	<script src="../resources/js/jquery-ui.min.js"></script>
+	<script src="../resources/js/iscroll-probe.js"></script>
+	<script src="../resources/js/scrollbooster.min.js"></script>
+	<script src="../resources/js/slick.min.js"></script>
+	<script src="../resources/js/mustache.min.js"></script>
+	<script src="../resources/js/store.modern.min.js"></script>
+	<script src="../resources/js/object-assign.js"></script>
+	<script src="../resources/js/highcharts.js"></script>
+	<script src="../resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="../resources/css-2026/plugin/swiper-bundle.min.css">
+	<link rel="stylesheet" href="../resources/css-2026/common.css">
+	<link rel="stylesheet" href="../resources/css-2026/sub.css">
+	<link rel="stylesheet" href="../resources/css-2026/icon.css">
+</head>
+
+<body class="wthema-a">
+	<div id="krds-skip-link">
+		<a href="#content">본문 바로가기</a>
+	</div>
+	<header class="nr__header"></header>
+
+	<div id="main" class="nr__sub">
+		<aside class="nr__aside"></aside>
+
+		<main class="nr__sub-content style-ocean">
+			<a id="content"></a>
+
+			<div class="flex items-center justify-between" data-zoom="true">
+				<nav aria-label="페이지 경로">
+					<ul id="breadcrumb">
+						<li class="home">
+							<a href="/w/index.do"><span class="sr-only">홈</span></a>
+						</li>
+						<li>
+							<a href="/w/special-report/overall.do"><span>특보·예보</span></a>
+						</li>
+						<li>
+							<a href=""><span>해상예보</span></a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- TEMP: fixme -->
+			<h2 class="pb-2 text-2xl font-semibold border-bborder-gray-200">해상예보</h2>
+			<div class="!max-w-full">
+				<ul class="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<a href="/w/forecast/ocean/short-term.do" target="_blank" data-target="popup" title="새창열림">
+						<li class="card">
+							<p class="title">해상 단기예보</p>
+							<p class="content">
+								해상 예보구역별로 하늘상태, 강수형태, 풍향, 풍속, 유의파고를
+								발표일로부터 4~5일까지 오전/오후로 구분하여 예보합니다.
+							</p>
+						</li>
+					</a>
+					<a href="/w/forecast/ocean/mid-term.do" target="_blank" data-target="popup" title="새창열림">
+						<li class="card">
+							<p class="title">해상 중기예보</p>
+							<p class="content">
+								하늘상태, 강수형태, 유의파고 및 그 밖에 필요한 사항을 발표일로부터 5일에서 8일 까지는 오전과
+								오후로 구분하여 예보하고, 발표일로부터 9일에서 11일까지는 일 단위로 예보합니다.
+							</p>
+						</li>
+					</a>
+					<a href="/w/forecast/ocean/nwp.do" target="_blank" data-target="popup" title="새창열림">
+						<li class="card">
+							<p class="title">해상 실황·예측</p>
+							<p class="content">
+								한반도 주변바다의 실황 및 수치모델 예측자료를 활용하여 파고, 바람, 시정의 실황 및 예측자료를
+								표출합니다.(실황: 과거 3시간, 예측: 현재부터 +12시간)
+							</p>
+						</li>
+					</a>
+					<a href="https://marine.kma.go.kr/mmis/?menuId=sig_wh" target="_blank" title="새창열림">
+						<li class="card">
+							<p class="title">해구별 예측</p>
+							<p class="content">
+								북위 25도로부터 46도까지, 동경 119도로부터 140도까지에 포함되는 해상영역을 대상으로 하며, 단기예보
+								기간에 대하여 파고, 파주기, 파향, 풍향, 풍속 수온 예측을 제공합니다.
+
+							</p>
+						</li>
+					</a>
+					<a href="/w/forecast/ocean/ripcurrent.do" target="_blank" data-target="popup" title="새창열림">
+						<li class="card">
+							<h4 class="title">이안류 위험 예측정보</h4>
+							<p class="content">
+								주요 해수욕장을 대상으로 이안류에 대한 위험 예측 정보(4단계 구분)를 제공합니다.
+							</p>
+						</li>
+					</a>
+					<a href="/w/forecast/ocean/swell.do" target="_blank" data-target="popup" title="새창열림">
+						<li class="card">
+							<h4 class="title">너울 위험 예측정보</h4>
+							<p class="content">
+								주요 해안가에 대한 너울 위험 예측 정보(4단계 구분)를 제공합니다.
+							</p>
+						</li>
+					</a>
+				</ul>
+
+			</div>
+
+		</main>
+	</div>
+
+
+	<!-- footer -->
+	<footer class="nr__footer"></footer>
+	<!-- //footer -->
+
+	<script src="../repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
+	<script src="../resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="../resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="../resources/js/global.js?ver=202607091110"></script>
+	<!-- START OF LOGGER TRACKING SCRIPT -->
+	<!-- 기존 logger2 로그 -->
+	<!--<script th:src="@{'/resources/js/logger2.weather.go.kr.1057.js?ver=' + ${appVersion}}"></script>
+    <noscript><img alt="로그" src="https://logger.kma.go.kr/tracker.tsp?u=7&amp;js=N" width="0" height="0" /></noscript>-->
+	<script src="../resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+	<script src="../resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드 -->
+	<script type="module">
+		import { UX } from '../resources/js-2026/ui-common.js';
+		import { initAsideMenu } from '../resources/js-2026/component/ui-aside.js';
+
+		UX.init('sub');
+
+		// 원하는 메뉴 활성화를 직접 호출하여 제어할 수도 있습니다:
+		// initAsideMenu({ dep1: 1, dep2: 2, dep3: 4 });
+	</script>
+</body>
+
+</html>

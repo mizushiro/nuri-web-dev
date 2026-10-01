@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ko" class=" localstorage">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+	<title>해상 예보 - 기상청 날씨누리</title>
+
+	<link rel="shortcut icon" href="../logo_mark.png">
+	<link rel="apple-touch-icon-precomposed" href="../logo_mark.png">
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/w/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY">
+
+	<link href="../resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="../resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="../resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+	<link href="../resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
+	<script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
+	<script src="../resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="../resources/js/clipboard.min.js"></script>
+	<script src="../resources/js/moment-with-locales.js"></script>
+	<script src="../resources/js/moment-timezone.js"></script>
+	<script src="../resources/js/jquery-3.5.0.min.js"></script>
+	<script src="../resources/js/jquery-ui.min.js"></script>
+	<script src="../resources/js/iscroll-probe.js"></script>
+	<script src="../resources/js/scrollbooster.min.js"></script>
+	<script src="../resources/js/slick.min.js"></script>
+	<script src="../resources/js/mustache.min.js"></script>
+	<script src="../resources/js/store.modern.min.js"></script>
+	<script src="../resources/js/object-assign.js"></script>
+	<script src="../resources/js/highcharts.js"></script>
+	<script src="../resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="../resources/css-2026/plugin/swiper-bundle.min.css">
+	<link rel="stylesheet" href="../resources/css-2026/common.css">
+	<link rel="stylesheet" href="../resources/css-2026/sub.css">
+	<link rel="stylesheet" href="../resources/css-2026/icon.css">
+</head>
+
+<body class="subp subp01 subp01-02 wthema-a">
+	<div id="krds-skip-link">
+		<a href="#content">본문 바로가기</a>
+	</div>
+	<header class="nr__header"></header>
+
+	<div id="main" class="nr__sub">
+		<aside class="nr__aside"></aside>
+
+		<main class="nr__sub-content style-ocean">
+			<a id="content"></a>
+
+			<div class="flex items-center justify-between">
+				<nav aria-label="페이지 경로">
+					<ul id="breadcrumb">
+						<li class="home">
+							<a href="/w/index.do"><span class="sr-only">홈</span></a>
+						</li>
+
+						<li>
+							<a href="/w/special-report/overall.do"><span>특보·예보</span></a>
+						</li>
+
+
+
+
+
+						<li>
+							<a href=""><span>특보(종합)</span></a>
+						</li>
+
+					</ul>
+				</nav>
+
+				<!-- <div class="flex gap-x-4">
+                <span class="share icon fill text-gray-500 !text-lg cursor-pointer">
+                    <span class="sr-only">공유하기</span>
+                </span>
+                <span class="print icon text-gray-500 !text-lg cursor-pointer">
+                    <span class="sr-only">인쇄</span>
+                </span>
+            </div> -->
+			</div>
+
+
+			<!-- TEMP: fixme -->
+
+			<h2 class="pb-2 text-2xl font-semibold border-b border-gray-200">특보(종합)</h2>
+
+			<div class="!max-w-full">
+
+				<a id="container"></a>
+				<div class="cont-wrap cmp-weather-warning-status !px-0" id="weather-warning">
+
+
+
+
+
+
+
+					<div class="cont-box01">
+						<h3 class="tit">
+							기상특보<i class="icon tooltip-btn" tabindex="0"><span class="tooltip">현재 발표·발효중인 육상 및 해상 기상특보를
+									제공합니다.</span></i>
+
+							<a href="/w/hazard/safety-guide/heavy-rain.do" target="_blank" title="새창열림"
+								class="more-left">+ 국민행동요령 보기</a>
+							<a href="/w/forecast/guide/standard.do" target="_blank" title="새창열림" class="more-side">+
+								발표기준 보기</a>
+							<a href="/w/forecast/guide/wrn-area.do" target="_blank" title="새창열림" class="more">+ 특보구역
+								보기</a>
+						</h3>
+					</div>
+					<div class="cont-box02">
+						<div class="accordion-con" style="display:block;">
+							<div class="tab-cont01">
+								<div class="cmp-toggle-gis"><a href="#" data-map-mode-action="gis"><span>GIS 고해상도 지도
+											보기</span></a></div>
+								<div class="tab-fild">
+									<div class="left-flid">
+										<img data-map-mode="img" style="display:block;"
+											src="https://www.weather.go.kr/w/repositary/image/wrn/img/KTKO50_202609261200_108_130.png"
+											alt="2026년 9월 26일(토) 12:00 이후 특보 발효현황 지도">
+										<div class="kmap-app" data-map-mode="gis" style="display:none">
+											<div id="legend" class="legend-position">
+												<div v-for="(legend, key) in legends" class="legend"
+													v-if="legend.display">
+													<div class="legendWrap">
+														<div class="co">
+															<div v-for="attr in legend.attributes" v-if="attr.visible"
+																v-bind:style="{width: legend.width + 'px', height: calcHeigth(legend) + 'px',
+															margin: legend.margin + 'px', background: attr.color}"></div>
+														</div>
+														<div class="no" :class="legend.class">
+															<span v-for="attr in legend.attributes"
+																v-if="attr.visible &amp;&amp; attr.label">
+																<template v-if="legend.unit == 'm/s'">{{
+																	Number((attr.label * config.unitValue).toFixed(1))
+																	}}</template>
+																<template v-else="">{{ attr.label }}</template>
+															</span>
+														</div>
+													</div>
+													<div v-show="legend.unit &amp;&amp; legend.unit != '없음'"
+														class="unit">
+														<template v-if="legend.unit == 'm/s'">{{ config.unit
+															}}</template>
+														<template v-else="">{{ legend.unit }}</template>
+													</div>
+												</div>
+											</div>
+											<div id="kmap" class="kmap-wrap"></div>
+										</div>
+									</div>
+									<div class="right-flid">
+										<h3 class="tit">특보 발효현황</h3>
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 26일(토) 12:00</span><span><strong>발효시각
+												</strong>: 2026년 9월 26일(토) 12:00 이후</span>
+										</p>
+										<h3 class="tit">특보 내용</h3>
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p class="tit">o 없 음</p>
+														<!-- <p class="bu-hyphen">- 강풍경보 : 울릉도.독도</p>
+                                                 <p class="bu-hyphen">- 풍랑경보 : 동해중부전해상, 동해남부북쪽먼바다, 동해남부남쪽먼바다, 동해남부앞바다(경북북부 앞바다, 경북남부앞바다)</p>
+                                                 <p class="bu-hyphen">- 풍랑주의보 : 남해동부먼바다, 남해동부앞바다(거제시동부앞바다, 부산앞바다), 동해 남부앞바다 (울산앞바다)</p> -->
+													</div>
+													<div class="paragraph">
+														<strong>&lt;특정관리해역 평수구역 특보사항&gt;</strong>
+														<br>
+														<div style="display:inline-block;">
+															o 서해남부남쪽안쪽먼바다중 조도부근평수구역 풍랑주의보 해제
+															<br>
+														</div>
+													</div>
+													<div class="paragraph">
+														<strong>&lt;특정관리해역 연안바다 특보사항&gt;</strong>
+														<br>
+														<div style="display:inline-block;">
+															o 남해서부서쪽먼바다중 추자도연안바다 풍랑주의보 해제
+															<br>
+														</div>
+													</div>
+
+													<div class="paragraph">
+														<p class="tit">&lt;참고사항&gt;</p>
+														<p class="txt">o 없음</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">특보 내용</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="noted-txt">
+							<p>※ 특보 상세내역은 하단의 '특보 상세내역 보기' 표를 확인하시기 바랍니다.</p>
+							<p style="margin-top:7px;">※ 도서지역 및 해안가를 포함한 해상특보구역이 잘못 표현된 부분이 있을 수 있으니,
+								보다 정확한 지도 구역 확인은 <a href="https://marine.kma.go.kr" target="_blank"
+									title="새창열림"><strong>해양기상기후정보포털</strong></a>을 이용해주시기 바랍니다.
+							</p>
+						</div>
+
+
+						<h3 class="tit">
+							특보 상세내역 보기
+							<a href="list.do?kind=met" target="_blank" title="새창열림" class="more">+<span
+									class="sr-only">특보 상세내역</span> 더보기</a>
+						</h3>
+						<div class="over-scroll">
+							<table class="table-col whitespaced tablesorter tablesorter-blue tablesorter2927fb4fb57b"
+								id="current-warnings" role="grid" aria-labelledby="tablesorter2927fb4fb57bcaption">
+								<caption class="hide-caption" id="tablesorter2927fb4fb57bcaption">기상특보 정보, 발령중인 기상특보에 대해
+									특보구분, 수준, 해당지역, 발표시각, 발효시각, 해제예고에 대해 나타낸 표입니다.</caption>
+								<colgroup>
+									<col style="width: 11%;">
+									<col style="width: 15%;">
+									<col style="width: 30%;">
+									<col style="width: auto;">
+									<col style="width: auto;">
+									<col style="width: auto;">
+								</colgroup>
+								<thead>
+									<tr role="row" class="tablesorter-headerRow">
+										<th scope="col" data-column="0"
+											class="tablesorter-header tablesorter-headerUnSorted" tabindex="0"
+											role="columnheader" aria-disabled="false" aria-controls="current-warnings"
+											unselectable="on" aria-sort="none" aria-label="특보: 정렬 없음, 클릭하여 오름차순 정렬 적용"
+											style="user-select: none;">
+											<div class="tablesorter-header-inner">특보</div>
+										</th>
+										<th scope="col" data-column="1"
+											class="tablesorter-header tablesorter-headerUnSorted" tabindex="0"
+											role="columnheader" aria-disabled="false" aria-controls="current-warnings"
+											unselectable="on" aria-sort="none" aria-label="수준: 정렬 없음, 클릭하여 오름차순 정렬 적용"
+											style="user-select: none;">
+											<div class="tablesorter-header-inner">수준</div>
+										</th>
+										<th scope="col" data-column="2"
+											class="tablesorter-header tablesorter-headerUnSorted" tabindex="0"
+											role="columnheader" aria-disabled="false" aria-controls="current-warnings"
+											unselectable="on" aria-sort="none" aria-label="해당지역: 정렬 없음, 클릭하여 오름차순 정렬 적용"
+											style="user-select: none;">
+											<div class="tablesorter-header-inner">해당지역</div>
+										</th>
+										<th scope="col" data-column="3"
+											class="tablesorter-header tablesorter-headerUnSorted" tabindex="0"
+											role="columnheader" aria-disabled="false" aria-controls="current-warnings"
+											unselectable="on" aria-sort="none" aria-label="발표시각: 정렬 없음, 클릭하여 오름차순 정렬 적용"
+											style="user-select: none;">
+											<div class="tablesorter-header-inner">발표시각</div>
+										</th>
+										<th scope="col" data-column="4"
+											class="tablesorter-header tablesorter-headerUnSorted" tabindex="0"
+											role="columnheader" aria-disabled="false" aria-controls="current-warnings"
+											unselectable="on" aria-sort="none" aria-label="발효시각: 정렬 없음, 클릭하여 오름차순 정렬 적용"
+											style="user-select: none;">
+											<div class="tablesorter-header-inner">발효시각</div>
+										</th>
+										<th scope="col" data-column="5"
+											class="tablesorter-header tablesorter-headerUnSorted" tabindex="0"
+											role="columnheader" aria-disabled="false" aria-controls="current-warnings"
+											unselectable="on" aria-sort="none" aria-label="해제예고: 정렬 없음, 클릭하여 오름차순 정렬 적용"
+											style="user-select: none;">
+											<div class="tablesorter-header-inner">해제예고</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody aria-live="polite" aria-relevant="all">
+
+								</tbody>
+							</table>
+						</div>
+
+
+					</div>
+					<div class="cont-box02">
+						<h3 class="tit">
+							예비특보<i class="icon tooltip-btn" tabindex="0"><span class="tooltip">기상특보를
+									발표할 것으로 예상될 때 이를 사전에 알리기 위한 정보를 제공합니다.</span></i>
+						</h3>
+						<div class="accordion-con" style="display: block;">
+							<div class="tab-cont02">
+								<div class="tab-fild">
+									<div class="left-flid">
+										<img data-map-mode="img" style="display:block;"
+											src="../repositary/image/wrn/img/KTKO50_202609261200_108_130b.png"
+											alt="2026년 9월 26일(토) 12:00 발표 예비특보 현황 지도">
+										<div class="kmap-app" data-map-mode="gis" style="display:none">
+											<div id="legend2" class="legend-position">
+												<div v-for="(legend, key) in legends" class="legend"
+													v-if="legend.display">
+													<div class="legendWrap">
+														<div class="co">
+															<div v-for="attr in legend.attributes" v-if="attr.visible"
+																v-bind:style="{width: legend.width + 'px', height: calcHeigth(legend) + 'px',
+															margin: legend.margin + 'px', background: attr.color}"></div>
+														</div>
+														<div class="no" :class="legend.class">
+															<span v-for="attr in legend.attributes"
+																v-if="attr.visible &amp;&amp; attr.label">
+																<template v-if="legend.unit == 'm/s'">{{
+																	Number((attr.label * config.unitValue).toFixed(1))
+																	}}</template>
+																<template v-else="">{{ attr.label }}</template>
+															</span>
+														</div>
+													</div>
+													<div v-show="legend.unit &amp;&amp; legend.unit != '없음'"
+														class="unit">
+														<template v-if="legend.unit == 'm/s'">{{ config.unit
+															}}</template>
+														<template v-else="">{{ legend.unit }}</template>
+													</div>
+												</div>
+											</div>
+											<div id="kmap2" class="kmap-wrap"></div>
+										</div>
+									</div>
+									<div class="right-flid">
+										<h3 class="tit">특보 발효현황</h3>
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 26일(토) 12:00</span>
+										</p>
+										<h3 class="tit">특보 내용</h3>
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p class="tit">o 없음</p>
+													</div>
+													<div class="paragraph">
+														<p class="tit">&lt;참고사항&gt;</p>
+														<p class="txt">o 없음</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">특보 내용</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="cont-box02">
+
+
+						<h3 class="tit">
+							기상정보<i class="icon tooltip-btn" tabindex="0"><span class="tooltip">호우, 강풍과 같은 위험기상이나 긴급 변경되는
+									예보정보를 수시로 제공합니다.</span></i>
+							<a class="more" href="list.do?kind=inf" target="_blank" title="새창열림">+ <span
+									class="sr-only">기상정보</span> 더보기</a>
+						</h3>
+						<div class="accordion-con" style="display: block;">
+							<div class="tab-cont02">
+								<div class="tab-fild">
+
+									<div class="left-flid">
+										<div class="img-area">
+											<div class="img-area-middle">
+
+												<div class="img-area-cont">
+													<img src="../repositary/image/wrn_img/fax_rpt_202609270540_108_23_1.png"
+														alt="가시거리 분포도, CCTV 영상">
+													<span>&lt; 가시거리 분포도, CCTV 영상 &gt;</span>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+
+									<div class="right-flid ">
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 27일(일) 05:40
+												<br><strong class="txt-subtitle">"강원내륙과 충청, 경북권내륙 중심 짙은 안개, 귀경길 교통안전
+													유의"</strong>
+											</span>
+										</p>
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p class="tit"><strong>&lt; 안개 현황 및 전망 &gt;</strong><br>○ (현황)
+															현재(05시 30분), 강원내륙.산지와 충청, 경북내륙을 중심으로 가시거리 200m 미만의 짙은 안개가 낀
+															곳이 있고, 그 밖의 내륙에도 가시거리 1km 미만의 안개가 낀 곳이 있습니다.<br><br>* 주요지점
+															가시거리 현황(27일 05:30 현재, 단위: m)<br>- 수도권: 장호원(이천) 300 여주 570 파주
+															760 경기광주 840<br>- 강원도: 대관령(평창) 140 안흥(횡성) 210 서석(홍천) 240
+															삽당령(강릉) 560 해안(양구) 780<br>- 충북: 괴산 210 추풍령(영동) 280 음성 280 옥천
+															310 상당(청주) 390 영동 550<br>- 충남권: 예산 160 천안 190 세종 300 홍성 610
+															금산 770 금산IC 970<br>- 전북: 장수 310 무주 820<br>- 경북권: 단북(의성) 170
+															청송군 270 상주 280 영천 350 의성 400 군위 460 경주시 660 680 안동 850<br>-
+															경남권: 합천 400<br><br>○ (안개) 오늘(27일) 오전(10시)까지 경기남동부와 강원내륙.산지,
+															충청권, 전북내륙, 경북권내륙을 중심으로 가시거리 200m 미만의 짙은 안개가 끼는 곳이 있겠고, 그 밖의
+															전국 내륙에도 가시거리 1km 미만의 안개가 끼는 곳이 있겠습니다.<br><br>- 특히, 내륙의 강이나
+															호수, 골짜기에 인접한 도로 및 교량에서는 주변보다 안개가 더욱 짙게 끼는 곳이 있겠으니, 차량 운행 시
+															감속 운행하여 추돌사고 등의 피해가 발생하지 않도록 교통안전에 각별히 유의하기 바랍니다.<br><br>-
+															또한, 공항에서는 짙은 안개로 인해 항공기 운항에 차질이 있을 수 있으니, 항공교통 이용객은 사전에
+															운항정보를 확인하기 바랍니다.</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">기상정보</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+
+
+
+						<div class="weather-cmt-tab">
+							<div><button tabindex="0" role="button">
+									<h3 class="tit">
+										날씨해설<i class="icon tooltip-btn" tabindex="0"><span class="tooltip">주요 날씨 상황 및
+												전망과 상세 원인을 하루 5회(04시,10시,10시 30분,16시,22시경) 제공합니다.</span></i>
+									</h3>
+								</button>
+							</div>
+							<div><button tabindex="0" role="button">6시간전망</button></div>
+							<div><button tabindex="0" role="button">3일전망</button></div>
+							<div><button tabindex="0" role="button">10일전망</button></div>
+
+							<a class="more" href="list.do?kind=cmt" target="_blank" title="새창열림"><span
+									class="sr-only">날씨해설</span> <span>더보기</span></a>
+						</div>
+						<div class="accordion-con weather-cmt-content" style="display: block;">
+							<div class="tab-cont01 on">
+								<div class="tab-fild">
+
+
+									<div class="right-flid no-img">
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 27일(일) 10:30
+
+												<br><strong class="txt-subtitle">"(중기 전망) 전국 대체로 맑거나 구름많겠음"</strong>
+
+											</span>
+										</p>
+
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p>※ 10월 01일부터 10월 07일까지의 전망입니다.</p>
+													</div>
+													<div class="paragraph">
+														<p class="tit"><strong>&lt; 중점 사항 &gt;</strong><br>○ (하늘상태) 10월
+															3일(토)까지 전국이 대체로 맑겠으나, 4일(일)~7일(수)은 전국이 구름많겠습니다. <br>○ (기온)
+															이번 예보기간 아침 기온은 6~17℃, 낮 기온은 20~26℃로 평년(최저기온 10~18℃, 최고기온
+															22~25℃)과 비슷하거나 조금 낮겠습니다.<br><br><strong>&lt; 10월 1일(목) ~ 10월
+																3일(토) &gt;</strong><br>○ 전국 대체로 맑음<br>- 고기압의 영향으로 전국이
+															대체로 맑겠습니다.<br>- 아침 기온은 6~17℃, 낮 기온은 20~24℃가
+															되겠습니다.<br><br><strong>&lt; 10월 4일(일) ~ 10월 6일(화)
+																&gt;</strong><br>○ 전국 구름많음<br>- 고기압의 가장자리에 들어 전국이
+															구름많겠습니다. <br>- 아침 기온은 8~16℃, 낮 기온은 21~26℃가
+															되겠습니다.<br><br><strong>&lt; 유의 사항 &gt;</strong><br>○ (기온) 이번
+															예보기간에는 내륙을 중심으로 낮과 밤의 기온차가 10℃ 안팎으로 크게 나타나는 곳이 있겠으며, 특히 10월
+															1일부터 북쪽의 찬 공기가 유입되면서 기온이 낮아지겠으니, 급격한 기온 변화로 인한 건강관리에 유의하기
+															바랍니다.</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">날씨해설</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-cont02">
+								<div class="tab-fild">
+
+									<div class="left-flid">
+										<div class="img-area">
+											<div class="img-area-middle">
+
+												<div class="img-area-cont">
+													<img src="../repositary/image/wrn_img/fax_wcmt_202609271010_108_132_1.png"
+														alt="레이더 영상 및 오늘 예상 최고기온 분포도">
+													<span>&lt; 레이더 영상 및 오늘 예상 최고기온 분포도 &gt;</span>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+
+									<div class="right-flid ">
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 27일(일) 10:10
+
+												<br><strong class="txt-subtitle">"(초단기 전망) 남부지방과 제주도 비 또는 소나기"</strong>
+
+											</span>
+										</p>
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p>※ 09월 27일 10시부터 09월 27일 16시까지의 전망입니다.</p>
+													</div>
+													<div class="paragraph">
+														<p class="tit"><strong>&lt; 중점 사항 &gt;</strong> <br>○ 전남남부와
+															경남권남해안, 제주도에 비가 내리는 곳이 있겠고, 오후부터 남부지방을 중심으로 소나기가 내리는 곳이
+															있겠습니다.<br><br><strong>&lt; 강수 및 유의 사항 &gt;</strong><br>○
+															(현황) 현재(10시), 남해상에서 동쪽으로 이동하는 기압골의 영향으로 전남권과 경남권, 제주도에 시간당
+															1mm 안팎의 비가 내리는 곳이 있습니다.<br><br>○ (전망) 전남남부와 경남권남해안, 제주도에 비가
+															내리는 곳이 있겠고, 오늘(27일) 오전(10~12시)까지 전남권북부와 울산.경남중.남부내륙에 0.1mm
+															미만의 빗방울이 떨어지는 곳이 있겠습니다.<br><br>○ (소나기) 오늘(27일) 오후(12~18시)부터
+															저녁(18~21시) 사이 전북남동부와 전남권북부, 경북동해안.남부내륙, 경남내륙에 소나기가 내리는 곳이
+															있겠습니다.<br><br>○ (유의 사항) 비나 소나기가 내리는 지역에서는 가시거리가 짧아지고 도로가
+															미끄러운 곳이 있겠으니, 차량 운행 시 안전거리를 충분히 확보하고 감속 운행하는 등 교통안전과 안전사고에
+															유의하기 바랍니다.<br><br><strong>&lt; 하늘상태 및 기온 &gt;</strong><br>○
+															(하늘상태) 중부지방은 대체로 맑겠고, 전북과 경북권은 가끔 구름많겠으며, 전남권과 경남권, 제주도는 대체로
+															흐리겠습니다.<br><br>○ (기온) 오늘(27일) 낮 기온은 25~28℃로 어제(26일,
+															19.2~28.0℃)와 비슷하거나 조금 높겠으나, 남부지방은 어제보다 높겠습니다.<br><br>- 또한,
+															전국 내륙을 중심으로 낮과 밤의 기온차가 10~15℃로 크겠으니, 건강관리에 유의하기
+															바랍니다.<br><br><strong>&lt; 유의 사항 &gt;</strong><br>○ (해상)
+															제주도해상에는 돌풍과 함께 천둥.번개가 치는 곳이 있겠으니, 해상 안전사고에 유의하기
+															바랍니다.<br><br>○ (조고) 달의 인력이 강해 바닷물의 높이가 높은 기간으로, 만조 시 해안가 저지대
+															침수, 하수 역류 등 피해가 발생하지 않도록 유의하기 바라며, 해안가 안전사고에도 각별히 유의하기 바랍니다.
+														</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">발표 내용</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="tab-cont03">
+								<div class="tab-fild">
+
+									<div class="left-flid">
+										<div class="img-area">
+											<div class="img-area-middle">
+
+												<div class="img-area-cont">
+													<img src="../repositary/image/wrn_img/fax_wcmt_202609270450_108_131_1.png"
+														alt="오늘~모레 예상 기온 분포도">
+													<span>&lt; 오늘~모레 예상 기온 분포도 &gt;</span>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+
+									<div class="right-flid ">
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 27일(일) 04:50
+
+												<br><strong class="txt-subtitle">"(단기 전망) 오늘 오전까지 전국 내륙 중심 짙은 안개, 낮과 밤의
+													기온차 큼"</strong>
+
+											</span>
+										</p>
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p>※ 09월 27일부터 09월 30일까지의 전망입니다.</p>
+													</div>
+													<div class="paragraph">
+														<p class="tit"><strong>&lt; 중점 사항 &gt;</strong> <br>○ 오늘 오전까지
+															경기남동부와 강원내륙.산지, 충청권, 전북, 경북권내륙을 중심으로 짙은 안개가 끼는 곳이 있겠고, 그 밖의
+															전국 내륙에도 안개가 끼는 곳이 있겠습니다.<br>○ 전국 대부분 지역에서 낮과 밤의 기온차가 10~15℃로
+															크겠습니다.<br><br><strong>&lt; 안개 &gt;</strong><br>○ 오늘(27일)
+															오전(10시)까지 경기남동부와 강원내륙.산지, 충청권, 전북, 경북권내륙을 중심으로 가시거리 200m 미만의
+															짙은 안개가 끼는 곳이 있겠고, 그 밖의 전국 내륙을 중심으로 가시거리 1km 미만의 안개가 끼는 곳이
+															있겠습니다.<br><br>- 특히, 내륙의 강이나 호수, 골짜기에 인접한 도로 및 교량에서는 주변보다 안개가
+															더욱 짙게 끼는 곳이 있겠으니, 차량 운행 시 감속 운행하여 추돌사고 등의 피해가 발생하지 않도록 교통안전에
+															각별히 유의하기 바랍니다.<br><br>- 또한, 공항에서는 짙은 안개로 인해 항공기 운항에 차질이 있을 수
+															있으니, 항공교통 이용객은 사전에 운항정보를 확인하기 바랍니다.<br><br><strong>&lt; 하늘상태
+																및 강수 &gt;</strong><br>○ (하늘상태) 오늘(27일) 중부지방과 전북은 대체로
+															맑겠으나 충청권은 밤부터 구름많아지겠고, 남부지방과 제주도는 대체로 흐리겠습니다. 내일(28일)은 전국이
+															가끔 구름많겠습니다. 모레(29일)는 전국이 구름많다가 오전부터 맑아겠으나, 강원동해안.산지와 경상권동해안은
+															오후까지 대체로 흐리겠습니다.<br><br>○ (오늘 강수) 오늘(27일) 오전(09~12시)까지
+															경남서부남해안, 저녁(18~21시)까지 전남남부와 제주도에 비가 내리는 곳이 있겠습니다.<br><br>-
+															또한, 오늘 오전(06~12시)까지 광주.전남북부에는 0.1mm 미만의 빗방울이 떨어지는 곳이
+															있겠습니다.<br><br>* 예상 강수량(27일)<br>- (전라권) 전남남부: 5~10mm<br>-
+															(경상권) 경남서부남해안: 5mm 미만, 울릉도.독도: 5mm 안팎<br>- (제주도) 제주도:
+															5~20mm<br><br>○ (오늘 소나기) 오늘(27일) 오후(12~18시)부터 저녁(18~21시) 사이
+															전북남동부와 전남동부내륙, 경북남동내륙, 경남내륙에 소나기가 내리는 곳이 있겠습니다.<br><br>*
+															소나기에 의한 예상 강수량(27일)<br>- (전라권) 전북남동부, 전남동부내륙: 5mm 미만<br>-
+															(경상권) 경북남동내륙, 경남내륙 : 5mm 미만<br><br>○ (내일 강수) 내일(28일)
+															새벽(00~06시)에 인천.경기서해안에 비가 내리는 곳이 있겠습니다.<br><br>- 또한, 내일
+															새벽(00~06시)부터 아침(06~09시) 사이 그 밖의 수도권과 강원내륙.산지, 충청북부, 제주도에
+															0.1mm 미만의 빗방울이 떨어지는 곳이 있겠습니다.<br><br>* 예상 강수량(28일)<br>-
+															(수도권) (27~28일) 서해5도: 5mm 안팎/ 인천.경기서해안: 5mm 미만<br><br>○ (모레
+															강수) 모레(29일) 오전(06~12시)부터 오후(12~18시) 사이 강원중.남부동해안.산지와 울산,
+															경북동해안.북동산지에 비가 내리는 곳이 있겠습니다.<br><br>* 예상 강수량(29일)<br>- (강원도)
+															강원중.남부동해안.산지: 5mm 안팎<br>- (경상권) 울산, 경북동해안.북동산지: 5mm
+															안팎<br><br>○ (유의 사항) 비가 내리는 지역에서는 가시거리가 짧아지고 도로가 미끄러운 곳이
+															있겠으니, 차량 운행 시 안전거리를 충분히 확보하고 감속 운행하는 등 교통안전과 안전사고에 각별히 유의하기
+															바랍니다.<br><br><strong>&lt; 기온 &gt;</strong><br>○ 당분간 기온은
+															평년(최저 11~18℃, 최고 23~26℃)과 비슷하거나 조금 높겠습니다.<br><br>- 또한, 당분간
+															전국 내륙을 중심으로 낮과 밤의 기온차가 10~15℃로 크겠으니, 건강관리에 유의하기
+															바랍니다.<br><br>- 오늘(27일) 낮최고기온은 25~28℃가 되겠습니다.<br>- 내일(28일)
+															아침최저기온은 14~21℃, 낮최고기온은 24~29℃가 되겠습니다.<br>- 모레(29일) 아침최저기온은
+															10~20℃, 낮최고기온은 23~27℃가 되겠습니다.<br><br><strong>&lt; 글피 전망
+																&gt;</strong><br>○ (하늘상태) 글피(30일)는 중부지방과 전북은 대체로 흐리겠고,
+															전남권과 경상권, 제주도는 대체로 맑다가 밤부터 구름많겠습니다.<br><br>○ (강수) 글피(30일)
+															아침(06~09시)부터 인천.경기북서부에 비가 시작하겠으며, 오전(09~12시)부터 밤(18~24시) 사이
+															그 밖의 수도권과 강원내륙.산지, 충청권, 전북에 비가 내리는 곳이 있겠습니다.<br><br>○ (기온)
+															글피(30일) 아침최저기온은 11~19℃, 낮최고기온은 24~30℃가
+															되겠습니다.<br><br><strong>&lt; 유의 사항 &gt;</strong><br>○ (조고) 당분간
+															달의 인력이 강해 바닷물의 높이가 높은 기간으로, 만조 시 해안가 저지대 침수, 하수 역류 등 피해가
+															발생하지 않도록 유의하기 바라며, 해안가 안전사고에도 각별히 유의하기
+															바랍니다.<br><br><strong>&lt; 기압계 현황 및 전망 &gt;</strong><br>○
+															오늘(27일)은 서해상에 위치한 고기압의 가장자리에 들겠으나, 전남과 제주도는 남해상을 지나는 기압골의
+															영향을 받다가 벗어나겠습니다.<br>○ 내일(28일)은 중국 북부지방에 위치한 고기압의 가장자리에 들겠으나,
+															중부지방은 새벽부터 아침사이 북쪽을 지나는 약한 기압골의 영향을 받겠습니다.<br>○ 모레(29일)는 중국
+															북동지방에서 동해북부해상으로 이동하는 고기압의 가장자리에 들겠습니다.<br>○ 글피(30일) 중부지방과
+															전북은 북쪽을 지나는 기압골의 영향을 받겠으며, 그 밖의 지역은 동해남부해상에 위치한 고기압의 가장자리에
+															들겠습니다.</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">발표 내용</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="tab-cont04">
+								<div class="tab-fild">
+
+
+									<div class="right-flid no-img">
+										<p class="txt">
+											<span><strong>발표시각 </strong>: 2026년 9월 27일(일) 10:30
+
+												<br><strong class="txt-subtitle">"(중기 전망) 전국 대체로 맑거나 구름많겠음"</strong>
+
+											</span>
+										</p>
+										<div class="cmp-weather-cmt-txt-box">
+											<div class="cmp-weather-cmt-txt-box-inner" tabindex="0">
+												<div class="inner-content">
+													<div class="paragraph">
+														<p>※ 10월 01일부터 10월 07일까지의 전망입니다.</p>
+													</div>
+													<div class="paragraph">
+														<p class="tit"><strong>&lt; 중점 사항 &gt;</strong><br>○ (하늘상태) 10월
+															3일(토)까지 전국이 대체로 맑겠으나, 4일(일)~7일(수)은 전국이 구름많겠습니다. <br>○ (기온)
+															이번 예보기간 아침 기온은 6~17℃, 낮 기온은 20~26℃로 평년(최저기온 10~18℃, 최고기온
+															22~25℃)과 비슷하거나 조금 낮겠습니다.<br><br><strong>&lt; 10월 1일(목) ~ 10월
+																3일(토) &gt;</strong><br>○ 전국 대체로 맑음<br>- 고기압의 영향으로 전국이
+															대체로 맑겠습니다.<br>- 아침 기온은 6~17℃, 낮 기온은 20~24℃가
+															되겠습니다.<br><br><strong>&lt; 10월 4일(일) ~ 10월 6일(화)
+																&gt;</strong><br>○ 전국 구름많음<br>- 고기압의 가장자리에 들어 전국이
+															구름많겠습니다. <br>- 아침 기온은 8~16℃, 낮 기온은 21~26℃가
+															되겠습니다.<br><br><strong>&lt; 유의 사항 &gt;</strong><br>○ (기온) 이번
+															예보기간에는 내륙을 중심으로 낮과 밤의 기온차가 10℃ 안팎으로 크게 나타나는 곳이 있겠으며, 특히 10월
+															1일부터 북쪽의 찬 공기가 유입되면서 기온이 낮아지겠으니, 급격한 기온 변화로 인한 건강관리에 유의하기
+															바랍니다.</p>
+													</div>
+												</div>
+											</div>
+											<a href="#" class="cmp-weather-cmt-txt-box-close anim">작게보기</a>
+										</div>
+										<a href="#" class="cmp-weather-cmt-more" data-event="on-more-click"
+											style=""><span class="sr-only">발표 내용</span> <span>더보기</span></a>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+
+
+					</div>
+
+				</div>
+				<div class="cont-wrap">
+					<div class="bottom-info">
+						<h3 class="tit">특보안내</h3>
+						<ul class="ban-wrap">
+							<li class="ban01">
+								<img src="../resources/image/banner04.png" alt="">
+								<div class="wr">
+									<div class="cel">
+										<img src="../resources/image/ban_cel03.png" alt="">
+										<p><a href="/w/weather/warning/list.do">기상특보 통보문<img
+													src="../resources/image/ban_cel_bu.png" alt=""></a></p>
+									</div>
+								</div>
+							</li>
+							<li class="ban02">
+								<img src="../resources/image/banner05.png" alt="">
+								<div class="wr">
+									<div class="cel">
+										<img src="../resources/image/ban_cel04.png" alt="">
+										<p><a href="http://kama.kma.go.kr/new/html/weather/weather01_04.jsp"
+												target="_blank" title="새창열림">공항특보 <img
+													src="../resources/image/ban_cel_bu.png" alt=""></a></p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+
+
+	<!-- footer -->
+	<footer class="nr__footer"></footer>
+	<!-- //footer -->
+
+	<script src="../repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
+	<script src="../resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="../resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="../resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="../resources/js/global.js?ver=202607091110"></script>
+	<!-- START OF LOGGER TRACKING SCRIPT -->
+	<!-- 기존 logger2 로그 -->
+	<!--<script th:src="@{'/resources/js/logger2.weather.go.kr.1057.js?ver=' + ${appVersion}}"></script>
+    <noscript><img alt="로그" src="https://logger.kma.go.kr/tracker.tsp?u=7&amp;js=N" width="0" height="0" /></noscript>-->
+	<script src="../resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+	<script src="../resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드 -->
+	<script type="module">
+		import { UX } from '../resources/js-2026/ui-common.js';
+		import { initAsideMenu } from '../resources/js-2026/component/ui-aside.js';
+
+		UX.init('sub');
+
+		// 원하는 메뉴 활성화를 직접 호출하여 제어할 수도 있습니다:
+		// initAsideMenu({ dep1: 1, dep2: 2, dep3: 4 });
+	</script>
+</body>
+
+</html>

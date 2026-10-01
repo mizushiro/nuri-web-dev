@@ -5095,40 +5095,16 @@
       height="0" /></noscript>
   <script src="./resources/js/UserScriptConf.js"></script>
 
-  <!-- 신규 코드 -->
+  <!-- 신규 UI 스크립트 통합 실행 -->
   <script src="./resources/js-2026/plugin/swiper-bundle.min.js"></script>
   <script type="module">
     import { UX } from './resources/js-2026/ui-common.js';
-    import { uiForecastExe } from './resources/js-2026/component/ui-forecast.js';
-    console.log(11111111111111111111)
-    UX.init('main');
+    
+    // 메인 UI 통합 초기화 (헤더/푸터, 드롭다운, 방재속보 기본열림, 지도, 타임바, 예보 데이터 일괄 실행)
+    UX.init('main', {
+      defaultOpen: 0, // 기본 열림 인덱스 (닫힌 상태로 시작하려면 false 또는 null)
+    });
 
-    const rangeInput = document.querySelector('.nr__map-area .kmap-app .timebar .range');
-    if (rangeInput) {
-      function updateRangeProgress() {
-        const min = Number(rangeInput.min) || 0;
-        const max = Number(rangeInput.max) || 100;
-        const val = Number(rangeInput.value) || 0;
-        const percentage = ((val - min) / (max - min)) * 100;
-        rangeInput.style.setProperty('--progress', `${percentage}%`);
-      }
-      rangeInput.addEventListener('input', updateRangeProgress);
-      updateRangeProgress();
-    }
-
-    fetch('./resources/json/weather.json')
-      .then(res => res.json())
-      .then(data => {
-        uiForecastExe(data, {
-          // 외부 차트 스크립트 커스텀 옵션 예시 (미지정 시 ui-forecast-chart.js 기본 SVG 차트 실행)
-          /*
-          renderTempChart: (layer, context, validDates) => console.log('기온 차트 커스텀', layer, context),
-          renderRainChart: (layer, context, validDates) => console.log('강수확률 차트 커스텀', layer, context),
-          renderWindChart: (layer, context, validDates) => console.log('풍향/풍속 차트 커스텀', layer, context),
-          renderHumidityChart: (layer, context, validDates) => console.log('습도 차트 커스텀', layer, context),
-          */
-        });
-      });
   </script>
 </body>
 

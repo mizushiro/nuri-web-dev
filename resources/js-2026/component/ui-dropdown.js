@@ -5,6 +5,7 @@
  * WAI-ARIA 웹접근성, 포커스 진입 및 순환(Focus Trap), 포커스 복원(Focus Restoration),
  * data-position 위치 제어를 지원합니다.
  */
+import { getCookie, setCookie, deleteCookie, getTodayDateString } from '../utils/utils.js';
 
 export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
   let el = typeof triggerOrContainerOrSelector === 'string'
@@ -584,6 +585,9 @@ export const initNoticeDropdown = (options = {}) => {
     btn.setAttribute('aria-expanded', 'true');
     content.classList.add('is-open', 'active');
     activeIndex = index;
+
+    // 패널 열릴 때 오늘 다시 열지 않기 쿠키 상태와 체크박스 UI 동기화
+    syncTodayCheckbox();
   };
 
   const toggleIndex = (index) => {
@@ -624,12 +628,124 @@ export const initNoticeDropdown = (options = {}) => {
     });
   });
 
+  // 대상 인덱스(숫자 또는 'disaster', 'special', '방재속보', '전국특보') 변환 헬퍼
+  const resolveTargetIndex = (target) => {
+    if (typeof target === 'number') return target;
+    if (typeof target === 'string') {
+      const lower = target.toLowerCase().trim();
+      if (lower === 'disaster' || lower === '방재속보' || lower === 'notice-content-1' || lower === '0') {
+        return 0;
+      }
+      if (lower === 'special' || lower === '전국특보' || lower === 'notice-content-2' || lower === '1') {
+        return 1;
+      }
+    }
+    return 0;
+  };
+
+  const openNotice = (target = 0) => {
+    const idx = resolveTargetIndex(target);
+    openIndex(idx);
+  };
+
+  const closeNotice = (restoreFocus = false, targetBtn = null) => {
+    closeAll(restoreFocus, targetBtn);
+  };
+
+  const toggleNotice = (target = 0) => {
+    const idx = resolveTargetIndex(target);
+    toggleIndex(idx);
+  };
+
+  // 쿠키 및 스토리지 키 상수
+  const NOTICE_COOKIE_NAME = 'nr_hide_notice_today';
+
+  // '오늘 다시 열지 않기' 쿠키/스토리지 확인 함수 (오늘 날짜와 일치하면 true)
+  const isHiddenToday = () => {
+    const todayStr = getTodayDateString();
+
+    // 1. 쿠키 검사 (우선순위)
+    const cookieVal = getCookie(NOTICE_COOKIE_NAME);
+    if (cookieVal === todayStr || cookieVal === 'Y') {
+      return true;
+    }
+
+    // 2. 로컬스토리지 보조 검사 (쿠키 제한 환경 대응)
+    try {
+      const localVal = localStorage.getItem(NOTICE_COOKIE_NAME);
+      if (localVal === todayStr || localVal === new Date().toDateString()) {
+        return true;
+      }
+    } catch (e) {}
+
+    return false;
+  };
+
+  // 체크박스 UI 상태를 쿠키 유효 여부와 동기화하는 함수
+  const syncTodayCheckbox = () => {
+    const isHidden = isHiddenToday();
+    const checkboxes = document.querySelectorAll('.nr__notice-check-input');
+    checkboxes.forEach((cb) => {
+      cb.checked = isHidden;
+    });
+  };
+
+  // '오늘 다시 열지 않기' 쿠키 및 로컬스토리지 저장 함수 (당일 자정 23:59:59 만료)
+  const setHideNoticeToday = () => {
+    const todayStr = getTodayDateString();
+    // 당일 자정까지 유효한 쿠키 설정 (path=/)
+    setCookie(NOTICE_COOKIE_NAME, todayStr, { endOfDay: true, path: '/' });
+    try {
+      localStorage.setItem(NOTICE_COOKIE_NAME, todayStr);
+    } catch (e) {}
+    syncTodayCheckbox();
+  };
+
+  // '오늘 다시 열지 않기' 쿠키 및 로컬스토리지 삭제 함수 (테스트/초기화용 및 체크 해제 후 닫을 때)
+  const clearHideNoticeToday = () => {
+    deleteCookie(NOTICE_COOKIE_NAME, '/');
+    try {
+      localStorage.removeItem(NOTICE_COOKIE_NAME);
+    } catch (e) {}
+    syncTodayCheckbox();
+  };
+
+  // 체크박스 상태 확인 후 쿠키 저장 또는 삭제 처리 헬퍼
+  const checkAndSaveTodayPreference = (contentEl) => {
+    const checkbox = (contentEl && contentEl.querySelector('.nr__notice-check-input')) ||
+                     document.querySelector('.nr__notice-check-input');
+    if (checkbox) {
+      if (checkbox.checked) {
+        // 체크되어 있으면 오늘 날짜 기준 쿠키 저장
+        setHideNoticeToday();
+      } else {
+        // 체크를 풀고 닫기를 누르면 쿠키를 삭제하여 다시 접속 시 열리도록 처리
+        clearHideNoticeToday();
+      }
+    }
+  };
+
+  // 체크박스 변경 시 상호 상태 동기화
+  const allNoticeCheckboxes = document.querySelectorAll('.nr__notice-check-input');
+  allNoticeCheckboxes.forEach((cb) => {
+    cb.addEventListener('change', (e) => {
+      const checked = e.target.checked;
+      allNoticeCheckboxes.forEach((other) => {
+        if (other !== e.target) other.checked = checked;
+      });
+    });
+  });
+
+  // 초기 로드 시 체크박스 상태를 쿠키와 동기화
+  syncTodayCheckbox();
+
   // 패널 내부 닫기 버튼 및 ESC 이벤트 처리 (닫은 후 열었던 버튼으로 포커스 이동)
   contents.forEach((content, index) => {
     const closeBtns = content.querySelectorAll('button[aria-label="닫기"], .nr__notice-close-btn');
     closeBtns.forEach((closeBtn) => {
       closeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        checkAndSaveTodayPreference(content);
         const openerBtn = buttons[index] || (activeIndex >= 0 ? buttons[activeIndex] : null);
         closeAll(true, openerBtn);
       });
@@ -638,6 +754,7 @@ export const initNoticeDropdown = (options = {}) => {
     content.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
+        checkAndSaveTodayPreference(content);
         const openerBtn = buttons[index] || (activeIndex >= 0 ? buttons[activeIndex] : null);
         closeAll(true, openerBtn);
       }
@@ -650,6 +767,7 @@ export const initNoticeDropdown = (options = {}) => {
     const isInsideNotice = noticeContainer.contains(e.target);
     const isInsideContent = contents.some((c) => c.contains(e.target));
     if (!isInsideNotice && !isInsideContent) {
+      checkAndSaveTodayPreference(contents[activeIndex]);
       closeAll(false);
     }
   });
@@ -658,16 +776,47 @@ export const initNoticeDropdown = (options = {}) => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && activeIndex !== -1) {
       e.preventDefault();
+      checkAndSaveTodayPreference(contents[activeIndex]);
       closeAll(true);
     }
   });
 
-  return {
-    open: openIndex,
-    close: (restoreFocus = false, targetBtn = null) => closeAll(restoreFocus, targetBtn),
-    toggle: toggleIndex,
+  // 초기 오픈 상태 처리 (기본: 0번 방재속보 자동 오픈)
+  // 오늘 날짜 기준 '오늘 다시 열지 않기' 쿠키가 유효한 경우, defaultOpen: 0 (또는 어떠한 값)이어도 절대 뜨지 않고 닫힌 상태를 유지합니다.
+  const defaultOpen = options.defaultOpen !== undefined ? options.defaultOpen : 0;
+  const isHidden = isHiddenToday();
+
+  if (defaultOpen !== false && defaultOpen !== null && defaultOpen !== -1 && !isHidden) {
+    const initialIdx = resolveTargetIndex(defaultOpen);
+    openIndex(initialIdx);
+  } else {
+    // defaultOpen이 false/null이거나, 오늘 날짜 기준 쿠키가 존재하는 경우 100% 전체 닫힘 처리
+    closeAll();
+  }
+
+  const instance = {
+    open: openNotice,
+    close: closeNotice,
+    toggle: toggleNotice,
     getActiveIndex: () => activeIndex,
+    isOpen: () => activeIndex !== -1,
+    isHiddenToday,
+    setHideToday: setHideNoticeToday,
+    clearHideToday: clearHideNoticeToday,
   };
+
+  noticeContainer._noticeInstance = instance;
+
+  // 전역 함수로 컨트롤할 수 있도록 등록
+  if (typeof window !== 'undefined') {
+    window.noticeDropdown = instance;
+    window.openNotice = openNotice;
+    window.closeNotice = closeNotice;
+    window.toggleNotice = toggleNotice;
+    window.clearNoticeTodayCookie = clearHideNoticeToday;
+  }
+
+  return instance;
 };
 
 /**

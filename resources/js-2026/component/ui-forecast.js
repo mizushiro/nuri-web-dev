@@ -130,11 +130,12 @@ export const weatherSwiperExe = (data) => {
     let result = '';
     dataList.forEach((item, idx) => {
       const displayDay = idx === 0 ? '오늘' : idx === 1 ? '내일' : idx === 2 ? '모레' : (item.dayOfWeek || item.day);
+      const displayDate = idx < 3 ? `${item.date}(${item.dayOfWeek})` : item.date;
       result += `
         <div class="swiper-slide nr__weather-card ${item.active ? 'active' : ''}" data-date="${item.date}" data-day="${displayDay}" data-am-temp="${item.amTemp}" data-am-rain="${item.amRain}" data-pm-temp="${item.pmTemp}" data-pm-rain="${item.pmRain}">
           <div class="nr__card-header">
             <strong class="nr__card-day">${displayDay}</strong>
-            <span class="nr__card-date">${item.date}</span>
+            <span class="nr__card-date">${displayDate}</span>
           </div>
           <div class="nr__card-body">
             <div class="nr__time-col am">

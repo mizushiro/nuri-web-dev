@@ -21,32 +21,7 @@
 	<nav class="nr__gnb-nav">
 		<div class="nr__inner">
 			<ul class="nr__gnb-menu">
-				<li class="nr__gnb-item">
-					<a href="#" class="nr__gnb-link" data-trigger="gnb">특보·예보</a>
-				</li>
-				<li class="nr__gnb-item">
-					<a href="#" class="nr__gnb-link" data-trigger="gnb">현재날씨</a>
-				</li>
-				<li class="nr__gnb-item">
-					<a href="#" class="nr__gnb-link" data-trigger="gnb">위험기상</a>
-				</li>
-				<li class="nr__gnb-item">
-					<a href="#" class="nr__gnb-link" data-trigger="gnb">수치일기도</a>
-				</li>
-				<li class="nr__gnb-item">
-					<a href="#" class="nr__gnb-link" data-trigger="gnb">기후·기후변화</a>
-				</li>
-				<li class="nr__gnb-item">
-					<a href="#" class="nr__gnb-link" data-trigger="gnb">지진·화산</a>
-				</li>
-				<li class="nr__gnb-item">
-					<a href="https://www.kma.go.kr/kma/" class="nr__gnb-link" target="_blank" title="새 창 열기">
-						기상청 누리집
-						<span data-icon-cricle="gray">
-							<i data-icon="link"></i>
-						</span>
-					</a>
-				</li>
+				<!-- aside-menu.json 기반 동적 렌더링 영역 -->
 			</ul>
 			<div class="nr__header-util">
 				<ul class="nr__util-list">
@@ -93,133 +68,12 @@
 			<div class="nr__mobile-menu-container">
 				<div class="nr__mobile-tabs">
 					<ul>
-						<li>
-							<a href="#mGnb-anchor1" class="nr__mobile-tab-btn active" aria-selected="true">특보·예보</a>
-						</li>
-						<li>
-							<a href="#mGnb-anchor2" class="nr__mobile-tab-btn">현재날씨</a>
-						</li>
-						<li>
-							<a href="#mGnb-anchor3" class="nr__mobile-tab-btn">위험기상</a>
-						</li>
-						<li>
-							<a href="#mGnb-anchor4" class="nr__mobile-tab-btn">수치일기도</a>
-						</li>
-						<li>
-							<a href="#mGnb-anchor5" class="nr__mobile-tab-btn">기후·기후변화</a>
-						</li>
-						<li>
-							<a href="#mGnb-anchor6" class="nr__mobile-tab-btn">지진·화산</a>
-						</li>
+						<!-- aside-menu.json 기반 1Depth 탭 동적 렌더링 영역 -->
 					</ul>
 				</div>
 				<!-- 2Depth~4Depth 서브메뉴 -->
 				<div class="nr__mobile-sub-wrap">
-					<div class="nr__mobile-sub-list active" id="mGnb-anchor1">
-						<h2 class="nr__mobile-sub-title">특보·예보</h2>
-						<ul>
-							<li>
-								<a href="#" class="nr__mobile-sub-link has-depth3">기상특보</a>
-								<div class="nr__mobile-depth3-wrap">
-									<ul>
-										<li><a href="#" class="nr__mobile-depth3-link">특보(종합)</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">특보 통보문</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">영향예보</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">안개정보</a></li>
-									</ul>
-								</div>
-							</li>
-							<li>
-								<a href="#" class="nr__mobile-sub-link has-depth3">기상예보</a>
-								<div class="nr__mobile-depth3-wrap">
-									<ul>
-										<li><a href="#" class="nr__mobile-depth3-link">날씨해설·옙TV</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">예보 종합</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">예보 통보문</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">해상 예보</a></li>
-									</ul>
-								</div>
-							</li>
-							<li><a href="#" class="nr__mobile-sub-link">공항·산악·생활</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">이용안내</a></li>
-						</ul>
-					</div>
-					<div class="nr__mobile-sub-list" id="mGnb-anchor2">
-						<h2 class="nr__mobile-sub-title">현재날씨</h2>
-						<ul>
-							<li><a href="#" target="_blank" class="nr__mobile-sub-link">날씨 지도</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">육상</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">해상</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">봄꽃·단풍</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">세계 기상</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">날씨 상황판</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">레이더·낙뢰</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">위성</a></li>
-							<li><a href="#" target="_blank" class="nr__mobile-sub-link">국가기상위성센터</a></li>
-						</ul>
-					</div>
-					<div class="nr__mobile-sub-list" id="mGnb-anchor3">
-						<h2 class="nr__mobile-sub-title">위험기상</h2>
-						<ul>
-							<li><a href="#" class="nr__mobile-sub-link">태풍</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">황사</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">폭염</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">자연재난행동요령</a></li>
-						</ul>
-					</div>
-					<div class="nr__mobile-sub-list" id="mGnb-anchor4">
-						<h2 class="nr__mobile-sub-title">수치일기도</h2>
-						<ul>
-							<li><a href="#" class="nr__mobile-sub-link">분석일기도</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">예상일기도</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">해상일기도</a></li>
-						</ul>
-					</div>
-					<div class="nr__mobile-sub-list" id="mGnb-anchor5">
-						<h2 class="nr__mobile-sub-title">기후·기후변화</h2>
-						<ul>
-							<li>
-								<a href="#" class="nr__mobile-sub-link has-depth3">기후</a>
-								<div class="nr__mobile-depth3-wrap">
-									<ul>
-										<li><a href="#" class="nr__mobile-depth3-link">기후예측</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">기상가뭄</a></li>
-										<li><a href="#" class="nr__mobile-depth3-link">기후통계</a></li>
-										<li><a href="#" target="_blank" class="nr__mobile-depth3-link">기후감시·예측정보</a></li>
-										<li><a href="#" target="_blank" class="nr__mobile-depth3-link">수문기상 가문정보 시스템</a></li>
-									</ul>
-								</div>
-							</li>
-							<li>
-								<a href="#" class="nr__mobile-sub-link has-depth3">기후변화</a>
-								<div class="nr__mobile-depth3-wrap">
-									<ul>
-										<li><a href="#" target="_blank" class="nr__mobile-depth3-link">주간기후이슈</a></li>
-										<li><a href="#" target="_blank" class="nr__mobile-depth3-link">기후정보포털</a></li>
-										<li><a href="#" target="_blank" class="nr__mobile-depth3-link">기후변화감시정보</a></li>
-										<li><a href="#" target="_blank" class="nr__mobile-depth3-link">기후변화상황지도</a></li>
-									</ul>
-								</div>
-							</li>
-							<li><a href="#" target="_blank" class="nr__mobile-sub-link">기상자료개방포털</a></li>
-						</ul>
-					</div>
-					<div class="nr__mobile-sub-list" id="mGnb-anchor6">
-						<h2 class="nr__mobile-sub-title">지진·화산</h2>
-						<ul>
-							<li><a href="#" target="_blank" class="nr__mobile-sub-link">실시간 감시</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">최근발표</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">지진조회</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">과거지진</a></li>
-							<li><a href="#" target="_blank" class="nr__mobile-sub-link">지진연보</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">지진해일</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">화산</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">통보기준</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">진도등급 별 현상</a></li>
-							<li><a href="#" class="nr__mobile-sub-link">지진·화산 대피요령</a></li>
-							<li><a href="#" target="_blank" class="nr__mobile-sub-link">지진과학관</a></li>
-						</ul>
-					</div>
+					<!-- aside-menu.json 기반 2Depth~3Depth 서브메뉴 동적 렌더링 영역 -->
 				</div>
 			</div>
 			<!-- //1Depth 탭 목록 -->

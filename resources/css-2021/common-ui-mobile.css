@@ -319,7 +319,7 @@
 	.move-control-area .cho-wrap01 button{margin-left:3px;} 
 	.move-control-area .cont-box02{margin-top:0;}
 	.move-control-area  input{text-align:left;padding-left:10px;width:270px;vertical-align:middle;}
-	.move-control-area .input-btn-wrap{margin-top:10px;overflow:hidden;display:inline-block;vertical-align:middle;margin-top:0;margin-left:10px;}
+	.move-control-area .input-btn-wrap{margin-top:10px;display:inline-block;vertical-align:middle;margin-top:0;margin-left:10px;}
 	
 	.move-control-area .cont-box03{display:none;}
 	.movi-set-wrap{overflow:hidden;margin-top:10px}
@@ -1436,6 +1436,7 @@
 	.subp01-02 .kmap-wrap{margin-top:10px;}
 	.subp01 .cont-box01 .tit .more { font-size: 13px; bottom:0;}
 	.subp01 .cont-box01 .tit .more-side { font-size: 13px; bottom:0; right: 106px;}
+	.subp01 .cont-box01 .tit .more-left { font-size: 13px; bottom:0; right: 195px;}
 	.noted-txt p{font-size:13px;}
 	
 	/* 신규 날씨해설탭 - 20200312 */
@@ -1465,6 +1466,7 @@
 	/* 기상특보 - 안개현황 */
 	.subp01-03 .cont-wrap .cont-box01 .over-scroll{padding:0 13px;}
 	.subp01-03 .cont-wrap *[class^="cont-box"] > .tit{font-size:17px;padding:0 13px;margin-top:0px;margin-top:0px;}
+	.subp01-03 .cont-wrap *[class^="cont-box"] > .subtit{font-size:15px;padding:0 13px;margin-top:0px; margin-bottom: 3px;}
 	.subp01-03 .cont-wrap .bg-box > .tit{padding:0 13px;font-size:17px;}
 	.subp01-03 .cont-box01 .bg-box .cont{padding:10px;}
 	.subp01-03 .cont-box01 .bg-box .cont .txt{font-size:13px;}
@@ -1622,8 +1624,8 @@
 	.page-num.page button{font-size:15px;margin-left:5px;}
 	.page-num.page .page-prev{background:url(../image/page_num_prev.png)no-repeat center 8px;margin-left:0;margin-right:10px;}
 	.page-num.page .page-next{background:url(../image/page_num_next.png)no-repeat center 8px;margin-left:10px;}
-	.page-num.page .num.on{color:#006fe8;}
-	.page-num.page .num.on:after{content:"";display:block;position:absolute;top:-35px;left:50%;margin-left:-15px;width:30px;height:30px;background:url(../image/sub_weat_icon.png)no-repeat center center;}
+    .page-num.page .num.on{font-weight: bold;}
+    /* .page-num.page .num.on:after{content:"";display:block;position:absolute;top:-35px;left:50%;margin-left:-15px;width:30px;height:30px;background:url(../image/sub_weat_icon.png)no-repeat center center;} */
 
 	.m-non{display:none;}
 
@@ -1812,7 +1814,7 @@
 	.move-control-area .cho-wrap01 button{margin-left:3px;width:61px;font-size:13px;height:30px;line-height:30px;} 
 	.move-control-area .cont-box02{margin-top:0;}
 	.move-control-area  input{text-align:left;font-size:13px;padding-left:10px;height:30px;line-height:30px;width:100%;}
-	.move-control-area .input-btn-wrap{margin-top:5px;overflow:hidden;display:block;margin-left:0;}
+	.move-control-area .input-btn-wrap{margin-top:5px;display:block;margin-left:0;}
 	.move-control-area .input-btn-wrap .btn-lap{display:inline-block;position:relative;}
 	.move-control-area .input-btn-wrap .btn-lap button{width:55px;font-size:13px;height:30px;line-height:30px;}
 	.move-control-area .cont-box03{display:none;}
@@ -1860,7 +1862,7 @@
 	 
 	.subp03-03 .move-control-area .cont-box02{margin-top:0;}
 	.subp03-03 .move-control-area  input{text-align:left;font-size:13px;padding-left:10px;height:30px;line-height:30px;width:100%;}
-	.subp03-03 .move-control-area .input-btn-wrap{margin-top:5px;overflow:hidden;display:block;margin-left:0;}
+	.subp03-03 .move-control-area .input-btn-wrap{margin-top:5px;display:block;margin-left:0;}
 	.subp03-03 .move-control-area .input-btn-wrap .btn-lap{display:inline-block;position:relative;}
 	.subp03-03 .move-control-area .input-btn-wrap .btn-lap button{width:55px;font-size:13px;height:30px;line-height:30px;}
 	.subp03-03 .move-control-area .cont-box03{display:none;}
@@ -1900,7 +1902,7 @@
 	.subp03-05 .move-control-area .cho-wrap01 button{margin-left:3px;width:61px;font-size:13px;height:30px;line-height:30px;} 
 	.subp03-05 .move-control-area .cont-box02{margin-top:0;}
 	.subp03-05 .move-control-area  input{text-align:left;font-size:13px;padding-left:10px;height:30px;line-height:30px;width:100%;}
-	.subp03-05 .move-control-area .input-btn-wrap{margin-top:5px;overflow:hidden;display:block;margin-left:0;}
+	.subp03-05 .move-control-area .input-btn-wrap{margin-top:5px;display:block;margin-left:0;}
 	.subp03-05 .move-control-area .input-btn-wrap .btn-lap{display:inline-block;position:relative;}
 	.subp03-05 .move-control-area .input-btn-wrap .btn-lap button{width:52px;font-size:13px;height:30px;line-height:30px;}
 	.subp03-05 .move-control-area .cont-box03{display:none;}

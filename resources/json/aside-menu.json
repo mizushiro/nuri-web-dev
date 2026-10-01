@@ -3,19 +3,19 @@
     {
       "id": "forecast",
       "title": "특보 · 예보",
-      "link": "/w/special-report/overall.do",
+      "link": "/special-report/overall.html",
       "depth2": [
         {
           "id": "special-report",
           "title": "기상 특보",
-          "link": "/w/special-report/overall.do",
+          "link": "/special-report/overall.html",
           "depth3Groups": [
             {
               "items": [
-                { "id": "special-all", "title": "특보(종합)", "link": "/w/special-report/overall.do" },
-                { "id": "special-notice", "title": "특보 통보문", "link": "/w/special-report/notice.do" },
-                { "id": "special-impact", "title": "영향예보", "link": "/w/special-report/impact.do" },
-                { "id": "special-fog", "title": "안개정보", "link": "/w/special-report/fog.do" }
+                { "id": "special-all", "title": "특보(종합)", "link": "/special-report/overall.html" },
+                { "id": "special-notice", "title": "특보 통보문", "link": "/special-report/notice.html" },
+                { "id": "special-impact", "title": "영향예보", "link": "/special-report/impact.html" },
+                { "id": "special-fog", "title": "안개정보", "link": "/special-report/fog.html" }
               ]
             }
           ]
@@ -23,36 +23,35 @@
         {
           "id": "weather-forecast",
           "title": "기상 예보",
-          "link": "/w/forecast/ocean.do",
-          "isActive": true,
+          "link": "/forecast/ocean.html",
           "depth3Groups": [
             {
               "items": [
-                { "id": "forecast-tv", "title": "날씨해설·웹TV", "link": "/w/forecast/commentary.do" },
-                { "id": "forecast-summary", "title": "예보 종합", "link": "/w/forecast/overall.do" },
-                { "id": "forecast-notice", "title": "예보 통보문", "link": "/w/forecast/notice.do" }
+                { "id": "forecast-tv", "title": "날씨해설·웹TV", "link": "/forecast/commentary.html" },
+                { "id": "forecast-summary", "title": "예보 종합", "link": "/forecast/overall.html" },
+                { "id": "forecast-notice", "title": "예보 통보문", "link": "/forecast/notice.html" }
               ]
             },
             {
               "items": [
-                { "id": "forecast-ocean", "title": "해상 예보", "link": "/w/forecast/ocean.do", "isActive": true },
+                { "id": "forecast-ocean", "title": "해상 예보", "link": "/forecast/ocean.html" },
                 { "id": "ocean-portal", "title": "해양기상기후정보포털", "link": "https://marine.kma.go.kr", "isExternal": true }
               ]
             },
             {
               "items": [
-                { "id": "energy-info", "title": "에너지기상 요약정보", "link": "/w/forecast/energy.do" }
+                { "id": "energy-info", "title": "에너지기상 요약정보", "link": "/forecast/energy.html" }
               ]
             },
             {
               "items": [
-                { "id": "airport-life", "title": "공항·산악·생활", "link": "/w/forecast/life.do" },
+                { "id": "airport-life", "title": "공항·산악·생활", "link": "/forecast/life.html" },
                 { "id": "heat-illness", "title": "온열질환예측정보", "link": "https://heat.kma.go.kr", "isExternal": true }
               ]
             },
             {
               "items": [
-                { "id": "forecast-guide", "title": "이용안내", "link": "/w/forecast/guide.do" }
+                { "id": "forecast-guide", "title": "이용안내", "link": "/forecast/guide.html" }
               ]
             }
           ]
@@ -62,52 +61,255 @@
     {
       "id": "current-weather",
       "title": "현재날씨",
-      "link": "/w/weather/now.do",
+      "link": "/weather/map.html",
       "depth2": [
         {
           "id": "weather-map",
           "title": "날씨 지도",
-          "link": "/w/weather/map.do"
+          "link": "/weather/map.html",
+          "isExternal": true
         },
         {
           "id": "weather-land",
           "title": "육상",
-          "link": "/w/weather/land.do",
+          "link": "/weather/land.html",
           "depth3Groups": [
             {
               "items": [
-                { "id": "land-current", "title": "현재 날씨", "link": "/w/weather/land/current.do" },
-                { "id": "land-obs", "title": "도시별 관측", "link": "/w/weather/land/obs.do" }
+                { "id": "land-current", "title": "현재날씨", "link": "/weather/land/current.html" },
+                { "id": "land-obs", "title": "도시별 관측", "link": "/weather/land/obs.html" },
+                { "id": "land-aws", "title": "자동기상관측", "link": "/weather/land/aws.html" }
               ]
             }
           ]
         },
         {
-          "id": "weather-ocean",
+          "id": "weather-sea",
           "title": "해상",
-          "link": "/w/weather/sea.do"
+          "link": "/weather/sea.html",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "sea-current", "title": "해상 실황", "link": "/weather/sea/current.html" },
+                { "id": "sea-buoy", "title": "부이 관측", "link": "/weather/sea/buoy.html" },
+                { "id": "sea-wave", "title": "파고/바람", "link": "/weather/sea/wave.html" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "weather-seasonal",
+          "title": "봄꽃·단풍",
+          "link": "/weather/seasonal.html"
+        },
+        {
+          "id": "weather-world",
+          "title": "세계 기상",
+          "link": "/weather/world.html"
+        },
+        {
+          "id": "weather-dashboard",
+          "title": "날씨 상황판",
+          "link": "/weather/dashboard.html"
+        },
+        {
+          "id": "weather-radar",
+          "title": "레이더·낙뢰",
+          "link": "/weather/radar.html"
+        },
+        {
+          "id": "weather-satellite",
+          "title": "위성",
+          "link": "/weather/satellite.html"
+        },
+        {
+          "id": "weather-nmsc",
+          "title": "국가기상위성센터",
+          "link": "https://nmsc.kma.go.kr",
+          "isExternal": true
         }
       ]
     },
     {
       "id": "severe-weather",
       "title": "위험기상",
-      "link": "/w/typhoon/now.do",
+      "link": "/typhoon/now.html",
       "depth2": [
         {
           "id": "typhoon",
           "title": "태풍",
-          "link": "/w/typhoon/now.do"
+          "link": "/typhoon/now.html",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "typhoon-now", "title": "태풍 정보", "link": "/typhoon/now.html" },
+                { "id": "typhoon-path", "title": "예상 진로", "link": "/typhoon/path.html" },
+                { "id": "typhoon-report", "title": "태풍 통보문", "link": "/typhoon/report.html" }
+              ]
+            }
+          ]
         },
         {
-          "id": "dust",
+          "id": "yellow-dust",
           "title": "황사",
-          "link": "/w/dust/now.do"
+          "link": "/dust/now.html",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "dust-now", "title": "황사 정보", "link": "/dust/now.html" },
+                { "id": "dust-pm", "title": "미세먼지 실황", "link": "/dust/pm.html" }
+              ]
+            }
+          ]
         },
         {
           "id": "heatwave",
           "title": "폭염",
-          "link": "/w/heatwave/now.do"
+          "link": "/heatwave/now.html",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "heatwave-impact", "title": "폭염 영향예보", "link": "/heatwave/impact.html" },
+                { "id": "heatwave-temp", "title": "체감온도", "link": "/heatwave/temp.html" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "disaster-guide",
+          "title": "자연재난행동요령",
+          "link": "/disaster/guide.html"
+        }
+      ]
+    },
+    {
+      "id": "nwp-chart",
+      "title": "수치일기도",
+      "link": "/nwp/analysis.html",
+      "depth2": [
+        {
+          "id": "nwp-analysis",
+          "title": "분석일기도",
+          "link": "/nwp/analysis.html"
+        },
+        {
+          "id": "nwp-forecast",
+          "title": "예상일기도",
+          "link": "/nwp/forecast.html"
+        },
+        {
+          "id": "nwp-sea",
+          "title": "해상일기도",
+          "link": "/nwp/sea.html"
+        }
+      ]
+    },
+    {
+      "id": "climate",
+      "title": "기후·기후변화",
+      "link": "/climate/forecast.html",
+      "depth2": [
+        {
+          "id": "climate-main",
+          "title": "기후",
+          "link": "/climate/forecast.html",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "climate-predict", "title": "기후예측", "link": "/climate/forecast.html" },
+                { "id": "climate-drought", "title": "기상가뭄", "link": "/climate/drought.html" },
+                { "id": "climate-stats", "title": "기후통계", "link": "/climate/stats.html" },
+                { "id": "climate-monitor", "title": "기후감시·예측정보", "link": "https://www.climatedata.go.kr", "isExternal": true },
+                { "id": "climate-water", "title": "수문기상 가문정보 시스템", "link": "https://hydro.kma.go.kr", "isExternal": true }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "climate-change",
+          "title": "기후변화",
+          "link": "/climate/change.html",
+          "depth3Groups": [
+            {
+              "items": [
+                { "id": "change-issue", "title": "주간기후이슈", "link": "https://www.climate.go.kr", "isExternal": true },
+                { "id": "change-portal", "title": "기후정보포털", "link": "https://www.climate.go.kr", "isExternal": true },
+                { "id": "change-monitor", "title": "기후변화감시정보", "link": "https://www.climate.go.kr", "isExternal": true },
+                { "id": "change-map", "title": "기후변화상황지도", "link": "https://www.climate.go.kr", "isExternal": true }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "data-portal",
+          "title": "기상자료개방포털",
+          "link": "https://data.kma.go.kr",
+          "isExternal": true
+        }
+      ]
+    },
+    {
+      "id": "earthquake",
+      "title": "지진·화산",
+      "link": "/earthquake/recent.html",
+      "depth2": [
+        {
+          "id": "eqk-realtime",
+          "title": "실시간 감시",
+          "link": "https://necis.kma.go.kr",
+          "isExternal": true
+        },
+        {
+          "id": "eqk-recent",
+          "title": "최근발표",
+          "link": "/earthquake/recent.html"
+        },
+        {
+          "id": "eqk-search",
+          "title": "지진조회",
+          "link": "/earthquake/search.html"
+        },
+        {
+          "id": "eqk-history",
+          "title": "과거지진",
+          "link": "/earthquake/history.html"
+        },
+        {
+          "id": "eqk-report",
+          "title": "지진연보",
+          "link": "https://www.kma.go.kr",
+          "isExternal": true
+        },
+        {
+          "id": "eqk-tsunami",
+          "title": "지진해일",
+          "link": "/earthquake/tsunami.html"
+        },
+        {
+          "id": "eqk-volcano",
+          "title": "화산",
+          "link": "/earthquake/volcano.html"
+        },
+        {
+          "id": "eqk-standard",
+          "title": "통보기준",
+          "link": "/earthquake/standard.html"
+        },
+        {
+          "id": "eqk-scale",
+          "title": "진도등급 별 현상",
+          "link": "/earthquake/scale.html"
+        },
+        {
+          "id": "eqk-safety",
+          "title": "지진·화산 대피요령",
+          "link": "/earthquake/safety.html"
+        },
+        {
+          "id": "eqk-museum",
+          "title": "지진과학관",
+          "link": "https://www.kma.go.kr/eqk_pub/",
+          "isExternal": true
         }
       ]
     }
