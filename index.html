@@ -1211,6 +1211,14 @@
                   <button type="button" class="nr__hourly-interval-btn" data-interval="3">3시간 간격</button>
                   <button type="button" class="nr__hourly-interval-btn active" data-interval="1">1시간 간격</button>
                 </div>
+                <div class="nr__main-head-line nr__desktop-only"></div>
+                <div class="nr__form-radio-wrap nr__desktop-only">
+                  <input type="radio" id="nr__temptype_av" name="nr__temptype" class="nr__sr-only" checked>
+                  <label for="nr__temptype_av">평균기온</label>
+
+                  <input type="radio" id="nr__temptype_mx" name="nr__temptype" class="nr__sr-only">
+                  <label for="nr__temptype_mx">최저/최고 기온</label>
+                </div>
               </div>
 
               <!-- Desktop Toolbar (1024px 초과 화면 노출) -->
@@ -1269,10 +1277,15 @@
                 </button>
                 <div id="hourly-settings-menu" class="nr__drop-menu nr__hourly-settings-menu"
                   data-position="bottom-right" style="display: none;">
-                  <ul class="nr__drop-list">
+                  <ul class="nr__drop-list" data-group="view">
                     <li><button type="button" class="nr__item-link active" data-view="mode1">혼합형태</button></li>
                     <li><button type="button" class="nr__item-link" data-view="mode2">그래프형태</button></li>
                     <li><button type="button" class="nr__item-link" data-view="mode3">표형태</button></li>
+                  </ul>
+                  <div class="nr__drop-divider" role="separator"></div>
+                  <ul class="nr__drop-list" data-group="temptype">
+                    <li><button type="button" class="nr__item-link active" data-temptype="avg">평균기온</button></li>
+                    <li><button type="button" class="nr__item-link" data-temptype="minmax">최저/최고기온</button></li>
                   </ul>
                 </div>
               </div>
