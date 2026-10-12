@@ -218,6 +218,12 @@ export const weatherSwiperExe = (data) => {
 export const hourlyForecastExe = (data, options = {}) => {
   let currentInterval = 1; // 1: 1시간 간격, 3: 3시간 간격
   let currentViewMode = 'mode1'; // mode1: 선형 차트, mode2: 막대 차트, mode3: 리스트
+  let currentTempType = 'avg'; // 'avg': 평균기온, 'minmax': 최저/최고 기온
+
+  const initialTempTypeRadio = document.querySelector('input[name="nr__temptype"]:checked');
+  if (initialTempTypeRadio) {
+    currentTempType = (initialTempTypeRadio.id === 'nr__temptype_mx') ? 'minmax' : 'avg';
+  }
 
   const getWindAngle = (dir) => {
     if (typeof dir === 'number') return dir;
@@ -251,93 +257,8 @@ export const hourlyForecastExe = (data, options = {}) => {
       currentSelectedDate = activeItem.date;
     }
 
-    if (currentViewMode === 'mode3') {
-      // Mode 3: 리스트 형태 (가로 스크롤 및 상단 스와이퍼 연동)
-      let html = '<div class="nr__hourly-list-container nr__hourly-scroll-viewport"><div class="nr__hourly-list-wrapper">';
-      validDates.forEach((dayItem, dayIndex) => {
-        const hours = filterHours(dayItem.hourly, currentInterval);
-        const isCurrent = currentSelectedDate ? (dayItem.date === currentSelectedDate) : (dayIndex === 0);
-        html += `
-          <div class="nr__list-date-block" data-date="${dayItem.date}" data-length="${hours.length}" data-current="${isCurrent}">
-            <div class="nr__list-date-header">
-              ${dayItem.forecastType ? `<span class="nr__badge-type">${dayItem.forecastType}</span>` : ''}
-              <span class="nr__date-pill"> <span class="nr__date-pill-icon"><span data-icon="calendar-check"></span></span> ${dayItem.date} ${dayItem.dayOfWeek || dayItem.day}</span>
-              <span class="nr__temp-range">
-                <span class="nr__temp-range-group">
-                  최저 <span class="nr__min-temp">${dayItem.minTemp || '-'}</span>
-                </span>
-                <span class="nr__divider">|</span>
-                <span class="nr__temp-range-group">
-                  최고 <span class="nr__max-temp">${dayItem.maxTemp || '-'}</span>
-                </span>
-              </span>
-            </div>
-            <table class="nr__hourly-list-table">
-              <thead>
-                <tr>
-                  <th>시각</th>
-                  <th>날씨</th>
-                  <th>기온(체감)</th>
-                  <th>강수량</th>
-                  <th>강수강도</th>
-                  <th>강수확률</th>
-                  <th>바람</th>
-                  <th>습도</th>
-                  <th>폭염영향</th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-        hours.forEach(h => {
-          let windText = '-';
-          if (Array.isArray(h.windText)) {
-            if (h.windText.length >= 3) {
-              windText = `${h.windText[0]} ${h.windText[1]} ${h.windText[2]}m/s`;
-            } else if (h.windText.length === 2) {
-              windText = `${h.windText[0]} ${h.windText[1]}`;
-            } else if (h.windText.length === 1) {
-              windText = h.windText[0];
-            }
-          } else if (h.windText) {
-            windText = h.windText;
-          }
-
-          html += `
-            <tr>
-              <td>${h.time}</td>
-              <td>
-                <div class="nr__td-weather">
-                  <div data-icon-weather="${h.icon}"></div>
-                  <span>${h.text}</span>
-                </div>
-              </td>
-              <td><strong>${h.temp}</strong><span class="nr__sensory-temp">(${h.sensoryTemp})</span></td>
-              <td>${h.precip || '-'}</td>
-              <td>${h.precipIntensity || '-'}</td>
-              <td>${h.rainProb || '0%'}</td>
-              <td>${windText}</td>
-              <td>${h.humidity || '-'}</td>
-              <td>${h.heatImpact || '-'}</td>
-            </tr>
-          `;
-        });
-        html += `
-              </tbody>
-            </table>
-          </div>
-        `;
-      });
-      html += '</div></div>';
-      container.innerHTML = html;
-
-      // 드래그 스크롤 이벤트 바인딩
-      bindDragScroll();
-      // 가로 스크롤 시 상단 스와이퍼 날짜 연동 바인딩
-      bindScrollSync();
-      return;
-    }
-
-    // Mode 1 (선형 차트) 및 Mode 2 (막대 차트)
+    // Mode 판별: Mode 1 (선형 차트), Mode 2 (막대 차트), Mode 3 (리스트/텍스트 형태)
+    const isListMode = (currentViewMode === 'mode3');
     const isBarChartMode = (currentViewMode === 'mode2');
 
     let fixedColHtml = '';
@@ -369,7 +290,24 @@ export const hourlyForecastExe = (data, options = {}) => {
       </div>
     `;
 
-    if (isBarChartMode) {
+    if (isListMode) {
+      // Mode 3 (리스트 보기): 차트 대신 텍스트 행 중심 구성 (높이 슬림 조절)
+      fixedColHtml = `
+        <div class="nr__hourly-fixed-column">
+          ${headerCellHtml}
+          <div class="nr__fixed-row-cell nr__row-time">시각</div>
+          <div class="nr__fixed-row-cell nr__row-weather">날씨</div>
+          <div class="nr__fixed-row-cell nr__row-temp-text">기온(체감)</div>
+          <div class="nr__fixed-row-cell nr__row-precip">강수량(mm)</div>
+          <div class="nr__fixed-row-cell nr__row-precip-intensity">강수강도</div>
+          <div class="nr__fixed-row-cell nr__row-rain-prob">강수확률</div>
+          <div class="nr__fixed-row-cell nr__row-wind">바람</div>
+          <div class="nr__fixed-row-cell nr__row-humidity">습도</div>
+          <div class="nr__fixed-row-cell nr__row-heat">폭염영향</div>
+        </div>
+      `;
+    } else if (isBarChartMode) {
+      // Mode 2 (막대 차트 형태)
       fixedColHtml = `
         <div class="nr__hourly-fixed-column">
           ${headerCellHtml}
@@ -382,6 +320,7 @@ export const hourlyForecastExe = (data, options = {}) => {
         </div>
       `;
     } else {
+      // Mode 1 (선형 차트 형태)
       fixedColHtml = `
         <div class="nr__hourly-fixed-column">
           ${headerCellHtml}
@@ -398,15 +337,18 @@ export const hourlyForecastExe = (data, options = {}) => {
       `;
     }
 
-    let chartLayersHtml = `
-      <div class="nr__hourly-chart-layer nr__temp-chart-layer" id="hourly-temp-chart-layer"></div>
-    `;
-    if (isBarChartMode) {
-      chartLayersHtml += `
-        <div class="nr__hourly-chart-layer nr__rain-chart-layer" id="hourly-rain-chart-layer"></div>
-        <div class="nr__hourly-chart-layer nr__wind-chart-layer" id="hourly-wind-chart-layer"></div>
-        <div class="nr__hourly-chart-layer nr__humidity-chart-layer" id="hourly-humidity-chart-layer"></div>
+    let chartLayersHtml = '';
+    if (!isListMode) {
+      chartLayersHtml = `
+        <div class="nr__hourly-chart-layer nr__temp-chart-layer" id="hourly-temp-chart-layer"></div>
       `;
+      if (isBarChartMode) {
+        chartLayersHtml += `
+          <div class="nr__hourly-chart-layer nr__rain-chart-layer" id="hourly-rain-chart-layer"></div>
+          <div class="nr__hourly-chart-layer nr__wind-chart-layer" id="hourly-wind-chart-layer"></div>
+          <div class="nr__hourly-chart-layer nr__humidity-chart-layer" id="hourly-humidity-chart-layer"></div>
+        `;
+      }
     }
 
     let scrollViewportHtml = `
@@ -445,7 +387,71 @@ export const hourlyForecastExe = (data, options = {}) => {
         const windStrengthVal = Array.isArray(h.windText) && h.windText.length >= 3 ? h.windText[1] : '약';
         const humidityVal = parseInt(h.humidity) || 0;
 
-        if (isBarChartMode) {
+        let windDirStrength = '-';
+        let windSpeedText = '-';
+        if (Array.isArray(h.windText)) {
+          if (h.windText.length >= 3) {
+            windDirStrength = `${h.windText[0]} ${h.windText[1]}`;
+            windSpeedText = `${h.windText[2]}m/s`;
+          } else if (h.windText.length === 2) {
+            windDirStrength = `${h.windText[0]}`;
+            windSpeedText = `${h.windText[1]}m/s`;
+          } else if (h.windText.length === 1) {
+            windDirStrength = `${h.windText[0]}`;
+          }
+        } else if (h.windSpeed) {
+          windSpeedText = `${h.windSpeed}m/s`;
+          windDirStrength = h.windStrength ? `${h.windText || ''} ${h.windStrength}` : (h.windText || '-');
+        }
+
+        if (isListMode) {
+          // Mode 3: 리스트/텍스트 형태 (기온 챠트 대신 텍스트로 높이 조절)
+          scrollViewportHtml += `
+            <div class="nr__hourly-col" data-date="${dayItem.date}" data-time="${h.time}">
+              <div class="nr__cell nr__row-time nr__cell-time">
+                <span class="sr-only">시각</span>
+                ${h.time}
+              </div>
+              <div class="nr__cell nr__row-weather nr__cell-weather">
+                <span class="sr-only">날씨</span>
+                <div data-icon-weather="${h.icon}">
+                  <span class="sr-only">${h.text}</span>
+                </div>
+              </div>
+              <div class="nr__cell nr__row-temp-text nr__cell-temp-text">
+                <span class="sr-only">기온</span>
+                <strong>${h.temp}</strong>
+                <span class="nr__sensory-temp">(${h.sensoryTemp})</span>
+              </div>
+              <div class="nr__cell nr__row-precip nr__cell-precip">
+                <span class="sr-only">강수량</span>
+                <div class="nr__cell-precip-value">${h.precip || '-'}</div>
+              </div>
+              <div class="nr__cell nr__row-precip-intensity nr__cell-precip-intensity">
+                <span class="sr-only">강수강도</span>
+                <div class="nr__cell-precip-intensity-value">${h.precipIntensity || '-'}</div>
+              </div>
+              <div class="nr__cell nr__row-rain-prob nr__cell-rain-prob">
+                <span class="sr-only">강수확률</span>
+                <div class="nr__cell-rain-prob-value">${h.rainProb || '0%'}</div>
+              </div>
+              <div class="nr__cell nr__row-wind nr__cell-wind nr__cell-wind-text">
+                <span class="sr-only">바람</span>
+                <span class="nr__wind-dir-str">${windDirStrength}</span>
+                <span class="nr__wind-spd">${windSpeedText}</span>
+              </div>
+              <div class="nr__cell nr__row-humidity nr__cell-humidity">
+                <span class="sr-only">습도</span>
+                ${h.humidity || '-'}
+              </div>
+              <div class="nr__cell nr__row-heat nr__cell-heat">
+                <span class="sr-only">폭염영향</span>
+                ${h.heatImpact || '-'}
+              </div>
+            </div>
+          `;
+        } else if (isBarChartMode) {
+          // Mode 2: 막대 차트 형태
           scrollViewportHtml += `
             <div class="nr__hourly-col" data-date="${dayItem.date}" data-time="${h.time}" data-temp="${numericTemp}" data-rain-prob="${rainProbVal}" data-wind-dir="${windDirVal}" data-wind-speed="${windSpeedVal}" data-wind-strength="${windStrengthVal}" data-humidity="${humidityVal}">
               <div class="nr__cell nr__row-time nr__cell-time">
@@ -473,6 +479,7 @@ export const hourlyForecastExe = (data, options = {}) => {
             </div>
           `;
         } else {
+          // Mode 1: 선형 차트 형태
           scrollViewportHtml += `
             <div class="nr__hourly-col" data-date="${dayItem.date}" data-time="${h.time}" data-temp="${numericTemp}" data-rain-prob="${rainProbVal}" data-wind-dir="${windDirVal}" data-wind-speed="${windSpeedVal}" data-wind-strength="${windStrengthVal}" data-humidity="${humidityVal}">
               <div class="nr__cell nr__row-time nr__cell-time">
@@ -520,7 +527,21 @@ export const hourlyForecastExe = (data, options = {}) => {
       });
 
       if (isLastDate) {
-        if (isBarChartMode) {
+        if (isListMode) {
+          scrollViewportHtml += `
+            <div class="nr__hourly-col nr__empty-col">
+              <div class="nr__cell nr__row-time nr__cell-time"></div>
+              <div class="nr__cell nr__row-weather nr__cell-weather"></div>
+              <div class="nr__cell nr__row-temp-text nr__cell-temp-text"></div>
+              <div class="nr__cell nr__row-precip nr__cell-precip"><div class="nr__cell-precip-value"></div></div>
+              <div class="nr__cell nr__row-precip-intensity nr__cell-precip-intensity"><div class="nr__cell-precip-intensity-value"></div></div>
+              <div class="nr__cell nr__row-rain-prob nr__cell-rain-prob"><div class="nr__cell-rain-prob-value"></div></div>
+              <div class="nr__cell nr__row-wind nr__cell-wind nr__cell-wind-text"></div>
+              <div class="nr__cell nr__row-humidity nr__cell-humidity"></div>
+              <div class="nr__cell nr__row-heat nr__cell-heat"></div>
+            </div>
+          `;
+        } else if (isBarChartMode) {
           scrollViewportHtml += `
             <div class="nr__hourly-col nr__empty-col">
               <div class="nr__cell nr__row-time nr__cell-time"></div>
@@ -559,8 +580,9 @@ export const hourlyForecastExe = (data, options = {}) => {
       </div>
     `;
 
+    const modeClass = isListMode ? 'nr__mode-list' : (isBarChartMode ? 'nr__mode-bar-chart' : 'nr__mode-line-chart');
     container.innerHTML = `
-      <div class="nr__hourly-grid-container ${isBarChartMode ? 'nr__mode-bar-chart' : 'nr__mode-line-chart'}">
+      <div class="nr__hourly-grid-container ${modeClass}">
         ${fixedColHtml}
         ${scrollViewportHtml}
       </div>
@@ -572,8 +594,13 @@ export const hourlyForecastExe = (data, options = {}) => {
       initDropdown(fixedTooltipEl);
     }
 
-    // 차트 레이어 렌더링 (전체 4가지 차트 통합 렌더링)
-    renderAllForecastCharts(container, validDates, options);
+    // 리스트 모드가 아닐 때만 차트 레이어 렌더링
+    if (!isListMode) {
+      renderAllForecastCharts(container, validDates, {
+        ...options,
+        tempType: currentTempType
+      });
+    }
 
     // 드래그 스크롤 이벤트 바인딩
     bindDragScroll();
@@ -757,6 +784,44 @@ export const hourlyForecastExe = (data, options = {}) => {
     });
   });
 
+  // 기온 형태 전환 함수 (평균기온 vs 최저/최고 기온)
+  const switchTempType = (tempType) => {
+    if (!tempType) return;
+    currentTempType = tempType;
+
+    // 1. PC 라디오 버튼 동기화
+    const targetRadio = document.getElementById(tempType === 'minmax' ? 'nr__temptype_mx' : 'nr__temptype_av');
+    if (targetRadio && !targetRadio.checked) {
+      targetRadio.checked = true;
+    }
+
+    // 2. 모바일 드롭다운 메뉴 아이템 active 동기화
+    if (settingsDropdownInstance && typeof settingsDropdownInstance.setActiveTempType === 'function') {
+      settingsDropdownInstance.setActiveTempType(currentTempType);
+    } else {
+      const mobileTempBtns = document.querySelectorAll('.nr__hourly-settings-menu [data-temptype]');
+      mobileTempBtns.forEach(b => {
+        if (b.dataset.temptype === currentTempType) {
+          b.classList.add('active');
+          b.setAttribute('aria-selected', 'true');
+        } else {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        }
+      });
+    }
+
+    // 3. 차트 레이어 재렌더링 (리스트 모드가 아닐 때)
+    if (currentViewMode !== 'mode3') {
+      const container = document.getElementById('hourly-forecast-content');
+      const validDates = data.filter(d => d.hourly && d.hourly.length > 0);
+      renderAllForecastCharts(container, validDates, {
+        ...options,
+        tempType: currentTempType
+      });
+    }
+  };
+
   // 데스크탑 뷰 모드 버튼 이벤트 바인딩
   const viewBtns = document.querySelectorAll('.nr__hourly-view-btn');
   viewBtns.forEach(btn => {
@@ -765,13 +830,16 @@ export const hourlyForecastExe = (data, options = {}) => {
     });
   });
 
-  // 모바일 뷰 모드 드롭다운 메뉴 아이템 이벤트 바인딩 (피씨형과 동일한 이벤트 적용)
-  const mobileViewBtns = document.querySelectorAll('.nr__hourly-settings-menu .nr__item-link');
-  mobileViewBtns.forEach(btn => {
+  // 모바일 설정 드롭다운 메뉴 아이템 이벤트 바인딩 (뷰 모드 및 기온 형태)
+  const mobileSettingsBtns = document.querySelectorAll('.nr__hourly-settings-menu .nr__item-link');
+  mobileSettingsBtns.forEach(btn => {
     btn.addEventListener('click', function () {
       const mode = this.dataset.view;
+      const tempType = this.dataset.temptype;
       if (mode) {
         switchViewMode(mode);
+      } else if (tempType) {
+        switchTempType(tempType);
       }
     });
   });
@@ -780,14 +848,36 @@ export const hourlyForecastExe = (data, options = {}) => {
   const settingsDropdownEl = document.querySelector('.nr__hourly-settings-dropdown, .nr__hourly-settings-btn');
   if (settingsDropdownEl) {
     settingsDropdownInstance = initDropdown(settingsDropdownEl, {
-      onSelect: (selectedMode) => {
-        switchViewMode(selectedMode);
+      onSelect: (selectedValue, item) => {
+        if (item && item.dataset.temptype) {
+          switchTempType(item.dataset.temptype);
+        } else if (item && item.dataset.view) {
+          switchViewMode(item.dataset.view);
+        } else if (selectedValue === 'minmax' || selectedValue === 'avg') {
+          switchTempType(selectedValue);
+        } else {
+          switchViewMode(selectedValue);
+        }
       }
     });
-    if (settingsDropdownInstance && typeof settingsDropdownInstance.setActiveView === 'function') {
-      settingsDropdownInstance.setActiveView(currentViewMode);
+    if (settingsDropdownInstance) {
+      if (typeof settingsDropdownInstance.setActiveView === 'function') {
+        settingsDropdownInstance.setActiveView(currentViewMode);
+      }
+      if (typeof settingsDropdownInstance.setActiveTempType === 'function') {
+        settingsDropdownInstance.setActiveTempType(currentTempType);
+      }
     }
   }
+
+  // 기온 형태 라디오 버튼 이벤트 바인딩 (평균기온 vs 최저/최고 기온)
+  const tempTypeRadios = document.querySelectorAll('input[name="nr__temptype"]');
+  tempTypeRadios.forEach(radio => {
+    radio.addEventListener('change', function () {
+      const type = (this.id === 'nr__temptype_mx') ? 'minmax' : 'avg';
+      switchTempType(type);
+    });
+  });
 };
 
 /**

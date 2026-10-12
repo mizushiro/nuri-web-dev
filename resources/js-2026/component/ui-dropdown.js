@@ -343,7 +343,11 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
   };
 
   const selectItem = (item) => {
-    items.forEach(el => {
+    // 동일한 리스트/그룹(ul) 내의 형제 아이템들만 active 클래스 갱신
+    const parentList = item.closest('.nr__drop-list, .drop-list, ul') || dropMenu;
+    const groupItems = items.filter(el => parentList.contains(el));
+
+    groupItems.forEach(el => {
       el.classList.remove('active');
       el.setAttribute('aria-selected', 'false');
       const srOnly = el.querySelector('.sr-only');
@@ -364,7 +368,7 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
     close(true);
 
     if (typeof currentOnSelect === 'function') {
-      currentOnSelect(item.dataset.view || item.value || item.textContent.trim(), item);
+      currentOnSelect(item.dataset.view || item.dataset.temptype || item.value || item.textContent.trim(), item);
     }
   };
 
@@ -487,7 +491,31 @@ export const initDropdown = (triggerOrContainerOrSelector, options = {}) => {
     setActiveView: (viewMode) => {
       const match = items.find(i => i.dataset.view === viewMode);
       if (match) {
-        items.forEach(el => {
+        const parentList = match.closest('.nr__drop-list, .drop-list, ul') || dropMenu;
+        const groupItems = items.filter(el => parentList.contains(el));
+        groupItems.forEach(el => {
+          el.classList.remove('active');
+          el.setAttribute('aria-selected', 'false');
+          const sr = el.querySelector('.sr-only');
+          if (sr) sr.textContent = '';
+        });
+        match.classList.add('active');
+        match.setAttribute('aria-selected', 'true');
+        let sr = match.querySelector('.sr-only');
+        if (!sr) {
+          sr = document.createElement('span');
+          sr.className = 'sr-only';
+          match.appendChild(sr);
+        }
+        sr.textContent = '선택됨';
+      }
+    },
+    setActiveTempType: (tempType) => {
+      const match = items.find(i => i.dataset.temptype === tempType);
+      if (match) {
+        const parentList = match.closest('.nr__drop-list, .drop-list, ul') || dropMenu;
+        const groupItems = items.filter(el => parentList.contains(el));
+        groupItems.forEach(el => {
           el.classList.remove('active');
           el.setAttribute('aria-selected', 'false');
           const sr = el.querySelector('.sr-only');
