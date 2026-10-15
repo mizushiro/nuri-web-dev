@@ -1,0 +1,164 @@
+{
+	"headers": [
+		{ "date": "11.23. (월)", "times": ["오전", "오후"] },
+		{ "date": "11.24. (화)", "times": ["오전", "오후"] },
+		{ "date": "11.25. (수)", "times": ["오전", "오후"] },
+		{ "date": "11.26. (목)", "times": ["오전", "오후"] }
+	],
+	"rows": [
+		{
+			"region": "서울",
+			"group": "수도권",
+			"forecasts": [
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": null, "minTemp": 3, "maxTemp": 12 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 3, "maxTemp": 12 },
+				{ "skyCode": "NB04", "skyText": "흐림", "precipLevel": "high", "precipText": "높음", "trend": "same", "minTemp": 5, "maxTemp": 10 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 5, "maxTemp": 10 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "up", "minTemp": -1, "maxTemp": 7 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": -1, "maxTemp": 7 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 0, "maxTemp": 8 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "up", "minTemp": 0, "maxTemp": 8 }
+			]
+		},
+		{
+			"region": "경기북부",
+			"group": "수도권",
+			"forecasts": [
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": null, "minTemp": 0, "maxTemp": 10 },
+				{ "skyCode": "NB04", "skyText": "흐림", "precipLevel": "high", "precipText": "높음", "trend": "up", "minTemp": 0, "maxTemp": 10 },
+				{ "skyCode": "NB04", "skyText": "흐림", "precipLevel": "high", "precipText": "높음", "trend": "same", "minTemp": 2, "maxTemp": 8 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "up", "minTemp": 2, "maxTemp": 8 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": -4, "maxTemp": 5 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": -4, "maxTemp": 5 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": -3, "maxTemp": 7 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "up", "minTemp": -3, "maxTemp": 7 }
+			]
+		},
+		{
+			"region": "경기남부",
+			"group": "수도권",
+			"forecasts": [
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": null, "minTemp": 2, "maxTemp": 11 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "same", "minTemp": 2, "maxTemp": 11 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 4, "maxTemp": 10 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "up", "minTemp": 4, "maxTemp": 10 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": -2, "maxTemp": 7 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": -2, "maxTemp": 7 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": -1, "maxTemp": 8 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": -1, "maxTemp": 8 }
+			]
+		},
+		{
+			"region": "강원영동중부",
+			"group": "강원",
+			"forecasts": [
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": null, "minTemp": 5, "maxTemp": 14 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "same", "minTemp": 5, "maxTemp": 14 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "up", "minTemp": 6, "maxTemp": 12 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 6, "maxTemp": 12 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 2, "maxTemp": 9 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "same", "minTemp": 2, "maxTemp": 9 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 3, "maxTemp": 10 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 3, "maxTemp": 10 }
+			]
+		},
+		{
+			"region": "충북",
+			"group": "충북",
+			"forecasts": [
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": null, "minTemp": 1, "maxTemp": 11 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 1, "maxTemp": 11 },
+				{ "skyCode": "NB04", "skyText": "흐림", "precipLevel": "high", "precipText": "높음", "trend": "up", "minTemp": 3, "maxTemp": 9 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "same", "minTemp": 3, "maxTemp": 9 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": -2, "maxTemp": 6 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": -2, "maxTemp": 6 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": -1, "maxTemp": 8 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": -1, "maxTemp": 8 }
+			]
+		},
+		{
+			"region": "대전·세종·충남",
+			"group": "충남권",
+			"forecasts": [
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": null, "minTemp": 2, "maxTemp": 12 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 2, "maxTemp": 12 },
+				{ "skyCode": "NB04", "skyText": "흐림", "precipLevel": "high", "precipText": "높음", "trend": "same", "minTemp": 4, "maxTemp": 10 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 4, "maxTemp": 10 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": -1, "maxTemp": 7 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": -1, "maxTemp": 7 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 0, "maxTemp": 9 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 0, "maxTemp": 9 }
+			]
+		},
+		{
+			"region": "전북",
+			"group": "전북",
+			"forecasts": [
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": null, "minTemp": 1, "maxTemp": 13 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "same", "minTemp": 1, "maxTemp": 13 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "up", "minTemp": 4, "maxTemp": 11 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 4, "maxTemp": 11 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 0, "maxTemp": 8 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 0, "maxTemp": 8 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": 1, "maxTemp": 9 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 1, "maxTemp": 9 }
+			]
+		},
+		{
+			"region": "광주·전남",
+			"group": "전남광주권",
+			"forecasts": [
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": null, "minTemp": 4, "maxTemp": 14 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "same", "minTemp": 4, "maxTemp": 14 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "up", "minTemp": 6, "maxTemp": 13 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 6, "maxTemp": 13 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 2, "maxTemp": 10 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 2, "maxTemp": 10 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": 3, "maxTemp": 11 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 3, "maxTemp": 11 }
+			]
+		},
+		{
+			"region": "대구·경북",
+			"group": "경북권",
+			"forecasts": [
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": null, "minTemp": 2, "maxTemp": 13 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "same", "minTemp": 2, "maxTemp": 13 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "up", "minTemp": 4, "maxTemp": 11 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 4, "maxTemp": 11 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 0, "maxTemp": 8 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 0, "maxTemp": 8 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": 1, "maxTemp": 10 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 1, "maxTemp": 10 }
+			]
+		},
+		{
+			"region": "부산·울산·경남",
+			"group": "경남권",
+			"forecasts": [
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": null, "minTemp": 5, "maxTemp": 15 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "same", "minTemp": 5, "maxTemp": 15 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "up", "minTemp": 7, "maxTemp": 13 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 7, "maxTemp": 13 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 3, "maxTemp": 11 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 3, "maxTemp": 11 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": 4, "maxTemp": 12 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "down", "minTemp": 4, "maxTemp": 12 }
+			]
+		},
+		{
+			"region": "제주",
+			"group": "제주",
+			"forecasts": [
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": null, "minTemp": 10, "maxTemp": 17 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "same", "minTemp": 10, "maxTemp": 17 },
+				{ "skyCode": "NB08", "skyText": "비", "precipLevel": "high", "precipText": "높음", "trend": "up", "minTemp": 11, "maxTemp": 15 },
+				{ "skyCode": "NB03", "skyText": "구름많음", "precipLevel": "mid", "precipText": "보통", "trend": "down", "minTemp": 11, "maxTemp": 15 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 8, "maxTemp": 13 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "same", "minTemp": 8, "maxTemp": 13 },
+				{ "skyCode": "NB01", "skyText": "맑음", "precipLevel": "none", "precipText": "거의 없음", "trend": "up", "minTemp": 9, "maxTemp": 14 },
+				{ "skyCode": "NB02", "skyText": "구름조금", "precipLevel": "low", "precipText": "조금", "trend": "down", "minTemp": 9, "maxTemp": 14 }
+			]
+		}
+	]
+}

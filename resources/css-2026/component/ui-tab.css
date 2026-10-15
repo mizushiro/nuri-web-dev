@@ -1,0 +1,120 @@
+/* tab */
+[data-tab] {
+	position: relative;
+	display: flex;
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	width: 100%;
+	z-index: 1;
+}
+
+[role=tablist] {
+	position: relative;
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 0;
+}
+
+[role=tablist] [role=tab] {
+	position: relative;
+	display: flex;
+	cursor: pointer;
+}
+
+[data-tab-wrap] {
+	position: relative;
+}
+
+[role=tabpanel],
+[role=tabpanel][aria-expanded=false] {
+	display: none;
+}
+
+[role=tabpanel][aria-expanded=true],
+[data-tab-wrap][data-tab-mode=single] [role=tabpanel],
+[data-tab-mode=single] [role=tabpanel] {
+	position: relative;
+	display: block;
+}
+
+[data-tab-type=scroll][data-tab] {
+	position: sticky;
+}
+
+[data-tab-type=scroll][data-tab-wrap] {
+	display: flex;
+	flex-direction: column;
+}
+
+[data-tab-type=scroll] [role=tabpanel] {
+	scroll-margin-top: 0;
+}
+[role=tablist] [role=tab]:focus {
+	box-shadow: none;
+	text-decoration: underline;
+	text-underline-offset: 0.5rem;
+}
+
+[data-tab-style="roundbox-small"] {
+	[role="tablist"] {
+		display: flex;
+		gap: 0.8rem;
+	}
+	[role="tab"] {
+		min-height: 3.2rem;
+		padding:.4rem 0.8rem;
+		border-radius: 0.8rem;
+		border: 1px solid #466F97;
+		color:#466F97;
+		background-color: #fff;
+		font-size: 1.4rem;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height:1.2;
+		word-break: keep-all;
+	}
+	[role=tablist] [role=tab][aria-selected=true] {
+		background-color: #466F97;
+		color: #fff;
+	}
+
+}
+[data-tab-style="text_|_text"] {
+	display: flex;
+	width: auto;
+
+	[role="tablist"] {
+		display: flex;
+		gap: 2.6rem;
+	}
+	[role="tab"] {
+		color:#727272;
+		font-size: 2rem;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+	}
+	[role="tab"]::after {
+		content:'';
+		width: 0.2rem;
+		height: 1.2rem;
+		position: absolute;
+		top:50%;
+		right: -1.3rem;
+		transform: translateY(-50%);
+		background-color: #ECEDF0;
+	}
+	[role="tab"]:last-child::after {
+		display: none;
+	}
+	[role=tablist] [role=tab][aria-selected=true] {
+		color: #0B1F65;
+		font-weight: 700;
+	}
+}

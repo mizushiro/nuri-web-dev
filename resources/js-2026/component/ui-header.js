@@ -7,15 +7,14 @@
 import { fetchMenuData, normalizeUrlPath, findMenuByPath } from './ui-aside.js';
 
 /**
- * 절대/상대 링크 경로를 현재 서브페이지 깊이에 맞게 변환하는 헬퍼 함수
- * 예: "/special-report/overall.html" -> 서브페이지면 "../special-report/overall.html", 메인이면 "./special-report/overall.html"
+ * 절대/상대 링크 경로를 <base href> 기준 상대경로로 변환하는 헬퍼 함수
+ * 예: "/special-report/overall.html" -> "special-report/overall.html"
  */
-export const resolveLinkPath = (linkStr, isSubPage) => {
+export const resolveLinkPath = (linkStr) => {
   if (!linkStr || linkStr === '#' || linkStr.startsWith('http') || linkStr.startsWith('//')) {
     return linkStr || '#';
   }
-  const clean = linkStr.replace(/^\/+/, '');
-  return isSubPage ? `../${clean}` : `./${clean}`;
+  return linkStr.replace(/^\/+/, '');
 };
 
 /**
@@ -272,7 +271,7 @@ export const initHeaderMenu = async (options = {}) => {
                     pathname.includes('/numerical/') ||
                     !!document.querySelector('.nr__sub');
 
-  const defaultJsonPath = isSubPage ? '../resources/json/aside-menu.json' : './resources/json/aside-menu.json';
+  const defaultJsonPath = '/resources/json/aside-menu.json';
   const jsonPath = options.jsonPath || defaultJsonPath;
 
   try {

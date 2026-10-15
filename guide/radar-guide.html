@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script>
+    (function () {
+      var isGhPages = window.location.pathname.startsWith('/nuri-web');
+      var baseHref = isGhPages ? '/nuri-web/' : '/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>기상청 레이더 영상 플레이어 (ImagePlayer) 가이드</title>
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- 기상청 레거시 및 플레이어 필수 CSS -->
+  <link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+  <link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+  <!-- 지도 및 OpenLayers / Kmap CSS -->
+  <link rel="stylesheet" href="https://www.weather.go.kr/wgis-nuri/css/ol.css?ver=202607091110" />
+  <link rel="stylesheet" href="https://www.weather.go.kr/wgis-nuri/css/kmap.css?ver=202607091110" />
+  <link rel="stylesheet" href="resources/lib/kmap/legend.css?ver=202607091110" />
+
+  <!-- 2026 신규 CSS -->
+  <link rel="stylesheet" href="resources/css-2026/common.css">
+  <link rel="stylesheet" href="resources/css-2026/sub.css">
+  <link rel="stylesheet" href="resources/css-2026/icon.css">
+
+  <!-- 상단 필수 라이브러리 (GIS/지도/비동기) -->
+  <script src="resources/js/lodash.min.js"></script>
+  <script src="resources/js/moment-with-locales.js"></script>
+  <script src="resources/js/moment-timezone.js"></script>
+  <script src="resources/js/jquery-3.5.0.min.js"></script>
+  <script src="resources/js/jquery-ui.min.js"></script>
+  <script src="resources/js/fn.js?ver=202607091110"></script>
+  <script>
+    window.appBase = "/w/";
+    window.vmapBaseUrl = "https://vmap.kma.go.kr";
+    window.vmapBaseParam = "HIDEMENU=Y";
+    window.wgisBaseUrl = "https://www.weather.go.kr/wgis-nuri";
+    var hashParam = null;
+  </script>
+
+  <script src="resources/lib/fetch.umd-3.6.1.min.js?ver=202607091110"></script>
+  <script src="resources/lib/promise-polyfill-8.min.js?ver=202607091110"></script>
+  <script src="resources/lib/babel-polyfill-7.12.1.min.js?ver=202607091110"></script>
+  <script src="resources/lib/abortcontroller-polyfill-1.7.1.min.js?ver=202607091110"></script>
+  <script src="resources/lib/vshrt-rain-fetch.js?ver=202607091110"></script>
+  <script src="https://www.weather.go.kr/wgis-nuri/js/proj4/proj4.js?ver=202607091110"></script>
+  <script src="resources/lib/v6.5.0-dist/ol.bb.js?ver=202607091110"></script>
+  <script src="resources/js/kmap.bb.js?ver=202607091110"></script>
+  <script src="https://www.weather.go.kr/wgis-nuri/js/common/windy.js?ver=202607091110"></script>
+
+  <style>
+    :root {
+      --primary: #006fe8;
+      --primary-dark: #0050a8;
+      --primary-light: #eaf3fe;
+      --accent: #f97316;
+      --surface: #ffffff;
+      --surface-sub: #f8fafc;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --code-bg: #1e293b;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+      overflow-x: clip !important;
+      overflow-y: auto !important;
+      height: auto !important;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background-color: #f1f5f9;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+      margin: 0;
+      overflow-x: clip !important;
+      overflow-y: visible !important;
+      height: auto !important;
+      min-height: 100vh !important;
+    }
+
+    body.subp,
+    body.subp01,
+    body.wthema-a {
+      overflow: visible !important;
+      overflow-x: clip !important;
+      overflow-y: visible !important;
+      height: auto !important;
+      min-height: 100vh !important;
+    }
+
+    /* 상단 네비게이션 헤더 */
+    header.guide-header,
+    .guide-header {
+      position: -webkit-sticky !important;
+      position: sticky !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 9999 !important;
+      background: rgba(255, 255, 255, 0.96) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border-bottom: 1px solid var(--border) !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+
+    header.guide-header.is-fixed,
+    .guide-header.is-fixed {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 9999 !important;
+    }
+    .guide-header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .guide-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .guide-brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .guide-brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .guide-nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .guide-nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .guide-nav-links a:hover,
+    .guide-nav-links a.active {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .guide-nav-links a.active {
+      font-weight: 700;
+      box-shadow: inset 0 -2px 0 var(--primary);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    /* 본문 컨테이너 */
+    .guide-container {
+      max-width: 1240px;
+      margin: 32px auto 80px;
+      padding: 0 24px;
+    }
+
+    /* 인트로 히어로 배너 */
+    .hero-banner {
+      background: linear-gradient(135deg, #091e42 0%, #0052cc 60%, #00a3bf 100%);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 40px 48px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      scroll-margin-top: 80px;
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      bottom: -60px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 800px;
+      line-height: 1.6;
+    }
+
+    /* 섹션 스타일 */
+    .guide-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow-sm);
+      scroll-margin-top: 80px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .section-title-badge {
+      font-size: 12px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0284c7;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* 카드 그리드 */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .feature-card {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+    .feature-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* 라이브 데모 박스 */
+    .demo-box {
+      border: 2px solid #bae6fd;
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.06);
+    }
+    .demo-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .demo-box-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0369a1;
+      letter-spacing: 0.3px;
+    }
+    .demo-live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .demo-live-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #16a34a;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.4; }
+    }
+
+    /* 레이더 플레이어 내부 래핑 조정 */
+    .radar-demo-wrapper {
+      position: relative;
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      min-height: 600px;
+    }
+
+    /* 코드 탭 */
+    .code-tabs {
+      background: var(--code-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .code-tabs-nav {
+      display: flex;
+      background: #0f172a;
+      padding: 4px 8px;
+      border-bottom: 1px solid #334155;
+    }
+    .code-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .code-tab-btn.active {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
+    .code-copy-btn {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #e2e8f0;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      align-self: center;
+      transition: all 0.2s;
+    }
+    .code-copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .code-content {
+      display: none;
+      padding: 20px 24px;
+      overflow-x: auto;
+    }
+    .code-content.active {
+      display: block;
+    }
+    pre code {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .c-comment { color: #64748b; font-style: italic; }
+    .c-tag { color: #f43f5e; }
+    .c-attr { color: #38bdf8; }
+    .c-str { color: #a3e635; }
+    .c-kw { color: #c084fc; font-weight: 600; }
+    .c-fn { color: #60a5fa; }
+    .c-prop { color: #fbbf24; }
+
+    /* 알림 박스 */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: #eff6ff;
+      padding: 16px 20px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 18px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+    }
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .callout-warn {
+      border-left-color: #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+    }
+    .callout-success {
+      border-left-color: #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    /* 테이블 */
+    .guide-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 14px;
+    }
+    .guide-table th, .guide-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .guide-table th {
+      background: var(--surface-sub);
+      font-weight: 700;
+      color: var(--text);
+    }
+    .guide-table td code {
+      background: #f1f5f9;
+      color: #0369a1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .guide-header-inner { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .guide-nav-links { flex-wrap: wrap; gap: 4px; }
+      .guide-nav-links a { padding: 4px 8px; font-size: 13px; }
+      .hero-banner { padding: 28px 24px; }
+      .hero-title { font-size: 24px; }
+      .guide-section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+
+<body class="subp subp01 wthema-a">
+  <!-- 상단 네비게이션 헤더 -->
+  <header class="guide-header">
+    <div class="guide-header-inner">
+      <a href="guide/radar-guide.html" class="guide-brand">
+        <span class="guide-brand-badge">COMPONENT GUIDE</span>
+        <span class="guide-brand-title">날씨누리 컴포넌트 가이드</span>
+      </a>
+      <ul class="guide-nav-links">
+        <li><a href="guide/markup-list.html">목록으로</a></li>
+        <li><a href="#sec-demo">실시간 라이브 데모</a></li>
+        <li><a href="#sec-structure">마크업 구조</a></li>
+        <li><a href="#sec-deps">필수 리소스 &amp; 로드 순서</a></li>
+        <li><a href="#sec-api">ImagePlayer 옵션 API</a></li>
+        <li><a href="#sec-boilerplate">전체 복사 템플릿</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="guide-container">
+    <!-- 인트로 배너 -->
+    <div class="hero-banner">
+      <span class="hero-tag">Core Player Component</span>
+      <h1 class="hero-title">기상청 레이더 영상 플레이어 (ImagePlayer) 가이드</h1>
+      <p class="hero-desc">
+        기상청 날씨누리 레이더 영상(<code>radar.do</code>)의 <strong>지점별/합성 강수 영상, 재생 타임라인 슬라이더, 재생 속도/간격 조절, OpenLayers 기반 Kmap 연동</strong> 기능을 서브페이지나 단일 패널 탭 등에 안전하고 빠르게 이식하기 위한 표준 가이드입니다.
+      </p>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 1. 실시간 동작 데모 -->
+    <!-- ================================================================= -->
+    <section id="sec-demo" class="guide-section">
+      <div class="section-title">
+        <span>1. 실시간 인터랙티브 라이브 데모</span>
+        <span class="section-title-badge">Live Demonstration</span>
+      </div>
+      <p class="section-desc">
+        현재 페이지에서 실제로 구동되고 있는 기상청 레이더 영상 플레이어입니다. 우측 상단의 <strong>[옵션보기]</strong> 스위치 토글, 재생/일시정지, 타임라인 클릭, 재생 속도 증감 버튼을 직접 테스트해 보세요.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-title">▶ 타임라인 및 연속 재생</div>
+          <p class="feature-card-desc">0.5초~2초 간격으로 시간대별 관측 레이더 이미지를 순차 로드하고 슬라이더 프로그레스 바와 동기화합니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-title">🗺️ OpenLayers + Kmap 연동</div>
+          <p class="feature-card-desc">기상청 전용 타일맵과 레이더 레이어를 OpenLayers 캔버스 위에 고해상도로 렌더링합니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-title">⚙️ 반응형 옵션 패널</div>
+          <p class="feature-card-desc">옵션보기 토글을 통해 영상 종류(강수합성/눈비영역/우박/누적강수) 및 지점, 과거 시간을 손쉽게 제어합니다.</p>
+        </div>
+      </div>
+
+      <!-- 라이브 데모 컨테이너 -->
+      <div class="demo-box">
+        <div class="demo-box-header">
+          <span class="demo-box-label">실제 구동 화면 (아래 컨트롤러를 직접 조작해 보세요)</span>
+          <span class="demo-live-badge">OpenLayers &amp; Kmap 구동 중</span>
+        </div>
+
+        <div class="radar-demo-wrapper">
+          <!-- 기상청 표준 #image-player-wrapper 컨테이너 -->
+          <div class="cont-wrap" id="image-player-wrapper">
+            <div class="movie-lap01 tab-menu-wrap">
+              <div class="checkbox-wrap movie-set-btn">
+                <h3 class="chk-title">옵션보기</h3>
+                <button type="button" class="switch-toggle off" data-target="movi-toggle" data-desc="레이더">
+                  <span class="hid">레이더 옵션보기 Off</span>
+                </button>
+              </div>
+            </div>
+
+            <form class="move-wrap off" name="image-player-form" action="#noreply" autocomplete="off">
+              <input type="hidden" name="autoStart" value="" />
+              <input type="hidden" name="zoomLevel" value="" />
+              <input type="hidden" name="zoomX" value="" />
+              <input type="hidden" name="zoomY" value="" />
+              <input type="hidden" name="showOption" value="" />
+
+              <div class="move-control-area" aria-hidden="true">
+                <div class="cont-box01">
+                  <h3 class="tit">영상선택</h3>
+                  <div class="cont-item">
+                    <div class="cho-wrap01">
+                      <div>
+                        <select name="data" title="영상 선택">
+                          <option value="pop" selected="selected">강수(합성영상)</option>
+                          <option value="ir1">강수(합성영상 480km)</option>
+                          <option value="pty">눈비영역</option>
+                          <option value="HAIL">우박</option>
+                          <option value="PCPH">누적강수</option>
+                          <option value="stn">지점별영상</option>
+                        </select>
+                      </div>
+                      <button class="cho-btn" data-role="data-select"><span class="sr-only">영상</span> 선택</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cont-box01" id="area-wrap" style="display:none;">
+                  <h3 class="tit">지점선택</h3>
+                  <div class="cont-item">
+                    <div class="cho-wrap01">
+                      <div>
+                        <select name="area" title="지점 선택">
+                          <option value="KWK" selected="selected">관악산</option>
+                          <option value="BRI">백령도</option>
+                          <option value="GDK">광덕산</option>
+                          <option value="GNG">강릉</option>
+                          <option value="KSN">오성산</option>
+                          <option value="JNI">진도</option>
+                          <option value="MYN">면봉산</option>
+                          <option value="PSN">구덕산</option>
+                          <option value="GSN">고산</option>
+                          <option value="SSP">성산</option>
+                          <option value="GAS">감악산</option>
+                          <option value="YBS">예봉산</option>
+                          <option value="SBS">소백산</option>
+                          <option value="MHS">모후산</option>
+                          <option value="BSL">비슬산</option>
+                        </select>
+                      </div>
+                      <button class="cho-btn" data-role="data-select"><span class="sr-only">지점</span> 선택</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cont-box02">
+                  <h3 class="tit">시간선택</h3>
+                  <div class="cont-item">
+                    <input type="text" value="" name="tm" title="날짜입력창" />
+                    <div class="input-btn-wrap image-player-move">
+                      <div class="btn-lap"><button type="button" class="type" data-move="-6" data-move-unit="hours">-6H</button></div>
+                      <div class="btn-lap"><button type="button" class="type" data-move="-3" data-move-unit="hours">-3H</button></div>
+                      <div class="btn-lap"><button type="button" class="type" data-move="-1" data-move-unit="hours">-1H</button></div>
+                      <div class="btn-lap"><button type="button" class="type" data-move="0" data-move-unit="hours">현재</button></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cont-box03" style="display:none">
+                  <h3 class="tit">종합영상안내</h3>
+                  <div class="scroll-js swiper-container" tabindex="0">
+                    <div class="swiper-wrapper">
+                      <div class="swiper-slide"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 영상 뷰어 & 재생 컨트롤 바 -->
+              <div class="movi-img-area image-player-slide-wrapper">
+                <div class="movi-wrap image-player-slide"></div>
+                <ul class="movi-set-wrap">
+                  <li class="movi-set-item">
+                    <label for="data-tm_display" class="tit"><span>기준</span>시간</label>
+                    <div class="input-wrap">
+                      <input type="text" value="" name="tm_display" readonly="readonly" tabindex="-1" id="data-tm_display">
+                    </div>
+                  </li>
+                  <li class="movi-set-item">
+                    <label for="data-timeTerm" class="tit"><span>재생</span>간격</label>
+                    <div class="input-wrap">
+                      <div class="select-conta">
+                        <select name="timeTerm" class="sart-set" id="data-timeTerm">
+                          <option value="5">5분</option>
+                          <option value="15">15분</option>
+                          <option value="30">30분</option>
+                          <option value="60">1시간</option>
+                          <option value="180">3시간</option>
+                        </select>
+                      </div>
+                      <button class="cho-btn time-set-btn" data-role="data-select"><span class="sr-only">재생간격</span> 적용</button>
+                    </div>
+                  </li>
+                  <li class="movi-set-item">
+                    <label for="data-itv" class="tit"><span>재생</span>속도(초)</label>
+                    <div class="input-wrap">
+                      <div><input type="text" value="0.5" name="itv" readonly="readonly" tabindex="-1" title="재생속도(초)" id="data-itv"></div>
+                      <button type="button" class="cho-btn icon1 player-itv-change-btn" data-itv-value="1" title="재생속도 증가"></button>
+                      <button type="button" class="cho-btn icon2 player-itv-change-btn" data-itv-value="-1" title="재생속도 감소"></button>
+                    </div>
+                  </li>
+                </ul>
+
+                <!-- 이전 / 재생 / 다음 컨트롤 & 타임라인 -->
+                <div class="control-movi-wrap image-control-form-player">
+                  <button type="button" class="prev-btn" data-role="prev-slide" title="이전"></button>
+                  <button type="button" class="start-btn" data-role="play-slide" title="재생"></button>
+                  <button type="button" class="next-btn" data-role="next-slide" title="다음"></button>
+                  <div class="control-movi-lap">
+                    <div class="movi-line"></div>
+                    <div class="movi-bar-wrap"></div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 2. HTML 마크업 구조 상세 -->
+    <!-- ================================================================= -->
+    <section id="sec-structure" class="guide-section">
+      <div class="section-title">
+        <span>2. 마크업 구조 (HTML Architecture)</span>
+        <span class="section-title-badge">DOM Tree &amp; Selectors</span>
+      </div>
+      <p class="section-desc">
+        <code>ImagePlayer</code>가 동작하기 위해 반드시 유지되어야 하는 3대 핵심 영역의 구조입니다.
+      </p>
+
+      <div class="callout callout-success">
+        <div class="callout-title">💡 3대 영역 요약</div>
+        1. <strong>최상위 래퍼 (<code>#image-player-wrapper</code>)</strong>: JS 인스턴스가 마운트될 부모 컨테이너<br>
+        2. <strong>옵션 컨트롤 폼 (<code>.move-wrap[name="image-player-form"]</code>)</strong>: 영상/지점/시간 선택 셀렉트박스와 히든 설정값<br>
+        3. <strong>영상 뷰어 &amp; 재생 컨트롤러 (<code>.movi-img-area</code>)</strong>: 지도 캔버스가 그려지는 <code>.movi-wrap</code>과 재생 바 <code>.control-movi-wrap</code>
+      </div>
+
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="m-wrapper">① 최상위 컨테이너 &amp; 옵션 토글</button>
+          <button class="code-tab-btn" data-target="m-form">② 컨트롤 폼 (.move-wrap)</button>
+          <button class="code-tab-btn" data-target="m-player">③ 뷰어 &amp; 타임라인 컨트롤 바</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+
+        <div id="m-wrapper" class="code-content active">
+          <pre><code><span class="c-comment">&lt;!-- 1. 최상위 래퍼: 반드시 id="image-player-wrapper" 지정 --&gt;</span>
+&lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-wrap"</span> <span class="c-attr">id</span>=<span class="c-str">"image-player-wrapper"</span>&gt;
+  <span class="c-comment">&lt;!-- 옵션보기 스위치 버튼 영역 --&gt;</span>
+  &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movie-lap01 tab-menu-wrap"</span>&gt;
+    &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"checkbox-wrap movie-set-btn"</span>&gt;
+      &lt;<span class="c-tag">h3</span> <span class="c-attr">class</span>=<span class="c-str">"chk-title"</span>&gt;옵션보기&lt;/<span class="c-tag">h3</span>&gt;
+      &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"switch-toggle off"</span> <span class="c-attr">data-target</span>=<span class="c-str">"movi-toggle"</span> <span class="c-attr">data-desc</span>=<span class="c-str">"레이더"</span>&gt;
+        &lt;<span class="c-tag">span</span> <span class="c-attr">class</span>=<span class="c-str">"hid"</span>&gt;레이더 옵션보기 Off&lt;/<span class="c-tag">span</span>&gt;
+      &lt;/<span class="c-tag">button</span>&gt;
+    &lt;/<span class="c-tag">div</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+
+  <span class="c-comment">&lt;!-- 2. 내부 폼 영역 연결 --&gt;</span>
+  &lt;<span class="c-tag">form</span> <span class="c-attr">class</span>=<span class="c-str">"move-wrap off"</span> <span class="c-attr">name</span>=<span class="c-str">"image-player-form"</span> <span class="c-attr">action</span>=<span class="c-str">"#noreply"</span> <span class="c-attr">autocomplete</span>=<span class="c-str">"off"</span>&gt;
+    <span class="c-comment">&lt;!-- 옵션 선택부 및 영상 뷰어 --&gt;</span>
+  &lt;/<span class="c-tag">form</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;</code></pre>
+        </div>
+
+        <div id="m-form" class="code-content">
+          <pre><code><span class="c-comment">&lt;!-- 컨트롤 폼 내부 히든값 및 옵션 선택 셀렉트 --&gt;</span>
+&lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"hidden"</span> <span class="c-attr">name</span>=<span class="c-str">"autoStart"</span> <span class="c-attr">value</span>=<span class="c-str">""</span> /&gt;
+&lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"hidden"</span> <span class="c-attr">name</span>=<span class="c-str">"zoomLevel"</span> <span class="c-attr">value</span>=<span class="c-str">""</span> /&gt;
+&lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"hidden"</span> <span class="c-attr">name</span>=<span class="c-str">"zoomX"</span> <span class="c-attr">value</span>=<span class="c-str">""</span> /&gt;
+&lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"hidden"</span> <span class="c-attr">name</span>=<span class="c-str">"zoomY"</span> <span class="c-attr">value</span>=<span class="c-str">""</span> /&gt;
+&lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"hidden"</span> <span class="c-attr">name</span>=<span class="c-str">"showOption"</span> <span class="c-attr">value</span>=<span class="c-str">""</span> /&gt;
+
+&lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"move-control-area"</span> <span class="c-attr">aria-hidden</span>=<span class="c-str">"true"</span>&gt;
+  <span class="c-comment">&lt;!-- 영상선택 (합성/지점/우박 등) --&gt;</span>
+  &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-box01"</span>&gt;
+    &lt;<span class="c-tag">h3</span> <span class="c-attr">class</span>=<span class="c-str">"tit"</span>&gt;영상선택&lt;/<span class="c-tag">h3</span>&gt;
+    &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-item"</span>&gt;
+      &lt;<span class="c-tag">select</span> <span class="c-attr">name</span>=<span class="c-str">"data"</span> <span class="c-attr">title</span>=<span class="c-str">"영상 선택"</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"pop"</span> <span class="c-attr">selected</span>&gt;강수(합성영상)&lt;/<span class="c-tag">option</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"ir1"</span>&gt;강수(합성영상 480km)&lt;/<span class="c-tag">option</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"pty"</span>&gt;눈비영역&lt;/<span class="c-tag">option</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"HAIL"</span>&gt;우박&lt;/<span class="c-tag">option</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"PCPH"</span>&gt;누적강수&lt;/<span class="c-tag">option</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"stn"</span>&gt;지점별영상&lt;/<span class="c-tag">option</span>&gt;
+      &lt;/<span class="c-tag">select</span>&gt;
+      &lt;<span class="c-tag">button</span> <span class="c-attr">class</span>=<span class="c-str">"cho-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"data-select"</span>&gt;선택&lt;/<span class="c-tag">button</span>&gt;
+    &lt;/<span class="c-tag">div</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+
+  <span class="c-comment">&lt;!-- 지점선택 (stn 모드 시 노출) --&gt;</span>
+  &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-box01"</span> <span class="c-attr">id</span>=<span class="c-str">"area-wrap"</span> <span class="c-attr">style</span>=<span class="c-str">"display:none;"</span>&gt;
+    &lt;<span class="c-tag">h3</span> <span class="c-attr">class</span>=<span class="c-str">"tit"</span>&gt;지점선택&lt;/<span class="c-tag">h3</span>&gt;
+    &lt;<span class="c-tag">select</span> <span class="c-attr">name</span>=<span class="c-str">"area"</span> <span class="c-attr">title</span>=<span class="c-str">"지점 선택"</span>&gt;
+      &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"KWK"</span> <span class="c-attr">selected</span>&gt;관악산&lt;/<span class="c-tag">option</span>&gt;
+      &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"BRI"</span>&gt;백령도&lt;/<span class="c-tag">option</span>&gt;
+      &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"GDK"</span>&gt;광덕산&lt;/<span class="c-tag">option</span>&gt;
+      <span class="c-comment">&lt;!-- 생략 --&gt;</span>
+    &lt;/<span class="c-tag">select</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;</code></pre>
+        </div>
+
+        <div id="m-player" class="code-content">
+          <pre><code><span class="c-comment">&lt;!-- 3. 지도 캔버스 래퍼 및 플레이어 타임라인 컨트롤 바 --&gt;</span>
+&lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-img-area image-player-slide-wrapper"</span>&gt;
+  <span class="c-comment">&lt;!-- OpenLayers 캔버스가 삽입되는 대상 요소 --&gt;</span>
+  &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-wrap image-player-slide"</span>&gt;&lt;/<span class="c-tag">div</span>&gt;
+
+  <span class="c-comment">&lt;!-- 기준시간, 재생간격, 재생속도 설정 헤더 --&gt;</span>
+  &lt;<span class="c-tag">ul</span> <span class="c-attr">class</span>=<span class="c-str">"movi-set-wrap"</span>&gt;
+    &lt;<span class="c-tag">li</span> <span class="c-attr">class</span>=<span class="c-str">"movi-set-item"</span>&gt;
+      &lt;<span class="c-tag">label</span> <span class="c-attr">for</span>=<span class="c-str">"data-tm_display"</span> <span class="c-attr">class</span>=<span class="c-str">"tit"</span>&gt;&lt;<span class="c-tag">span</span>&gt;기준&lt;/<span class="c-tag">span</span>&gt;시간&lt;/<span class="c-tag">label</span>&gt;
+      &lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"text"</span> <span class="c-attr">name</span>=<span class="c-str">"tm_display"</span> <span class="c-attr">readonly</span> <span class="c-attr">id</span>=<span class="c-str">"data-tm_display"</span>&gt;
+    &lt;/<span class="c-tag">li</span>&gt;
+    &lt;<span class="c-tag">li</span> <span class="c-attr">class</span>=<span class="c-str">"movi-set-item"</span>&gt;
+      &lt;<span class="c-tag">label</span> <span class="c-attr">for</span>=<span class="c-str">"data-timeTerm"</span> <span class="c-attr">class</span>=<span class="c-str">"tit"</span>&gt;&lt;<span class="c-tag">span</span>&gt;재생&lt;/<span class="c-tag">span</span>&gt;간격&lt;/<span class="c-tag">label</span>&gt;
+      &lt;<span class="c-tag">select</span> <span class="c-attr">name</span>=<span class="c-str">"timeTerm"</span> <span class="c-attr">id</span>=<span class="c-str">"data-timeTerm"</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"5"</span>&gt;5분&lt;/<span class="c-tag">option</span>&gt;
+        &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"15"</span>&gt;15분&lt;/<span class="c-tag">option</span>&gt;
+      &lt;/<span class="c-tag">select</span>&gt;
+    &lt;/<span class="c-tag">li</span>&gt;
+  &lt;/<span class="c-tag">ul</span>&gt;
+
+  <span class="c-comment">&lt;!-- 재생, 이전, 다음 버튼 및 타임라인 슬라이더 --&gt;</span>
+  &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"control-movi-wrap image-control-form-player"</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"prev-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"prev-slide"</span> <span class="c-attr">title</span>=<span class="c-str">"이전"</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"start-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"play-slide"</span> <span class="c-attr">title</span>=<span class="c-str">"재생"</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"next-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"next-slide"</span> <span class="c-attr">title</span>=<span class="c-str">"다음"</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"control-movi-lap"</span>&gt;
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-line"</span>&gt;&lt;/<span class="c-tag">div</span>&gt;
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-bar-wrap"</span>&gt;&lt;/<span class="c-tag">div</span>&gt;
+    &lt;/<span class="c-tag">div</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 3. 필수 리소스 & 로드 순서 -->
+    <!-- ================================================================= -->
+    <section id="sec-deps" class="guide-section">
+      <div class="section-title">
+        <span>3. 필수 리소스 &amp; 로드 순서 (Dependencies)</span>
+        <span class="section-title-badge">Load Sequence</span>
+      </div>
+      <p class="section-desc">
+        레이더 영상 플레이어는 OpenLayers 타일 매핑, 투영 변환(Proj4), Kmap 엔진, Vue 템플릿 컴파일러가 유기적으로 연결되어 동작하므로 <strong>스크립트 로드 순서</strong>가 매우 엄격합니다.
+      </p>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ 스크립트 로드 순서 위반 시 주요 오류</div>
+        - <code>OpenLayers is not defined</code>: <code>ol.bb.js</code>가 <code>kmap.bb.js</code>보다 늦게 로드될 때 발생<br>
+        - <code>Vue is not defined</code>: <code>image-player.js</code> 내부 범례 컴포넌트 마운트 실패<br>
+        - <code>window.wgisBaseUrl is undefined</code>: 헤더의 전역 환경설정 객체 누락 시 지도 타일 404 발생
+      </div>
+
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="dep-head">&lt;head&gt; 필수 CSS 및 사전 스크립트</button>
+          <button class="code-tab-btn" data-target="dep-body">&lt;body&gt; 하단 실행 스크립트</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+
+        <div id="dep-head" class="code-content active">
+          <pre><code><span class="c-comment">&lt;!-- 1. 전역 환경설정 변수 (반드시 타일맵 로드 전 선언) --&gt;</span>
+&lt;<span class="c-tag">script</span>&gt;
+  <span class="c-kw">window</span>.appBase = <span class="c-str">"/w/"</span>;
+  <span class="c-kw">window</span>.vmapBaseUrl = <span class="c-str">"https://vmap.kma.go.kr"</span>;
+  <span class="c-kw">window</span>.vmapBaseParam = <span class="c-str">"HIDEMENU=Y"</span>;
+  <span class="c-kw">window</span>.wgisBaseUrl = <span class="c-str">"https://www.weather.go.kr/wgis-nuri"</span>;
+&lt;/<span class="c-tag">script</span>&gt;
+
+<span class="c-comment">&lt;!-- 2. 지도 및 GIS 전용 스타일 --&gt;</span>
+&lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/css/ol.css?ver=202607091110"</span> /&gt;
+&lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/css/kmap.css?ver=202607091110"</span> /&gt;
+&lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/lib/kmap/legend.css?ver=202607091110"</span> /&gt;
+
+<span class="c-comment">&lt;!-- 3. Proj4 및 OpenLayers, Kmap 엔진 라이브러리 --&gt;</span>
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/fetch.umd-3.6.1.min.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/vshrt-rain-fetch.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/js/proj4/proj4.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/v6.5.0-dist/ol.bb.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/kmap.bb.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/js/common/windy.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;</code></pre>
+        </div>
+
+        <div id="dep-body" class="code-content">
+          <pre><code><span class="c-comment">&lt;!-- &lt;body&gt; 태그 종료 직전: 범례, 플레이어 코어 및 구동 스크립트 순차 로드 --&gt;</span>
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/vue/vue.min.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/dfsLegends.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/legend.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/kmap_overlay.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+
+<span class="c-comment">&lt;!-- 핵심 엔진 및 레이더 모듈 스크립트 --&gt;</span>
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/app-2021/image-player.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/app-2021/app-image-radar.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 4. ImagePlayer 옵션 API -->
+    <!-- ================================================================= -->
+    <section id="sec-api" class="guide-section">
+      <div class="section-title">
+        <span>4. ImagePlayer 옵션 &amp; 초기화 API</span>
+        <span class="section-title-badge">Configuration API</span>
+      </div>
+      <p class="section-desc">
+        <code>new ImagePlayer(wrapperId, configUrl, options)</code>에 전달할 수 있는 설정값과 파라미터 규격입니다.
+      </p>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 180px;">옵션명</th>
+            <th style="width: 130px;">타입</th>
+            <th style="width: 140px;">기본값</th>
+            <th>기능 설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>type</code></td>
+            <td>String</td>
+            <td><code>"cmp"</code></td>
+            <td>레이더 합성모드(<code>"cmp"</code>: 전국 합성영상, <code>"stn"</code>: 지점별 단독 관측소 영상)</td>
+          </tr>
+          <tr>
+            <td><code>showOptionControl</code></td>
+            <td>Boolean</td>
+            <td><code>true</code></td>
+            <td>옵션보기 토글 스위치 인터랙션 지원 여부</td>
+          </tr>
+          <tr>
+            <td><code>showOption</code></td>
+            <td>Boolean</td>
+            <td><code>false</code></td>
+            <td>최초 로드 시 옵션 선택창 열림 여부</td>
+          </tr>
+          <tr>
+            <td><code>timeTerm</code></td>
+            <td>Number</td>
+            <td><code>5</code></td>
+            <td>재생 간격 (분 단위. 예: 5분, 15분, 30분, 60분)</td>
+          </tr>
+          <tr>
+            <td><code>interval</code></td>
+            <td>Number</td>
+            <td><code>0.5</code></td>
+            <td>프레임 전환 속도(초). 0.5초마다 다음 관측 프레임으로 이동</td>
+          </tr>
+          <tr>
+            <td><code>autoStart</code></td>
+            <td>Boolean</td>
+            <td><code>false</code></td>
+            <td>페이지 진입 즉시 자동 연속 재생 시작 여부</td>
+          </tr>
+          <tr>
+            <td><code>kmapEnabled</code></td>
+            <td>Boolean</td>
+            <td><code>true</code></td>
+            <td>OpenLayers/Kmap 지도 엔진 활성화</td>
+          </tr>
+          <tr>
+            <td><code>kmapOptions</code></td>
+            <td>Object</td>
+            <td><code>{ zoom: 9 }</code></td>
+            <td>지도의 초기 줌 레벨(<code>zoom</code>), 위경도(<code>lat</code>, <code>lon</code>), 기본 줌(<code>defaultZoom</code>)</td>
+          </tr>
+          <tr>
+            <td><code>kmapLayers</code></td>
+            <td>Array</td>
+            <td><code>[{...}]</code></td>
+            <td>초기 로드할 레이어 설정. 예: <code>[ { name: "radar", options: { type: "pop" } } ]</code></td>
+          </tr>
+          <tr>
+            <td><code>form.data.onchange</code></td>
+            <td>Function</td>
+            <td><code>callback</code></td>
+            <td>영상 셀렉트 변경 시(합성/지점/우박/눈비 등) 레이어 교체 및 줌 재조정 핸들러</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="c-init">자바스크립트 초기화 코드 예시</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+        <div id="c-init" class="code-content active">
+          <pre><code><span class="c-comment">// 기본 레이더 합성영상 플레이어 인스턴스 생성 예시</span>
+<span class="c-kw">var</span> player = <span class="c-kw">new</span> <span class="c-fn">ImagePlayer</span>(<span class="c-str">"image-player-wrapper"</span>, <span class="c-kw">null</span>, {
+  <span class="c-prop">type</span>: <span class="c-str">"cmp"</span>,
+  <span class="c-prop">showOptionControl</span>: <span class="c-kw">true</span>,
+  <span class="c-prop">showOption</span>: <span class="c-kw">false</span>,
+  <span class="c-prop">timeTerm</span>: 5,
+  <span class="c-prop">interval</span>: 0.5,
+  <span class="c-prop">autoStart</span>: <span class="c-kw">false</span>,
+  <span class="c-prop">kmapEnabled</span>: <span class="c-kw">true</span>,
+  <span class="c-prop">kmapOptions</span>: { <span class="c-prop">zoom</span>: 9, <span class="c-prop">lat</span>: 0, <span class="c-prop">lon</span>: 0, <span class="c-prop">defaultZoom</span>: 7 },
+  <span class="c-prop">kmapLayers</span>: [
+    { <span class="c-prop">name</span>: <span class="c-str">"radar"</span>, <span class="c-prop">options</span>: { <span class="c-prop">type</span>: <span class="c-str">"pop"</span> } }
+  ]
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 5. 전체 복사 템플릿 -->
+    <!-- ================================================================= -->
+    <section id="sec-boilerplate" class="guide-section">
+      <div class="section-title">
+        <span>5. 전체 복사용 완성 템플릿 (Full Boilerplate)</span>
+        <span class="section-title-badge">Copy &amp; Paste</span>
+      </div>
+      <p class="section-desc">
+        신규 서브페이지를 생성하거나 기존 페이지의 특정 영역에 레이더 영상 플레이어를 즉시 삽입할 때 사용할 수 있는 완성형 템플릿입니다.
+      </p>
+
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="bp-all">전체 HTML 소스 코드</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+        <div id="bp-all" class="code-content active">
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;<span class="c-tag">html</span> <span class="c-attr">lang</span>=<span class="c-str">"ko"</span>&gt;
+&lt;<span class="c-tag">head</span>&gt;
+  &lt;<span class="c-tag">meta</span> <span class="c-attr">charset</span>=<span class="c-str">"UTF-8"</span>&gt;
+  &lt;<span class="c-tag">title</span>&gt;레이더 영상 플레이어&lt;/<span class="c-tag">title</span>&gt;
+
+  <span class="c-comment">&lt;!-- 필수 CSS --&gt;</span>
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/css/styles.css"</span> /&gt;
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/css-2021/common-ui.css"</span> /&gt;
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/css/ol.css"</span> /&gt;
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/css/kmap.css"</span> /&gt;
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/lib/kmap/legend.css"</span> /&gt;
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/css-2026/common.css"</span> /&gt;
+  &lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/css-2026/sub.css"</span> /&gt;
+
+  <span class="c-comment">&lt;!-- 상단 필수 스크립트 --&gt;</span>
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/jquery-3.5.0.min.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/lodash.min.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/moment-with-locales.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/fn.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span>&gt;
+    <span class="c-kw">window</span>.appBase = <span class="c-str">"/w/"</span>;
+    <span class="c-kw">window</span>.vmapBaseUrl = <span class="c-str">"https://vmap.kma.go.kr"</span>;
+    <span class="c-kw">window</span>.vmapBaseParam = <span class="c-str">"HIDEMENU=Y"</span>;
+    <span class="c-kw">window</span>.wgisBaseUrl = <span class="c-str">"https://www.weather.go.kr/wgis-nuri"</span>;
+  &lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/js/proj4/proj4.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/v6.5.0-dist/ol.bb.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/kmap.bb.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;/<span class="c-tag">head</span>&gt;
+
+&lt;<span class="c-tag">body</span> <span class="c-attr">class</span>=<span class="c-str">"subp subp01 wthema-a"</span>&gt;
+  &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-wrap"</span> <span class="c-attr">id</span>=<span class="c-str">"image-player-wrapper"</span>&gt;
+    &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movie-lap01 tab-menu-wrap"</span>&gt;
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"checkbox-wrap movie-set-btn"</span>&gt;
+        &lt;<span class="c-tag">h3</span> <span class="c-attr">class</span>=<span class="c-str">"chk-title"</span>&gt;옵션보기&lt;/<span class="c-tag">h3</span>&gt;
+        &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"switch-toggle off"</span> <span class="c-attr">data-target</span>=<span class="c-str">"movi-toggle"</span>&gt;
+          &lt;<span class="c-tag">span</span> <span class="c-attr">class</span>=<span class="c-str">"hid"</span>&gt;레이더 옵션보기 Off&lt;/<span class="c-tag">span</span>&gt;
+        &lt;/<span class="c-tag">button</span>&gt;
+      &lt;/<span class="c-tag">div</span>&gt;
+    &lt;/<span class="c-tag">div</span>&gt;
+
+    &lt;<span class="c-tag">form</span> <span class="c-attr">class</span>=<span class="c-str">"move-wrap off"</span> <span class="c-attr">name</span>=<span class="c-str">"image-player-form"</span> <span class="c-attr">action</span>=<span class="c-str">"#noreply"</span>&gt;
+      &lt;<span class="c-tag">input</span> <span class="c-attr">type</span>=<span class="c-str">"hidden"</span> <span class="c-attr">name</span>=<span class="c-str">"autoStart"</span> <span class="c-attr">value</span>=<span class="c-str">""</span> /&gt;
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"move-control-area"</span>&gt;
+        &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-box01"</span>&gt;
+          &lt;<span class="c-tag">h3</span> <span class="c-attr">class</span>=<span class="c-str">"tit"</span>&gt;영상선택&lt;/<span class="c-tag">h3</span>&gt;
+          &lt;<span class="c-tag">select</span> <span class="c-attr">name</span>=<span class="c-str">"data"</span>&gt;
+            &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"pop"</span> <span class="c-attr">selected</span>&gt;강수(합성영상)&lt;/<span class="c-tag">option</span>&gt;
+            &lt;<span class="c-tag">option</span> <span class="c-attr">value</span>=<span class="c-str">"ir1"</span>&gt;강수(합성영상 480km)&lt;/<span class="c-tag">option</span>&gt;
+          &lt;/<span class="c-tag">select</span>&gt;
+        &lt;/<span class="c-tag">div</span>&gt;
+      &lt;/<span class="c-tag">div</span>&gt;
+
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-img-area image-player-slide-wrapper"</span>&gt;
+        &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-wrap image-player-slide"</span>&gt;&lt;/<span class="c-tag">div</span>&gt;
+        &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"control-movi-wrap image-control-form-player"</span>&gt;
+          &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"prev-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"prev-slide"</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+          &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"start-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"play-slide"</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+          &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"next-btn"</span> <span class="c-attr">data-role</span>=<span class="c-str">"next-slide"</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+          &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"control-movi-lap"</span>&gt;
+            &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-line"</span>&gt;&lt;/<span class="c-tag">div</span>&gt;
+            &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movi-bar-wrap"</span>&gt;&lt;/<span class="c-tag">div</span>&gt;
+          &lt;/<span class="c-tag">div</span>&gt;
+        &lt;/<span class="c-tag">div</span>&gt;
+      &lt;/<span class="c-tag">div</span>&gt;
+    &lt;/<span class="c-tag">form</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+
+  <span class="c-comment">&lt;!-- 하단 구동 스크립트 --&gt;</span>
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/vue/vue.min.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/dfsLegends.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/legend.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/kmap_overlay.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/app-2021/image-player.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+  &lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/app-2021/app-image-radar.js"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;/<span class="c-tag">body</span>&gt;
+&lt;/<span class="c-tag">html</span>&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 하단 플레이어 라이브 구동 스크립트 -->
+  <script src="resources/lib/vue/vue.min.js?ver=202607091110"></script>
+  <script src="resources/lib/kmap/dfsLegends.js?ver=202607091110"></script>
+  <script src="resources/lib/kmap/legend.js?ver=202607091110"></script>
+  <script src="resources/lib/kmap/kmap_overlay.js?ver=202607091110"></script>
+  <script src="resources/js/app-2021/image-player.js?ver=202607091110"></script>
+  <script src="resources/js/app-2021/app-image-radar.js?ver=202607091110"></script>
+
+  <script>
+    // 코드 탭 전환
+    document.querySelectorAll(".code-tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const wrap = btn.closest(".code-tabs");
+        wrap.querySelectorAll(".code-tab-btn").forEach(b => b.classList.remove("active"));
+        wrap.querySelectorAll(".code-content").forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+        const target = wrap.querySelector("#" + btn.dataset.target);
+        if (target) target.classList.add("active");
+      });
+    });
+
+    // 코드 복사 기능
+    function copyCode(btn) {
+      const wrap = btn.closest(".code-tabs");
+      const activeContent = wrap.querySelector(".code-content.active code");
+      if (!activeContent) return;
+      navigator.clipboard.writeText(activeContent.innerText).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = "복사 완료!";
+        btn.style.background = "#059669";
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.background = "";
+        }, 1800);
+      });
+    }
+
+    // 상단 네비게이션 부드러운 스크롤 이동 및 ScrollSpy
+    document.addEventListener("DOMContentLoaded", function () {
+      var navAnchors = document.querySelectorAll('.guide-nav-links a[href*="#"]');
+      var trackedSections = [];
+
+      navAnchors.forEach(function (anchor) {
+        var href = anchor.getAttribute('href');
+        var hashIdx = href.indexOf('#');
+        if (hashIdx === -1) return;
+        var targetId = href.substring(hashIdx + 1);
+        var targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          trackedSections.push({ id: targetId, el: targetEl, link: anchor });
+        }
+
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (targetEl) {
+            var headerOffset = 70;
+            var elementPosition = targetEl.getBoundingClientRect().top;
+            var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: Math.max(0, offsetPosition),
+              behavior: 'smooth'
+            });
+
+            if (history.pushState) {
+              history.pushState(null, '', '#' + targetId);
+            }
+          }
+        });
+      });
+
+      // 브랜드 로고 클릭 시 최상단 부드러운 스크롤
+      var brandLink = document.querySelector('.guide-brand');
+      if (brandLink) {
+        brandLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (history.pushState) {
+            history.pushState(null, '', window.location.pathname);
+          }
+        });
+      }
+
+      // 페이지 로드 시 기존 URL 해시가 있다면 헤더 오프셋 고려하여 스크롤
+      if (window.location.hash) {
+        var initialTarget = document.querySelector(window.location.hash);
+        if (initialTarget) {
+          setTimeout(function () {
+            var headerOffset = 70;
+            var elementPosition = initialTarget.getBoundingClientRect().top;
+            var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
+          }, 100);
+        }
+      }
+
+      // 스크롤 시 활성 네비게이션 메뉴 갱신 (ScrollSpy)
+      function updateActiveNav() {
+        var scrollPos = window.pageYOffset + 120;
+        var currentId = '';
+
+        trackedSections.forEach(function (sec) {
+          var top = sec.el.offsetTop;
+          var height = sec.el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            currentId = sec.id;
+          }
+        });
+
+        trackedSections.forEach(function (sec) {
+          if (sec.id === currentId) {
+            sec.link.classList.add('active');
+          } else {
+            sec.link.classList.remove('active');
+          }
+        });
+      }
+
+      // 헤더 스티키/고정 보장 핸들러 (레거시 CSS overflow 충돌 완벽 방어)
+      var headerEl = document.querySelector('.guide-header');
+      if (headerEl) {
+        var headerHeight = headerEl.offsetHeight || 60;
+        function checkHeaderFixed() {
+          if (window.pageYOffset > 0) {
+            headerEl.classList.add('is-fixed');
+            document.body.style.paddingTop = headerHeight + 'px';
+          } else {
+            headerEl.classList.remove('is-fixed');
+            document.body.style.paddingTop = '0px';
+          }
+        }
+        window.addEventListener('scroll', checkHeaderFixed, { passive: true });
+        window.addEventListener('resize', function () {
+          headerHeight = headerEl.offsetHeight || 60;
+          if (headerEl.classList.contains('is-fixed')) {
+            document.body.style.paddingTop = headerHeight + 'px';
+          }
+        });
+        checkHeaderFixed();
+      }
+
+      window.addEventListener('scroll', updateActiveNav, { passive: true });
+      updateActiveNav();
+    });
+  </script>
+</body>
+</html>

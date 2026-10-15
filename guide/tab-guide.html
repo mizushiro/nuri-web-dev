@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <script>
+    (function () {
+      var isGhPages = window.location.pathname.startsWith('/nuri-web');
+      var baseHref = isGhPages ? '/nuri-web/' : '/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>탭 컴포넌트(UX.Tab) & 영상 플레이어 연동 가이드</title>
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- 공통 기본 리소스 -->
+  <link rel="stylesheet" href="resources/css-2026/component/ui-tab.css">
+  <link rel="stylesheet" href="resources/css-2026/common.css">
+
+  <style>
+    :root {
+      --primary: #006fe8;
+      --primary-dark: #0050a8;
+      --primary-light: #eaf3fe;
+      --surface: #ffffff;
+      --surface-sub: #f8fafc;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --code-bg: #1e293b;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background-color: #f1f5f9;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 상단 네비게이션 헤더 */
+    .guide-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .guide-header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .guide-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .guide-brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .guide-brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .guide-nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .guide-nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .guide-nav-links a:hover,
+    .guide-nav-links a.active {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .guide-nav-links a.active {
+      font-weight: 700;
+      box-shadow: inset 0 -2px 0 var(--primary);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    /* 본문 레이아웃 */
+    .guide-container {
+      max-width: 1240px;
+      margin: 32px auto 80px;
+      padding: 0 24px;
+    }
+
+    /* 인트로 배너 */
+    .hero-banner {
+      background: linear-gradient(135deg, #0b1f65 0%, #0066d4 100%);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 40px 48px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      scroll-margin-top: 80px;
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 760px;
+      line-height: 1.6;
+    }
+
+    /* 섹션 공통 스타일 */
+    .guide-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow-sm);
+      scroll-margin-top: 80px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .section-title-badge {
+      font-size: 12px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0284c7;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* 카드 그리드 */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .feature-card {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+    .feature-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* 데모 영역 */
+    .demo-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      background: #fafcff;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .demo-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .demo-box-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0369a1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .demo-live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .demo-live-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #16a34a;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.4; }
+    }
+
+    /* 단일 패널 결과 뷰어 스타일 */
+    .single-panel-result {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .result-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .result-badge {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #2563eb;
+      font-weight: 600;
+    }
+    .result-content {
+      font-size: 14px;
+      color: #334155;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 6px;
+      line-height: 1.7;
+    }
+
+    /* 코드 블록 */
+    .code-tabs {
+      border: 1px solid #334155;
+      border-radius: var(--radius-md);
+      background: var(--code-bg);
+      overflow: hidden;
+      margin-top: 16px;
+    }
+    .code-tabs-nav {
+      display: flex;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 0 8px;
+    }
+    .code-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+    }
+    .code-tab-btn.active {
+      color: #38bdf8;
+    }
+    .code-tab-btn.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: #38bdf8;
+    }
+    .code-copy-btn {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      align-self: center;
+      transition: all 0.2s;
+    }
+    .code-copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .code-content {
+      display: none;
+      padding: 20px 24px;
+      overflow-x: auto;
+    }
+    .code-content.active {
+      display: block;
+    }
+    pre code {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .c-comment { color: #64748b; font-style: italic; }
+    .c-tag { color: #f43f5e; }
+    .c-attr { color: #38bdf8; }
+    .c-str { color: #a3e635; }
+    .c-kw { color: #c084fc; font-weight: 600; }
+    .c-fn { color: #60a5fa; }
+    .c-prop { color: #fbbf24; }
+
+    /* 테이블 */
+    .guide-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    .guide-table th, .guide-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .guide-table th {
+      background: var(--surface-sub);
+      font-weight: 700;
+      color: var(--text);
+    }
+    .guide-table td code {
+      background: #f1f5f9;
+      color: #0369a1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 알림 박스 */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: #f0f7ff;
+      padding: 16px 20px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+    }
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .callout-warn {
+      border-left-color: #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .guide-header-inner { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .guide-nav-links { flex-wrap: wrap; gap: 4px; }
+      .guide-nav-links a { padding: 4px 8px; font-size: 13px; }
+      .hero-banner { padding: 28px 24px; }
+      .hero-title { font-size: 24px; }
+      .guide-section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 상단 네비게이션 헤더 -->
+  <header class="guide-header">
+    <div class="guide-header-inner">
+      <a href="guide/tab-guide.html" class="guide-brand">
+        <span class="guide-brand-badge">COMPONENT GUIDE</span>
+        <span class="guide-brand-title">날씨누리 컴포넌트 가이드</span>
+      </a>
+      <ul class="guide-nav-links">
+        <li><a href="guide/markup-list.html">목록으로</a></li>
+        <li><a href="#sec-single">단일 패널 (콜백형)</a></li>
+        <li><a href="#sec-nested">중첩 탭 (형제격리)</a></li>
+        <li><a href="#sec-standard">기본 다중 패널</a></li>
+        <li><a href="#sec-player">레이더 플레이어 연동</a></li>
+        <li><a href="#sec-api">API 레퍼런스</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="guide-container">
+    <!-- 인트로 배너 -->
+    <div class="hero-banner">
+      <span class="hero-tag">Component Reference</span>
+      <h1 class="hero-title">탭 컴포넌트 (UX.Tab) & 플레이어 연동 가이드</h1>
+      <p class="hero-desc">
+        기상청 날씨누리 2026 표준 탭 컴포넌트의 사용법입니다. 다중 패널 전환 방식뿐만 아니라,
+        단일 패널에서 정보만 콜백으로 갱신하는 <strong>singlePanel 모드</strong>,
+        하위 탭이 포함되었을 때 인덱스가 섞이지 않는 <strong>중첩 탭 계층 격리</strong>, 그리고
+        <strong>레이더 영상 플레이어 연동</strong> 표준 가이드를 제공합니다.
+      </p>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 1. 단일 패널 (콜백형) 탭 -->
+    <!-- ================================================================= -->
+    <section id="sec-single" class="guide-section">
+      <div class="section-title">
+        <span>1. 단일 패널 (콜백 전용) 탭</span>
+        <span class="section-title-badge">singlePanel: true</span>
+      </div>
+      <p class="section-desc">
+        패널을 여러 개 만들지 않고, <strong>단 1개의 패널 컨테이너만 유지한 상태에서 탭 선택 시 콜백 함수를 실행</strong>하여
+        내부 차트, 데이터, 텍스트만 비동기/동적으로 교체하는 모드입니다.<br>
+        불필요한 <code>id</code>, <code>aria-controls</code>, <code>aria-labelledby</code>, <code>aria-expanded</code> 토글을 거치지 않아 성능과 접근성이 향상됩니다.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-title">💡 적용 대상</div>
+          <p class="feature-card-desc">분포도 탭(강수가능성/하늘상태/기온 등), 단일 차트 뷰어, 지도 필터 탭 등 패널 형태는 하나이고 내용값만 바뀌는 영역</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-title">✨ 핵심 장점</div>
+          <p class="feature-card-desc">패널 DOM이 hide/show 되지 않아 깜빡임 없음, 콜백 함수 인자로 선택된 <code>{ index, n, tab, data }</code>가 직관적으로 전달됨</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-title">⚡ 활성화 옵션</div>
+          <p class="feature-card-desc"><code>singlePanel: true</code> 또는 <code>renderMode: "callback"</code> 설정으로 즉시 적용</p>
+        </div>
+      </div>
+
+      <!-- 라이브 데모 -->
+      <div class="demo-box">
+        <div class="demo-box-header">
+          <span class="demo-box-label">라이브 데모 (탭을 클릭해 보세요)</span>
+          <span class="demo-live-badge">실시간 인터랙티브 동작 중</span>
+        </div>
+
+        <!-- 탭 버튼 -->
+        <div data-tab="demo-subtab" data-tab-style="text_|_text">
+          <div role="tablist">
+            <button type="button" role="tab"><span>강수가능성</span></button>
+            <button type="button" role="tab"><span>하늘상태</span></button>
+            <button type="button" role="tab"><span>기온</span></button>
+            <button type="button" role="tab"><span>최고기온</span></button>
+            <button type="button" role="tab"><span>최저기온</span></button>
+          </div>
+        </div>
+
+        <!-- 단 1개의 패널 (singlePanel: true) -->
+        <div data-tab-wrap="demo-subtab">
+          <section role="tabpanel">
+            <div class="single-panel-result">
+              <div class="result-header">
+                <h3 class="result-title" id="demo-result-title">강수가능성 데이터 뷰어</h3>
+                <span class="result-badge" id="demo-result-status">선택 번호: 1</span>
+              </div>
+              <div class="result-content" id="demo-result-body">
+                [강수가능성] 24일(화)~25일(수) 중부지방을 중심으로 30~60% 강수 확률이 예측됩니다.
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- 코드 예시 -->
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="c1-html">HTML 마크업</button>
+          <button class="code-tab-btn" data-target="c1-js">JavaScript 초기화</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+        <div id="c1-html" class="code-content active">
+          <pre><code><span class="c-comment">&lt;!-- 탭 버튼 영역 (data-tab-style로 원하는 디자인 선택) --&gt;</span>
+&lt;<span class="c-tag">div</span> <span class="c-attr">data-tab</span>=<span class="c-str">"subtab2"</span> <span class="c-attr">data-tab-style</span>=<span class="c-str">"text_|_text"</span>&gt;
+  &lt;<span class="c-tag">div</span> <span class="c-attr">role</span>=<span class="c-str">"tablist"</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;강수가능성&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;하늘상태&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;기온&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;최고기온&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;최저기온&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;
+
+<span class="c-comment">&lt;!-- 단 1개의 패널만 두어 계속 열려있는 상태로 유지 --&gt;</span>
+&lt;<span class="c-tag">div</span> <span class="c-attr">data-tab-wrap</span>=<span class="c-str">"subtab2"</span>&gt;
+  &lt;<span class="c-tag">section</span> <span class="c-attr">role</span>=<span class="c-str">"tabpanel"</span>&gt;
+    &lt;<span class="c-tag">h2</span> <span class="c-attr">class</span>=<span class="c-str">"sr-only"</span>&gt;분포도 상세 내용&lt;/<span class="c-tag">h2</span>&gt;
+    <span class="c-comment">&lt;!-- 이 영역 내부의 데이터가 콜백에 의해 갱신됩니다 --&gt;</span>
+    &lt;<span class="c-tag">div</span> <span class="c-attr">id</span>=<span class="c-str">"distribution-content"</span>&gt;...&lt;/<span class="c-tag">div</span>&gt;
+  &lt;/<span class="c-tag">section</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;</code></pre>
+        </div>
+        <div id="c1-js" class="code-content">
+          <pre><code><span class="c-kw">import</span> { UX } <span class="c-kw">from</span> <span class="c-str">'./resources/js-2026/ui-common.js'</span>;
+
+<span class="c-comment">// subtab2 단일 패널 콜백형 인스턴스 생성</span>
+UI.subtab2 = <span class="c-kw">new</span> UX.<span class="c-fn">Tab</span>({
+  <span class="c-prop">id</span>: <span class="c-str">"subtab2"</span>,
+  <span class="c-prop">renderMode</span>: <span class="c-str">"static"</span>,
+  <span class="c-prop">singlePanel</span>: <span class="c-kw">true</span>, <span class="c-comment">// 단일 패널(콜백 실행) 모드 필수 활성화</span>
+  <span class="c-prop">selected</span>: <span class="c-str">1</span>,         <span class="c-comment">// 기본 선택 탭 (1번: 강수가능성)</span>
+  <span class="c-prop">callback</span>: (res) =&gt; {
+    console.<span class="c-fn">log</span>(<span class="c-str">"선택된 탭 정보:"</span>, res); <span class="c-comment">// { index, n, tab, panel, data }</span>
+    <span class="c-kw">switch</span> (res.n) {
+      <span class="c-kw">case</span> <span class="c-num">1</span>:
+        console.<span class="c-fn">log</span>(<span class="c-str">"1. 강수가능성 탭 실행"</span>);
+        <span class="c-comment">// 단일 패널 내부의 강수 데이터 또는 지도 레이어 갱신</span>
+        <span class="c-kw">break</span>;
+      <span class="c-kw">case</span> <span class="c-num">2</span>:
+        console.<span class="c-fn">log</span>(<span class="c-str">"2. 하늘상태 탭 실행"</span>);
+        <span class="c-kw">break</span>;
+      <span class="c-kw">case</span> <span class="c-num">3</span>:
+        console.<span class="c-fn">log</span>(<span class="c-str">"3. 기온 탭 실행"</span>);
+        <span class="c-kw">break</span>;
+      <span class="c-kw">case</span> <span class="c-num">4</span>:
+        console.<span class="c-fn">log</span>(<span class="c-str">"4. 최고기온 탭 실행"</span>);
+        <span class="c-kw">break</span>;
+      <span class="c-kw">case</span> <span class="c-num">5</span>:
+        console.<span class="c-fn">log</span>(<span class="c-str">"5. 최저기온 탭 실행"</span>);
+        <span class="c-kw">break</span>;
+    }
+  }
+});
+
+<span class="c-comment">// 탭 초기화 실행</span>
+UI.subtab2.<span class="c-fn">init</span>();</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 2. 중첩 탭 (Nested Tabs) -->
+    <!-- ================================================================= -->
+    <section id="sec-nested" class="guide-section">
+      <div class="section-title">
+        <span>2. 부모-자식 중첩 탭 (형제 단위 격리)</span>
+        <span class="section-title-badge">Nested Isolation</span>
+      </div>
+      <p class="section-desc">
+        부모 탭의 1번 패널 내부에 또 다른 하위 서브탭이 들어있는 다계층 구조입니다.<br>
+        <code>ui-tab.js</code> 내부에서 <code>panel.closest('[data-tab-wrap]') === this.#el_wrap</code> 필터링을 거치므로
+        <strong>하위 탭의 패널이 부모 탭의 패널 인덱스에 섞여 들어가지 않고 완벽하게 형제 단위로 격리</strong>됩니다.
+      </p>
+
+      <div class="callout">
+        <div class="callout-title">📌 중첩 탭 작성 규칙</div>
+        부모 탭의 <code>data-tab="parent"</code>와 자식 탭의 <code>data-tab="child"</code> 이름(ID)은 반드시 서로 다르게 지정해야 합니다.
+        패널 래퍼(<code>data-tab-wrap</code>) 역시 동일한 이름으로 쌍을 맞춰줍니다.
+      </div>
+
+      <!-- 중첩 탭 데모 -->
+      <div class="demo-box">
+        <div class="demo-box-header">
+          <span class="demo-box-label">중첩 탭 라이브 데모 (부모 탭 1, 2번을 눌러보세요)</span>
+          <span class="demo-live-badge">형제 격리 동작 중</span>
+        </div>
+
+        <!-- 부모 탭 버튼 -->
+        <div data-tab="demo-parent" data-tab-style="roundbox-small">
+          <div role="tablist">
+            <button type="button" role="tab"><span>부모 탭 1 (하위탭 포함)</span></button>
+            <button type="button" role="tab"><span>부모 탭 2 (일반 패널)</span></button>
+          </div>
+        </div>
+
+        <!-- 부모 탭 래퍼 -->
+        <div data-tab-wrap="demo-parent" style="margin-top: 16px;">
+          <!-- 부모 패널 1 -->
+          <section role="tabpanel" style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:20px;">
+            <h4 style="font-size:16px; font-weight:700; margin-bottom:12px;">📁 부모 패널 1번 내부</h4>
+
+            <!-- 자식 탭 버튼 -->
+            <div data-tab="demo-child" data-tab-style="text_|_text">
+              <div role="tablist">
+                <button type="button" role="tab"><span>자식 탭 A</span></button>
+                <button type="button" role="tab"><span>자식 탭 B</span></button>
+              </div>
+            </div>
+
+            <!-- 자식 탭 래퍼 -->
+            <div data-tab-wrap="demo-child" style="margin-top:12px;">
+              <section role="tabpanel" style="padding:14px; background:#f1f5f9; border-radius:6px; font-size:13px;">
+                자식 탭 [A]의 내용입니다. 부모 패널 1번 내부에서 안전하게 독립 토글됩니다.
+              </section>
+              <section role="tabpanel" style="padding:14px; background:#f1f5f9; border-radius:6px; font-size:13px;">
+                자식 탭 [B]의 내용입니다. 부모의 다른 형제 패널과 인덱스가 절대 충돌하지 않습니다.
+              </section>
+            </div>
+          </section>
+
+          <!-- 부모 패널 2 -->
+          <section role="tabpanel" style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:20px;">
+            <h4 style="font-size:16px; font-weight:700; margin-bottom:8px;">📁 부모 패널 2번 내용</h4>
+            <p style="font-size:14px; color:#475569;">부모 2번 탭의 독립된 내용입니다.</p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 3. 기본 다중 패널 탭 -->
+    <!-- ================================================================= -->
+    <section id="sec-standard" class="guide-section">
+      <div class="section-title">
+        <span>3. 기본 다중 패널 탭</span>
+        <span class="section-title-badge">renderMode: "static"</span>
+      </div>
+      <p class="section-desc">
+        탭 버튼 N개와 패널 N개가 1:1로 매핑되어, 활성화된 탭에 대응하는 패널만 <code>aria-expanded="true"</code>로 노출되는 가장 일반적인 탭 방식입니다.
+      </p>
+
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="c3-html">HTML 마크업</button>
+          <button class="code-tab-btn" data-target="c3-js">JavaScript 초기화</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+        <div id="c3-html" class="code-content active">
+          <pre><code>&lt;<span class="c-tag">div</span> <span class="c-attr">data-tab</span>=<span class="c-str">"mainTab"</span> <span class="c-attr">data-tab-style</span>=<span class="c-str">"roundbox-small"</span>&gt;
+  &lt;<span class="c-tag">div</span> <span class="c-attr">role</span>=<span class="c-str">"tablist"</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;기상전망&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+    &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">role</span>=<span class="c-str">"tab"</span>&gt;&lt;<span class="c-tag">span</span>&gt;권역별 요약표&lt;/<span class="c-tag">span</span>&gt;&lt;/<span class="c-tag">button</span>&gt;
+  &lt;/<span class="c-tag">div</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;
+
+&lt;<span class="c-tag">div</span> <span class="c-attr">data-tab-wrap</span>=<span class="c-str">"mainTab"</span>&gt;
+  &lt;<span class="c-tag">section</span> <span class="c-attr">role</span>=<span class="c-str">"tabpanel"</span>&gt;기상전망 내용&lt;/<span class="c-tag">section</span>&gt;
+  &lt;<span class="c-tag">section</span> <span class="c-attr">role</span>=<span class="c-str">"tabpanel"</span>&gt;권역별 요약표 내용&lt;/<span class="c-tag">section</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;</code></pre>
+        </div>
+        <div id="c3-js" class="code-content">
+          <pre><code>UI.mainTab = <span class="c-kw">new</span> UX.<span class="c-fn">Tab</span>({
+  <span class="c-prop">id</span>: <span class="c-str">"mainTab"</span>,
+  <span class="c-prop">renderMode</span>: <span class="c-str">"static"</span>,
+  <span class="c-prop">selected</span>: <span class="c-str">1</span>,
+  <span class="c-prop">data</span>: [
+    { <span class="c-fn">callback</span>: () =&gt; console.<span class="c-fn">log</span>(<span class="c-str">"1번 탭 오픈"</span>) },
+    { <span class="c-fn">callback</span>: () =&gt; console.<span class="c-fn">log</span>(<span class="c-str">"2번 탭 오픈"</span>) }
+  ]
+});
+UI.mainTab.<span class="c-fn">init</span>();</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 4. 레이더/영상 플레이어 연동 -->
+    <!-- ================================================================= -->
+    <section id="sec-player" class="guide-section">
+      <div class="section-title">
+        <span>4. 레이더 영상 플레이어 연동</span>
+        <span class="section-title-badge">#image-player-wrapper</span>
+      </div>
+      <p class="section-desc">
+        기상청의 지도 기반 레이더 영상 플레이어를 서브페이지(예: 중기예보 등)의 탭 패널 내부에 삽입하여 구동하는 방법입니다.
+      </p>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ 필수 의존 스크립트 로드 순서</div>
+        영상 플레이어는 <code>OpenLayers(ol)</code>, <code>Kmap</code>, <code>Vue</code>, <code>ImagePlayer</code> 라이브러리가 순서대로 로드되어야 정상 동작합니다.
+      </div>
+
+      <div class="code-tabs">
+        <div class="code-tabs-nav">
+          <button class="code-tab-btn active" data-target="c4-head">1. &lt;head&gt; 의존 리소스</button>
+          <button class="code-tab-btn" data-target="c4-body">2. 본문 &lt;body&gt; 하단 스크립트</button>
+          <button class="code-tab-btn" data-target="c4-html">3. HTML 컨테이너 마크업</button>
+          <button class="code-copy-btn" onclick="copyCode(this)">코드 복사</button>
+        </div>
+        <div id="c4-head" class="code-content active">
+          <pre><code><span class="c-comment">&lt;!-- &lt;head&gt; 내부 추가 필요 리소스 --&gt;</span>
+&lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/css/ol.css?ver=202607091110"</span> /&gt;
+&lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/css/kmap.css?ver=202607091110"</span> /&gt;
+&lt;<span class="c-tag">link</span> <span class="c-attr">rel</span>=<span class="c-str">"stylesheet"</span> <span class="c-attr">href</span>=<span class="c-str">"resources/lib/kmap/legend.css?ver=202607091110"</span> /&gt;
+
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/fetch.umd-3.6.1.min.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/vshrt-rain-fetch.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/js/proj4/proj4.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/v6.5.0-dist/ol.bb.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/kmap.bb.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"https://www.weather.go.kr/wgis-nuri/js/common/windy.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;</code></pre>
+        </div>
+        <div id="c4-body" class="code-content">
+          <pre><code><span class="c-comment">&lt;!-- &lt;body&gt; 종료 태그 직전 스크립트 로드 순서 --&gt;</span>
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/vue/vue.min.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/dfsLegends.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/legend.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/lib/kmap/kmap_overlay.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/app-2021/image-player.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;
+&lt;<span class="c-tag">script</span> <span class="c-attr">src</span>=<span class="c-str">"resources/js/app-2021/app-image-radar.js?ver=202607091110"</span>&gt;&lt;/<span class="c-tag">script</span>&gt;</code></pre>
+        </div>
+        <div id="c4-html" class="code-content">
+          <pre><code><span class="c-comment">&lt;!-- 탭 패널 내부 배치 예시: #image-player-wrapper 컨테이너 --&gt;</span>
+&lt;<span class="c-tag">div</span> <span class="c-attr">data-tab-wrap</span>=<span class="c-str">"subtab2"</span>&gt;
+  &lt;<span class="c-tag">section</span> <span class="c-attr">role</span>=<span class="c-str">"tabpanel"</span>&gt;
+    &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"cont-wrap"</span> <span class="c-attr">id</span>=<span class="c-str">"image-player-wrapper"</span>&gt;
+      <span class="c-comment">&lt;!-- 옵션 토글 &amp; 컨트롤 폼 영역 --&gt;</span>
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"movie-lap01 tab-menu-wrap"</span>&gt;
+        &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"checkbox-wrap movie-set-btn"</span>&gt;
+          &lt;<span class="c-tag">h3</span> <span class="c-attr">class</span>=<span class="c-str">"chk-title"</span>&gt;옵션보기&lt;/<span class="c-tag">h3</span>&gt;
+          &lt;<span class="c-tag">button</span> <span class="c-attr">type</span>=<span class="c-str">"button"</span> <span class="c-attr">class</span>=<span class="c-str">"switch-toggle off"</span> <span class="c-attr">data-target</span>=<span class="c-str">"movi-toggle"</span> <span class="c-attr">data-desc</span>=<span class="c-str">"레이더"</span>&gt;
+            &lt;<span class="c-tag">span</span> <span class="c-attr">class</span>=<span class="c-str">"hid"</span>&gt;레이더 옵션보기 Off&lt;/<span class="c-tag">span</span>&gt;
+          &lt;/<span class="c-tag">button</span>&gt;
+        &lt;/<span class="c-tag">div</span>&gt;
+      &lt;/<span class="c-tag">div</span>&gt;
+
+      <span class="c-comment">&lt;!-- 지도 뷰어 컨테이너 --&gt;</span>
+      &lt;<span class="c-tag">div</span> <span class="c-attr">class</span>=<span class="c-str">"map-wrap"</span> <span class="c-attr">id</span>=<span class="c-str">"map"</span>&gt;
+        <span class="c-comment">&lt;!-- OpenLayers 캔버스 및 플레이어 인터페이스 자동 마운트 --&gt;</span>
+      &lt;/<span class="c-tag">div</span>&gt;
+    &lt;/<span class="c-tag">div</span>&gt;
+  &lt;/<span class="c-tag">section</span>&gt;
+&lt;/<span class="c-tag">div</span>&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 5. API 레퍼런스 -->
+    <!-- ================================================================= -->
+    <section id="sec-api" class="guide-section">
+      <div class="section-title">
+        <span>5. Tab 컴포넌트 옵션 레퍼런스</span>
+        <span class="section-title-badge">Options & API</span>
+      </div>
+      <p class="section-desc">
+        <code>new UX.Tab(options)</code> 생성자 및 인스턴스 메서드 규격입니다.
+      </p>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 180px;">옵션명</th>
+            <th style="width: 140px;">타입</th>
+            <th style="width: 130px;">기본값</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>id</code></td>
+            <td>String</td>
+            <td><em>필수</em></td>
+            <td>탭 그룹 식별자. <code>[data-tab="id"]</code>와 <code>[data-tab-wrap="id"]</code>와 일치해야 함.</td>
+          </tr>
+          <tr>
+            <td><code>singlePanel</code></td>
+            <td>Boolean</td>
+            <td><code>false</code></td>
+            <td><strong>단일 패널 모드</strong> 활성화. true 설정 시 패널 토글 없이 콜백 함수만 실행.</td>
+          </tr>
+          <tr>
+            <td><code>renderMode</code></td>
+            <td>String</td>
+            <td><code>"dynamic"</code></td>
+            <td><code>"static"</code> (기존 HTML 사용), <code>"dynamic"</code> (JS 자동 생성), <code>"callback"</code> (단일 패널형)</td>
+          </tr>
+          <tr>
+            <td><code>selected</code></td>
+            <td>Number</td>
+            <td><code>1</code></td>
+            <td>초기 선택될 탭의 번호 (1부터 시작).</td>
+          </tr>
+          <tr>
+            <td><code>data</code></td>
+            <td>Array</td>
+            <td><code>[]</code></td>
+            <td>각 탭 아이템 설정 배열. <code>{ tab: '버튼명', callback: (res) => {}, src: '경로' }</code></td>
+          </tr>
+          <tr>
+            <td><code>scroll</code></td>
+            <td>Boolean</td>
+            <td><code>false</code></td>
+            <td>스크롤 연동 모드 활성화 (ScrollTrigger 연계).</td>
+          </tr>
+          <tr>
+            <td><code>scrollOffsetTop</code></td>
+            <td>Number</td>
+            <td><code>120</code></td>
+            <td>스크롤 연동 시 상단 트리거 오프셋 픽셀값.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 16px; font-weight: 700; margin: 28px 0 12px;">인스턴스 메서드 (Methods)</h3>
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 220px;">메서드</th>
+            <th style="width: 180px;">인자</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>tab.init()</code></td>
+            <td>-</td>
+            <td>탭 컴포넌트를 초기화하고 이벤트 리스너를 등록합니다.</td>
+          </tr>
+          <tr>
+            <td><code>tab.expanded(target)</code></td>
+            <td>Number | String | Element</td>
+            <td>지정한 탭(인덱스 번호, ID 문자열, 엘리먼트 객체)을 프로그래밍 방식으로 활성화합니다.</td>
+          </tr>
+          <tr>
+            <td><code>tab.destroy()</code></td>
+            <td>-</td>
+            <td>등록된 클릭 리스너, 키보드 네비게이터, 스크롤트리거를 해제하고 메모리를 정리합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- 가이드 스크립트 실행 -->
+  <script type="module">
+    import { UX } from './resources/js-2026/ui-common.js';
+
+    // 1. 단일 패널 라이브 데모 인스턴스
+    const resultTitle = document.getElementById("demo-result-title");
+    const resultStatus = document.getElementById("demo-result-status");
+    const resultBody = document.getElementById("demo-result-body");
+
+    const demoContents = [
+      { title: "강수가능성 데이터 뷰어", desc: "[강수가능성] 24일(화)~25일(수) 중부지방을 중심으로 30~60% 강수 확률이 예측됩니다." },
+      { title: "하늘상태 데이터 뷰어", desc: "[하늘상태] 전국이 대체로 맑겠으나 제주도 및 남부해안은 가끔 구름많겠습니다." },
+      { title: "기온 분포 뷰어", desc: "[기온] 평년(최저 -1~7℃, 최고 6~13℃)과 비슷하거나 조금 높은 기온 분포를 보이겠습니다." },
+      { title: "최고기온 분포 뷰어", desc: "[최고기온] 서울 12℃, 대전 13℃, 광주 14℃, 대구 15℃, 부산 16℃ 안팎으로 온화하겠습니다." },
+      { title: "최저기온 분포 뷰어", desc: "[최저기온] 서울 2℃, 춘천 -1℃, 대전 2℃, 전주 3℃, 대구 4℃, 부산 7℃로 다소 쌀쌀하겠습니다." }
+    ];
+
+    const demoSubTab = new UX.Tab({
+      id: "demo-subtab",
+      renderMode: "static",
+      singlePanel: true,
+      selected: 1,
+      callback: (res) => {
+        const item = demoContents[res.index];
+        if (item) {
+          if (resultTitle) resultTitle.textContent = item.title;
+          if (resultStatus) resultStatus.textContent = `선택 번호: ${res.n}`;
+          if (resultBody) resultBody.textContent = item.desc;
+        }
+      }
+    });
+    demoSubTab.init();
+
+    // 2. 중첩 탭 라이브 데모 인스턴스
+    const demoParent = new UX.Tab({
+      id: "demo-parent",
+      renderMode: "static",
+      selected: 1,
+      data: [
+        { callback: () => demoChild.init() },
+        { callback: () => {} }
+      ]
+    });
+    const demoChild = new UX.Tab({
+      id: "demo-child",
+      renderMode: "static",
+      selected: 1
+    });
+
+    demoParent.init();
+    demoChild.init();
+  </script>
+
+  <script>
+    // 코드 탭 전환
+    document.querySelectorAll(".code-tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const wrap = btn.closest(".code-tabs");
+        wrap.querySelectorAll(".code-tab-btn").forEach(b => b.classList.remove("active"));
+        wrap.querySelectorAll(".code-content").forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+        const target = wrap.querySelector("#" + btn.dataset.target);
+        if (target) target.classList.add("active");
+      });
+    });
+
+    // 코드 복사 기능
+    function copyCode(btn) {
+      const wrap = btn.closest(".code-tabs");
+      const activeContent = wrap.querySelector(".code-content.active code");
+      if (!activeContent) return;
+      navigator.clipboard.writeText(activeContent.innerText).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = "복사 완료!";
+        btn.style.background = "#059669";
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.background = "";
+        }, 1800);
+      });
+    }
+
+    // 상단 네비게이션 부드러운 스크롤 이동 및 ScrollSpy
+    document.addEventListener("DOMContentLoaded", function () {
+      var navAnchors = document.querySelectorAll('.guide-nav-links a[href*="#"]');
+      var trackedSections = [];
+
+      navAnchors.forEach(function (anchor) {
+        var href = anchor.getAttribute('href');
+        var hashIdx = href.indexOf('#');
+        if (hashIdx === -1) return;
+        var targetId = href.substring(hashIdx + 1);
+        var targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          trackedSections.push({ id: targetId, el: targetEl, link: anchor });
+        }
+
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (targetEl) {
+            var headerOffset = 70;
+            var elementPosition = targetEl.getBoundingClientRect().top;
+            var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: Math.max(0, offsetPosition),
+              behavior: 'smooth'
+            });
+
+            if (history.pushState) {
+              history.pushState(null, '', '#' + targetId);
+            }
+          }
+        });
+      });
+
+      // 브랜드 로고 클릭 시 최상단 부드러운 스크롤
+      var brandLink = document.querySelector('.guide-brand');
+      if (brandLink) {
+        brandLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (history.pushState) {
+            history.pushState(null, '', window.location.pathname);
+          }
+        });
+      }
+
+      // 페이지 로드 시 기존 URL 해시가 있다면 헤더 오프셋 고려하여 스크롤
+      if (window.location.hash) {
+        var initialTarget = document.querySelector(window.location.hash);
+        if (initialTarget) {
+          setTimeout(function () {
+            var headerOffset = 70;
+            var elementPosition = initialTarget.getBoundingClientRect().top;
+            var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
+          }, 100);
+        }
+      }
+
+      // 스크롤 시 활성 네비게이션 메뉴 갱신 (ScrollSpy)
+      function updateActiveNav() {
+        var scrollPos = window.pageYOffset + 120;
+        var currentId = '';
+
+        trackedSections.forEach(function (sec) {
+          var top = sec.el.offsetTop;
+          var height = sec.el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            currentId = sec.id;
+          }
+        });
+
+        trackedSections.forEach(function (sec) {
+          if (sec.id === currentId) {
+            sec.link.classList.add('active');
+          } else {
+            sec.link.classList.remove('active');
+          }
+        });
+      }
+
+      window.addEventListener('scroll', updateActiveNav, { passive: true });
+      updateActiveNav();
+    });
+  </script>
+</body>
+</html>

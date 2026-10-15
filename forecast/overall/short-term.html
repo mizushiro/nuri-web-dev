@@ -1,0 +1,4882 @@
+<!DOCTYPE html>
+<html lang="ko" class=" localstorage">
+
+<head>
+	<meta charset="UTF-8">
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+	<title>예보 종합 - 기상청 날씨누리</title>
+
+	<link rel="shortcut icon" href="logo_mark.png">
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png">
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY">
+
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
+	<script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
+	<script src="resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="resources/css-2026/plugin/swiper-bundle.min.css">
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
+</head>
+
+<body class="wthema-a">
+	<div id="krds-skip-link">
+		<a href="#content">본문 바로가기</a>
+	</div>
+	<header class="nr__header"></header>
+
+	<div id="main" class="nr__sub">
+		<aside class="nr__aside"></aside>
+
+		<main class="nr__sub-content style-ocean">
+			<a id="content"></a>
+
+			<div class="flex items-center justify-between" data-zoom="true">
+				<nav aria-label="페이지 경로">
+					<ul id="breadcrumb">
+						<li class="home">
+							<a href="/index.html"><span class="sr-only">홈</span></a>
+						</li>
+						<li>
+							<a href="/special-report/overall.html"><span>특보·예보</span></a>
+						</li>
+						<li>
+							<a href=""><span>예보 종합</span></a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- TEMP: fixme -->
+			<h2 class="pb-2 text-2xl font-semibold border-bborder-gray-200">예보 종합</h2>
+			<div class="!max-w-full">
+
+				<ul class="tab">
+					<li><a class="active" href="/forecast/overall/short-term.html" title="선택됨">단기예보</a></li>
+					<li><a href="/forecast/overall/mid-term.html">중기예보</a></li>
+				</ul>
+
+				<div class="cont-wrap cmp-weather-short-term">
+					<div id="content-body">
+						<div class="lay point-sch-wrap">
+							<div class="cmp-my-point-slider" id="my-point-slider">
+								<div class="slide-wrap">
+									<div data-role="my-area-holder" style="width: 41px; transform: translate(0px, 0px);">
+										<div class="my-item"><a class="dong on" title="보기" href="#view-bookmark" data-role="view-bookmark"
+												data-index="0" data-full-name="서울특별시 동작구 신대방제2동" data-wide-code="1100000000"
+												data-wide-name="서울특별시" data-city-code="1159000000" data-city-name="동작구"
+												data-dong-code="1159068000" data-dong-name="신대방제2동" data-x="59" data-y="125"
+												data-lat="37.493546" data-lon="126.921654" data-name="" data-route="">신대방제2동</a></div>
+									</div>
+									<div class="left-fade"></div>
+									<div class="right-fade"></div>
+								</div>
+							</div>
+							<a href="#" class="sym-btn sch-b" data-role="pop-local-search">행정동검색</a>
+							<div class="lay-500ext">
+								<div class="cmp-local-search v2" id="index-local-search">
+									<div class="cmp-local-search-input">
+										<div><input class="input" type="text" placeholder="주요지명으로 입력"></div>
+										<a href="#" class="sym-btn sch">검색</a>
+										<a href="#" class="sym-btn txt-only pop-open" data-pop-name="open-search-pop"><span>읍면동으로
+												선택</span></a>
+									</div>
+									<div class="cmp-local-search-items">
+										<ul></ul>
+									</div>
+								</div>
+							</div>
+							<div class="lay-500">
+								<div class="cmp-bookmark" id="index-bookmarks">
+									<a href="#" class="sym-btn curr" data-role="search-current-location"
+										title="내위치(PC에서 접속하시는 경우 실제 계신 곳의 위치와 차이가 발생할 수 있습니다.)">현재위찾기</a>
+									<div class="serch-area accordionsecond-wrap">
+										<a href="#" class="serch-area-btn accordionsecond-tit" data-role="bookmark-selected" title="접힘"
+											data-wide-code="1100000000" data-wide-name="서울특별시" data-city-code="1159000000"
+											data-city-name="동작구" data-dong-code="1159068000" data-dong-name="신대방제2동" data-x="59" data-y="125"
+											data-lat="37.493546" data-lon="126.921654" data-name="" data-route=""><i>서울특별시 동작구 신대방제2동</i></a>
+										<div class="accordionsecond-con serch-con" style="display: none;">
+											<div>
+												<ul data-role="bookmark-holder">
+													<li class="serch-con-item"><button class="select-btn" data-wide-code="1100000000"
+															data-wide-name="서울특별시" data-city-code="1159000000" data-city-name="동작구"
+															data-dong-code="1159068000" data-dong-name="신대방제2동" data-x="59" data-y="125"
+															data-lat="37.493546" data-lon="126.921654" data-name="" data-route=""
+															data-index="0"></button></li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="right-wrap">
+										<a href="#" class="sym-btn star on" data-role="toggle-bookmark">관심지역토글 선택됨</a>
+										<a href="#" class="sym-btn quest" data-role="toggle-help">도움말</a>
+										<i class="tt-btn" title="도움말"><span class="tt">별표를 누르면 관심지역으로 등록 또는 삭제할 수 있습니다</span></i>
+										<div class="cmp-help-tooltip">
+											<div class="shadow-box">
+												<div class="inner">
+													<a href="#close" class="close-box">닫기</a>
+													<h5>도움말</h5>
+													<p>별표를 누르면 관심지역으로 등록 또는 삭제할 수 있습니다</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="lay" data-active-mode="default">
+							<div class="lay-100p" id="digital-forecast">
+
+
+
+
+								<div class="cmp-dfs-slider hr1-fct mode-default">
+									<div class="dfs-daily-head">
+										<h3>일별 예보</h3>
+									</div>
+									<div class="dfs-daily-slider-body">
+										<ul class="item-lbl">
+											<li>날짜</li>
+											<li>시각</li>
+											<li>날씨</li>
+											<li>기온</li>
+											<li>강수확률</li>
+										</ul>
+										<div class="dfs-daily-slider no-scrollbars" style="touch-action: pan-y pinch-zoom;">
+											<div class="dfs-daily-slide-wrap" style="transform: translate(0px, 0px) translateZ(0px);">
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-14" data-midterm-forecast="false"
+													data-week-day="3">
+													<div class="dfs-daily-slide-box active" title="선택됨">
+														<h4 class="todaytomorrow"><span>14일</span><span>(수)</span><em>내일</em></h4>
+
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB01" title="오전 날씨 맑음">맑음</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB01" title="오후 날씨 맑음">맑음</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>10℃</span></div>
+																<div><strong>최고 : </strong><span>20℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>0%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>0%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-15" data-midterm-forecast="false"
+													data-week-day="4">
+													<div class="dfs-daily-slide-box">
+														<h4 class="todaytomorrow"><span>15일</span><span>(목)</span><em>모레</em></h4>
+
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB01" title="오전 날씨 맑음">맑음</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB01" title="오후 날씨 맑음">맑음</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>11℃</span></div>
+																<div><strong>최고 : </strong><span>22℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>0%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>10%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-16" data-midterm-forecast="false"
+													data-week-day="5">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>16일</span><em>(금)</em></h4>
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB03" title="오전 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB03" title="오후 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>14℃</span></div>
+																<div><strong>최고 : </strong><span>24℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>10%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>10%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-17" data-midterm-forecast="false"
+													data-week-day="6">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>17일</span><em>(토)</em></h4>
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB03" title="오전 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB04" title="오후 날씨 흐림">흐림</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>14℃</span></div>
+																<div><strong>최고 : </strong><span>25℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>10%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>30%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-18" data-midterm-forecast="true"
+													data-week-day="0">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>18일</span><em>(일)</em></h4>
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB08" title="오전 날씨 흐리고 비">흐리고 비</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB08" title="오후 날씨 흐리고 비">흐리고 비</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>16℃</span></div>
+																<div><strong>최고 : </strong><span>21℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>60%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>60%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-19" data-midterm-forecast="true"
+													data-week-day="1">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>19일</span><em>(월)</em></h4>
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB03" title="오전 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB03" title="오후 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>14℃</span></div>
+																<div><strong>최고 : </strong><span>20℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>30%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>30%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-20" data-midterm-forecast="true"
+													data-week-day="2">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>20일</span><em>(화)</em></h4>
+														<div class="dfs-daily-item">
+
+
+															<div class="daily-weather-am">
+																<div><strong>오전</strong></div>
+
+																<div><span class="wic NB03" title="오전 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-weather-pm">
+																<div><strong>오후</strong></div>
+
+																<div><span class="wic NB03" title="오후 날씨 구름많음">구름많음</span></div>
+
+
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>10℃</span></div>
+																<div><strong>최고 : </strong><span>19℃</span></div>
+															</div>
+															<div class="daily-pop-am"><strong class="hid">오전 강수확률</strong><span>20%</span></div>
+															<div class="daily-pop-pm"><strong class="hid">오후 강수확률</strong><span>20%</span></div>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-21" data-midterm-forecast="true"
+													data-week-day="3">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>21일</span><em>(수)</em></h4>
+														<div class="dfs-daily-item">
+
+
+
+															<div class="daily-weather-allday">
+																<div><strong>종일</strong></div>
+																<div><span class="wic NB01" title="날씨 맑음">맑음</span></div>
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>8℃</span></div>
+																<div><strong>최고 : </strong><span>19℃</span></div>
+															</div>
+															<div class="daily-pop-allday"><strong class="hid">강수확률</strong><span>10%</span></div>
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-22" data-midterm-forecast="true"
+													data-week-day="4">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>22일</span><em>(목)</em></h4>
+														<div class="dfs-daily-item">
+
+
+
+															<div class="daily-weather-allday">
+																<div><strong>종일</strong></div>
+																<div><span class="wic NB01" title="날씨 맑음">맑음</span></div>
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>8℃</span></div>
+																<div><strong>최고 : </strong><span>18℃</span></div>
+															</div>
+															<div class="daily-pop-allday"><strong class="hid">강수확률</strong><span>10%</span></div>
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+												<div class="dfs-daily-slide" role="button" data-date="2026-10-23" data-midterm-forecast="true"
+													data-week-day="5">
+													<div class="dfs-daily-slide-box">
+
+														<h4><span>23일</span><em>(금)</em></h4>
+														<div class="dfs-daily-item">
+
+
+
+															<div class="daily-weather-allday">
+																<div><strong>종일</strong></div>
+																<div><span class="wic NB01" title="날씨 맑음">맑음</span></div>
+															</div>
+															<div class="daily-minmax">
+																<div><strong>최저 : </strong><span>8℃</span></div>
+																<div><strong>최고 : </strong><span>19℃</span></div>
+															</div>
+															<div class="daily-pop-allday"><strong class="hid">강수확률</strong><span>10%</span></div>
+
+
+														</div>
+													</div>
+												</div>
+
+
+											</div>
+											<div class="iScrollHorizontalScrollbar iScrollLoneScrollbar"
+												style="overflow: hidden; opacity: 0;">
+												<div class="iScrollIndicator"
+													style="transition-duration: 0ms; display: none; width: 1040px; transform: translate(0px, 0px) translateZ(0px);">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="dfs-tab daily-fcsm">
+										<div class="dfs-tab-head-wrap">
+											<div class="dfs-tab-head">
+												<h3>시간별 예보</h3>
+												<div class="tab-btn-wrap">
+													<a href="#" class="tab-btn" data-interval-hours="3">3시간 간격</a>
+													<a href="#" class="tab-btn on" data-interval-hours="1">1시간 간격</a>
+												</div>
+											</div>
+										</div>
+										<ul class="right">
+											<li class="updated">
+												<h4>갱신시각</h4>
+												<strong>시간별예보 : <span>10.13.(화) 23:00</span></strong>
+												<strong>중기예보 : <span>10.13.(화) 18:00</span></strong>
+											</li>
+											<div class="cmp-dfs-updated">
+												<a href="/forecast/guide/fct-shrt-guide.html" title="새창열림" class="ts-open-box"
+													onclick="openPopGuide(event, this.href);"><span>시계열예보안내</span></a>
+												<a href="#" class="open-box"><span>최근발표시각</span></a>
+												<div class="shadow-box">
+													<div class="inner">
+														<a href="#close" class="close-box">닫기</a>
+														<h5>최근발표시각</h5>
+														<dl>
+															<dt>초단기예보(현재부터 +6시간까지):</dt>
+															<dd>10.13.(화) 23:30</dd>
+														</dl>
+														<dl>
+															<dt>단기예보(현재부터 +4일까지):</dt>
+															<dd>10.13.(화) 23:00</dd>
+														</dl>
+														<dl>
+															<dt>중기예보(단기예보 이후 10일까지):</dt>
+															<dd>10.13.(화) 18:00</dd>
+														</dl>
+													</div>
+												</div>
+											</div>
+											<div class="dfs-guide-btn">
+												<a href="#" class="sym-btn with-txt iconguide pop-open" data-pop-name="open-iconguide-pop">날씨기호
+													설명</a>
+											</div>
+											<li class="btns">
+												<div class="btn-wrap">
+													<a href="#" class="sym-btn view-composite on" data-view="mode-default" title="선택됨">혼합 형태</a>
+													<a href="#" class="sym-btn view-chart" data-view="mode-chart">그래프 형태</a>
+													<a href="#" class="sym-btn view-table" data-view="mode-table">표 형태</a>
+												</div>
+												<a href="#" class="sym-btn settings with-txt" data-layer="view-options">보기 설정</a>
+											</li>
+										</ul>
+										<div class="view-options" data-layer="view-options">
+											<a href="#pop-close" class="sym-btn big-close">닫기</a>
+											<h4>시계열 표현</h4>
+											<ul>
+												<li><a href="#mode-default" class="sym-btn txt-only on" data-option="series"
+														data-value="mode-default" title="">혼합 형태</a></li>
+												<li><a href="#mode-chart" class="sym-btn txt-only" data-option="series" data-value="mode-chart"
+														title="">그래프 형태</a></li>
+												<li><a href="#mode-table" class="sym-btn txt-only" data-option="series" data-value="mode-table"
+														title="선택됨">표 형태</a></li>
+											</ul>
+										</div>
+									</div>
+									<div class="skip_nav"><a href="#after-dfs-forecast">시간별예보 건너뛰기</a></div>
+									<div class="dfs-tab-body">
+										<div class="tt-btn" tabindex="0"
+											style="margin-left: 19px; z-index: 3; position: absolute; margin-top: 28px;" title="도움말">
+											<p class="tt">
+												<img
+													src="/resources/image/main/forecast_info_hr01.png;jsessionid=hphGuCe333qHtFQ-OQGoZwCipkc000chCx2SCzDg.standalone"
+													alt="예보요소별 시간안내(1시간 간격) * 시각: 01시 기준 예시 -날씨: 이전 1시간(00시~01시)의 날씨-기온: 01시 정시 기온-체감온도: 01시 정시 체감온도 -강수량: 이전 1시간(00시~01시) 강수량 * '~1'은 1mm미만(예상강수량&lt;1)을 나타냄 -강수강도: 이전 1시간(00시~01시) 강수량 또는 신적설을 텍스트 기반 체감도 높은 정보로 표출 -강수확률: 이전 1시간(00시~01시) 강수확률 -바람: 01시 정시 바람(풍향 및 강도, 풍속) -습도: 01시 정시 습도 ">
+											</p>
+										</div>
+										<ul class="item-lbl  ">
+											<li>시각</li>
+											<li>날씨</li>
+											<li>기온</li>
+											<li>체감온도</li>
+											<li><a href="https://youtube.com/watch?v=q4zu6WzWdDA" target="_blank"
+													title="새창열림">강수량<small>(mm)</small></a></li>
+
+											<li>강수강도</li>
+											<li>강수확률</li>
+											<li>바람<small>(<span class="unit">m/s</span>)</small></li>
+											<li>습도</li>
+											<li><a href="/weather/warning/impact/impact-loc.do?dongCode=1159068000#dong/1159068000"
+													target="_blank" title="새창열림">한파영향<span class="hide"> 바로가기</span></a></li>
+										</ul>
+										<ul class="item-lbl-graph  ">
+											<li>시각</li>
+											<li>날씨</li>
+											<li>기온</li>
+											<li class="rain">강수량<small>(mm)</small></li>
+											<li>강수강도</li>
+											<li class="snow">적설<small>(cm)</small></li>
+											<li>강수확률</li>
+											<li>풍향<br>풍속<small><span class="unit">(m/s)</span></small></li>
+											<li>습도</li>
+										</ul>
+										<ul class="item-lbl-midterm">
+											<li>날짜</li>
+											<li>날씨</li>
+											<li>기온</li>
+											<li>강수확률</li>
+										</ul>
+										<div class="dfs-slider" style="touch-action: pan-y pinch-zoom;">
+											<div class="slide-wrap  " style="width: 3462px; transform: translate(0px, 0px) translateZ(0px);">
+
+
+												<div class="slide" style="width: 1128px;">
+													<h4 class="hid">내일</h4>
+													<div class="daily" data-date="2026-10-14" data-start-time="01시" data-start-data-time="01:00"
+														data-midterm-forecast="false">
+														<div class="daily-head" style="margin-left: auto;">
+															<span class="date">14일(수)</span>
+
+															<span class="tminmax"><span class="tmin">최저<span class="minval">10℃</span></span><span
+																	class="tmax">최고<span class="maxval">20℃</span></span></span>
+
+															<ul class="table-head">
+																<li>시각</li>
+																<li>날씨</li>
+																<li>기온<br>(체감)</li>
+																<li>강수량</li>
+
+																<li>강수강도</li>
+																<li>강수<br>확률</li>
+																<li>바람</li>
+																<li>습도</li>
+																<li>한파<br>영향</li>
+															</ul>
+														</div>
+														<div class="item-wrap">
+
+
+
+
+
+															<ul class="item vs-item  v-item-first " data-date="2026-10-14" data-time="01:00">
+																<li><span class="hid">시각: </span><span>01시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm W_b" title="서풍">서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item vs-item " data-date="2026-10-14" data-time="02:00">
+																<li><span class="hid">시각: </span><span>02시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item vs-item " data-date="2026-10-14" data-time="03:00">
+																<li><span class="hid">시각: </span><span>03시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">13℃<span
+																			class="chill">(13℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>13℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item vs-item " data-date="2026-10-14" data-time="04:00">
+																<li><span class="hid">시각: </span><span>04시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">13℃<span
+																			class="chill">(13℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>13℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item vs-item " data-date="2026-10-14" data-time="05:00">
+																<li><span class="hid">시각: </span><span>05시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">12℃<span
+																			class="chill">(12℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>12℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+
+															<ul class="item s-item   s-item-first " data-sonagi="0" data-date="2026-10-14"
+																data-time="06:00">
+																<li><span class="hid">시각: </span><span>06시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">11℃<span
+																			class="chill">(11℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>11℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="07:00">
+																<li><span class="hid">시각: </span><span>07시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">11℃<span
+																			class="chill">(11℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>11℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="08:00">
+																<li><span class="hid">시각: </span><span>08시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">12℃<span
+																			class="chill">(12℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>12℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>45%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="09:00">
+																<li><span class="hid">시각: </span><span>09시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>40%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="10:00">
+																<li><span class="hid">시각: </span><span>10시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">16℃<span
+																			class="chill">(16℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>16℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>35%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="11:00">
+																<li><span class="hid">시각: </span><span>11시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>30%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="12:00">
+																<li><span class="hid">시각: </span><span>12시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">18℃<span
+																			class="chill">(18℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>18℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>25%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="13:00">
+																<li><span class="hid">시각: </span><span>13시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">19℃<span
+																			class="chill">(19℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>19℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>25%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="14:00">
+																<li><span class="hid">시각: </span><span>14시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">20℃<span
+																			class="chill">(20℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>20℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm NW_b" title="북서풍">북서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>30%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="15:00">
+																<li><span class="hid">시각: </span><span>15시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">20℃<span
+																			class="chill">(20℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>20℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm W_b" title="서풍">서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>30%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="16:00">
+																<li><span class="hid">시각: </span><span>16시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">20℃<span
+																			class="chill">(20℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>20℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm W_b" title="서풍">서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>35%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="17:00">
+																<li><span class="hid">시각: </span><span>17시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">19℃<span
+																			class="chill">(19℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>19℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>40%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="18:00">
+																<li><span class="hid">시각: </span><span>18시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="19:00">
+																<li><span class="hid">시각: </span><span>19시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">16℃<span
+																			class="chill">(16℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>16℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white lvl-show"></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="20:00">
+																<li><span class="hid">시각: </span><span>20시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>60%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="21:00">
+																<li><span class="hid">시각: </span><span>21시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>60%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="22:00">
+																<li><span class="hid">시각: </span><span>22시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>65%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="23:00">
+																<li><span class="hid">시각: </span><span>23시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">13℃<span
+																			class="chill">(13℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>13℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>65%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-14" data-time="24:00">
+																<li><span class="hid">시각: </span><span>0시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">13℃<span
+																			class="chill">(13℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>13℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>65%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+												<div class="slide" style="width: 1128px;">
+													<h4 class="hid">모레</h4>
+													<div class="daily" data-date="2026-10-15" data-start-time="01시" data-start-data-time="01:00"
+														data-midterm-forecast="false">
+														<div class="daily-head">
+															<span class="date">15일(목)</span>
+
+															<span class="tminmax"><span class="tmin">최저<span class="minval">11℃</span></span><span
+																	class="tmax">최고<span class="maxval">22℃</span></span></span>
+
+															<ul class="table-head">
+																<li>시각</li>
+																<li>날씨</li>
+																<li>기온<br>(체감)</li>
+																<li>강수량</li>
+
+																<li>강수강도</li>
+																<li>강수<br>확률</li>
+																<li>바람</li>
+																<li>습도</li>
+																<li>한파<br>영향</li>
+															</ul>
+														</div>
+														<div class="item-wrap">
+
+
+
+
+
+
+															<ul class="item s-item   s-item-first " data-sonagi="0" data-date="2026-10-15"
+																data-time="01:00">
+																<li><span class="hid">시각: </span><span>01시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">13℃<span
+																			class="chill">(13℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>13℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>70%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="02:00">
+																<li><span class="hid">시각: </span><span>02시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">12℃<span
+																			class="chill">(12℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>12℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="03:00">
+																<li><span class="hid">시각: </span><span>03시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">12℃<span
+																			class="chill">(12℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>12℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="04:00">
+																<li><span class="hid">시각: </span><span>04시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">11℃<span
+																			class="chill">(11℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>11℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="05:00">
+																<li><span class="hid">시각: </span><span>05시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">11℃<span
+																			class="chill">(11℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>11℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="06:00">
+																<li><span class="hid">시각: </span><span>06시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">11℃<span
+																			class="chill">(11℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>11℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="07:00">
+																<li><span class="hid">시각: </span><span>07시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">11℃<span
+																			class="chill">(11℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>11℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="08:00">
+																<li><span class="hid">시각: </span><span>08시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">13℃<span
+																			class="chill">(13℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>13℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>70%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="09:00">
+																<li><span class="hid">시각: </span><span>09시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">16℃<span
+																			class="chill">(16℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>16℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>60%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="10:00">
+																<li><span class="hid">시각: </span><span>10시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">18℃<span
+																			class="chill">(18℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>18℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="11:00">
+																<li><span class="hid">시각: </span><span>11시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">20℃<span
+																			class="chill">(20℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>20℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약간 강</span>
+																	<span class="wspd">4<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="12:00">
+																<li><span class="hid">시각: </span><span>12시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약간 강</span>
+																	<span class="wspd">5<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="13:00">
+																<li><span class="hid">시각: </span><span>13시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약간 강</span>
+																	<span class="wspd">5<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="14:00">
+																<li><span class="hid">시각: </span><span>14시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약간 강</span>
+																	<span class="wspd">4<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="15:00">
+																<li><span class="hid">시각: </span><span>15시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약간 강</span>
+																	<span class="wspd">5<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="16:00">
+																<li><span class="hid">시각: </span><span>16시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약간 강</span>
+																	<span class="wspd">5<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="17:00">
+																<li><span class="hid">시각: </span><span>17시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">20℃<span
+																			class="chill">(20℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>20℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SW_b" title="남서풍">남서풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">4<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>60%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="18:00">
+																<li><span class="hid">시각: </span><span>18시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">19℃<span
+																			class="chill">(19℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>19℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>70%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl-white "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="19:00">
+																<li><span class="hid">시각: </span><span>19시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">18℃<span
+																			class="chill">(18℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>18℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>70%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="20:00">
+																<li><span class="hid">시각: </span><span>20시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="21:00">
+																<li><span class="hid">시각: </span><span>21시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="22:00">
+																<li><span class="hid">시각: </span><span>22시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">16℃<span
+																			class="chill">(16℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>16℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="23:00">
+																<li><span class="hid">시각: </span><span>23시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">16℃<span
+																			class="chill">(16℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>16℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">3<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-15" data-time="24:00">
+																<li><span class="hid">시각: </span><span>0시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">16℃<span
+																			class="chill">(16℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>16℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>80%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+												<div class="slide" style="width: 1128px;">
+													<h4 class="hid">글피</h4>
+													<div class="daily" data-date="2026-10-16" data-start-time="01시" data-start-data-time="01:00"
+														data-midterm-forecast="false">
+														<div class="daily-head">
+															<span class="date">16일(금)</span>
+
+															<span class="tminmax"><span class="tmin">최저<span class="minval">14℃</span></span><span
+																	class="tmax">최고<span class="maxval">24℃</span></span></span>
+
+															<ul class="table-head">
+																<li>시각</li>
+																<li>날씨</li>
+																<li>기온<br>(체감)</li>
+																<li>강수량</li>
+
+																<li>강수강도</li>
+																<li>강수<br>확률</li>
+																<li>바람</li>
+																<li>습도</li>
+																<li>한파<br>영향</li>
+															</ul>
+														</div>
+														<div class="item-wrap">
+
+
+
+
+
+
+															<ul class="item s-item   s-item-first " data-sonagi="0" data-date="2026-10-16"
+																data-time="01:00">
+																<li><span class="hid">시각: </span><span>01시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>80%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="02:00">
+																<li><span class="hid">시각: </span><span>02시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>80%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="03:00">
+																<li><span class="hid">시각: </span><span>03시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">2<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>85%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="04:00">
+																<li><span class="hid">시각: </span><span>04시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm S_b" title="남풍">남풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>85%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="05:00">
+																<li><span class="hid">시각: </span><span>05시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>85%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="06:00">
+																<li><span class="hid">시각: </span><span>06시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>90%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="07:00">
+																<li><span class="hid">시각: </span><span>07시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">14℃<span
+																			class="chill">(14℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>14℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>90%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="08:00">
+																<li><span class="hid">시각: </span><span>08시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">15℃<span
+																			class="chill">(15℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>15℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>80%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="09:00">
+																<li><span class="hid">시각: </span><span>09시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="10:00">
+																<li><span class="hid">시각: </span><span>10시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">19℃<span
+																			class="chill">(19℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>19℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>70%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="11:00">
+																<li><span class="hid">시각: </span><span>11시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>65%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="12:00">
+																<li><span class="hid">시각: </span><span>12시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">22℃<span
+																			class="chill">(22℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>22℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm SE_b" title="남동풍">남동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>60%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="13:00">
+																<li><span class="hid">시각: </span><span>13시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">23℃<span
+																			class="chill">(23℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>23℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="14:00">
+																<li><span class="hid">시각: </span><span>14시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">24℃<span
+																			class="chill">(24℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>24℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="15:00">
+																<li><span class="hid">시각: </span><span>15시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB04" title="흐림">흐림</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">24℃<span
+																			class="chill">(24℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>24℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>30%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="16:00">
+																<li><span class="hid">시각: </span><span>16시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">24℃<span
+																			class="chill">(24℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>24℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>50%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="17:00">
+																<li><span class="hid">시각: </span><span>17시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">22℃<span
+																			class="chill">(22℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>22℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>55%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="18:00">
+																<li><span class="hid">시각: </span><span>18시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03" title="구름 많음">구름 많음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">21℃<span
+																			class="chill">(21℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>21℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>65%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="19:00">
+																<li><span class="hid">시각: </span><span>19시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">19℃<span
+																			class="chill">(19℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>19℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="20:00">
+																<li><span class="hid">시각: </span><span>20시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">19℃<span
+																			class="chill">(19℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>19℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+
+																<li><span class="hid">바람: </span><span class="wspd" title="바람없음">-</span></li>
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="21:00">
+																<li><span class="hid">시각: </span><span>21시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB03_N" title="구름 많음">구름 많음</span>
+																</li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">18℃<span
+																			class="chill">(18℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>18℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>20%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm E_b" title="동풍">동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="22:00">
+																<li><span class="hid">시각: </span><span>22시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">18℃<span
+																			class="chill">(18℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>18℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm E_b" title="동풍">동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>75%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="23:00">
+																<li><span class="hid">시각: </span><span>23시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm E_b" title="동풍">동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>80%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+
+
+
+															<ul class="item s-item  " data-sonagi="0" data-date="2026-10-16" data-time="24:00">
+																<li><span class="hid">시각: </span><span>0시</span></li>
+																<li><span class="hid">날씨: </span><span class="wic DB01_N" title="맑음">맑음</span></li>
+																<li><span class="hid">기온(체감온도) </span><span class="hid feel">17℃<span
+																			class="chill">(17℃)</span></span></li>
+																<li><span class="hid">체감온도: </span><span>17℃</span></li>
+																<li class="pcp "><span class="hid">강수량: </span><span>-</span></li>
+																<li>
+
+
+
+
+
+																	<span>-</span>
+
+
+																</li>
+																<li><span class="hid">강수확률: </span><span>0%</span></li>
+
+
+																<li>
+
+
+																	<span class="hid">바람: </span><span class="wdic sm E_b" title="동풍">동풍</span>
+
+
+
+																	<span class="wspd qwsd">약</span>
+																	<span class="wspd">1<span class="unit">m/s</span></span>
+																</li>
+
+
+
+																<li><span class="hid">습도: </span><span>80%</span></li>
+																<li><span class="hid">한파영향: </span><span class="lvl- "></span></li>
+															</ul>
+
+
+
+														</div>
+													</div>
+												</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+												<div class="tchart"
+													data-data="[[15,14,13,13,12,11,11,12,14,16,17,18,19,20,20,20,19,17,16,15,15,14,13,13,13,12,12,11,11,11,11,13,16,18,20,21,21,21,21,21,20,19,18,17,17,16,16,16,15,15,15,14,14,14,14,15,17,19,21,22,23,24,24,24,22,21,19,19,18,18,17,17]]"
+													style="width: 3384px;">
+													<div id="my-tchart" data-highcharts-chart="9"
+														style="width: 100%; height: 100%; overflow: hidden;">
+														<div id="highcharts-2oux3d8-389" dir="ltr" class="highcharts-container "
+															style="position: relative; overflow: hidden; width: 3383px; height: 100px; text-align: left; line-height: normal; z-index: 0; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); user-select: none; font-family: ns, sans-serif;">
+															<svg version="1.1" class="highcharts-root"
+																style="font-family:'ns', sans-serif;font-size:12px;" xmlns="http://www.w3.org/2000/svg"
+																width="3383" height="100" viewBox="0 0 3383 100">
+																<desc>Created with Highcharts 9.0.0</desc>
+																<defs>
+																	<clipPath id="highcharts-2oux3d8-390-">
+																		<rect x="0" y="0" width="3383" height="100" fill="none"></rect>
+																	</clipPath>
+																</defs>
+																<rect fill="rgba(0,0,0,0)" class="highcharts-background" x="0" y="0" width="3383"
+																	height="100" rx="0" ry="0"></rect>
+																<rect fill="none" class="highcharts-plot-background" x="0" y="0" width="3383"
+																	height="100"></rect>
+																<g class="highcharts-grid highcharts-xaxis-grid" data-z-index="1">
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 69.5 0 L 69.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 163.5 0 L 163.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 257.5 0 L 257.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 351.5 0 L 351.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 445.5 0 L 445.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 539.5 0 L 539.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 633.5 0 L 633.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 727.5 0 L 727.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 821.5 0 L 821.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 915.5 0 L 915.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1009.5 0 L 1009.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1103.5 0 L 1103.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1197.5 0 L 1197.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1291.5 0 L 1291.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1385.5 0 L 1385.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1479.5 0 L 1479.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1573.5 0 L 1573.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1667.5 0 L 1667.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1761.5 0 L 1761.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1855.5 0 L 1855.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 1949.5 0 L 1949.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2043.5 0 L 2043.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2137.5 0 L 2137.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2231.5 0 L 2231.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2325.5 0 L 2325.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2419.5 0 L 2419.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2513.5 0 L 2513.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2607.5 0 L 2607.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2701.5 0 L 2701.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2795.5 0 L 2795.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2889.5 0 L 2889.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 2983.5 0 L 2983.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 3077.5 0 L 3077.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 3171.5 0 L 3171.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 3265.5 0 L 3265.5 100" opacity="1"></path>
+																	<path fill="none" data-z-index="1" class="highcharts-grid-line"
+																		d="M 3359.5 0 L 3359.5 100" opacity="1"></path>
+																</g>
+																<g class="highcharts-grid highcharts-yaxis-grid" data-z-index="1">
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 100.5 L 3383 100.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 88.5 L 3383 88.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 75.5 L 3383 75.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 63.5 L 3383 63.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 50.5 L 3383 50.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 38.5 L 3383 38.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 25.5 L 3383 25.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 12.5 L 3383 12.5" opacity="1"></path>
+																	<path fill="none" stroke="rgba(0,0,0,0)" stroke-width="1" data-z-index="1"
+																		class="highcharts-grid-line" d="M 0 -0.5 L 3383 -0.5" opacity="1"></path>
+																</g>
+																<rect fill="none" class="highcharts-plot-border" data-z-index="1" x="0" y="0"
+																	width="3383" height="100"></rect>
+																<g class="highcharts-axis highcharts-xaxis" data-z-index="2">
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 69.5 100 L 69.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 163.5 100 L 163.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 257.5 100 L 257.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 351.5 100 L 351.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 445.5 100 L 445.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 539.5 100 L 539.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 633.5 100 L 633.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 727.5 100 L 727.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 821.5 100 L 821.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 915.5 100 L 915.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1009.5 100 L 1009.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1103.5 100 L 1103.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1197.5 100 L 1197.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1291.5 100 L 1291.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1385.5 100 L 1385.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1479.5 100 L 1479.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1573.5 100 L 1573.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1667.5 100 L 1667.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1761.5 100 L 1761.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1855.5 100 L 1855.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 1949.5 100 L 1949.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2043.5 100 L 2043.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2137.5 100 L 2137.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2231.5 100 L 2231.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2325.5 100 L 2325.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2419.5 100 L 2419.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2513.5 100 L 2513.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2607.5 100 L 2607.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2701.5 100 L 2701.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2795.5 100 L 2795.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2889.5 100 L 2889.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 2983.5 100 L 2983.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 3077.5 100 L 3077.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 3171.5 100 L 3171.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 3265.5 100 L 3265.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-tick" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		d="M 3359.5 100 L 3359.5 110" opacity="1"></path>
+																	<path fill="none" class="highcharts-axis-line" stroke="rgba(0,0,0,0)" stroke-width="1"
+																		data-z-index="7" d="M 0 100.5 L 3383 100.5"></path>
+																</g>
+																<g class="highcharts-axis highcharts-yaxis" data-z-index="2">
+																	<path fill="none" class="highcharts-axis-line" data-z-index="7" d="M 0 0 L 0 100">
+																	</path>
+																</g>
+																<g class="highcharts-series-group" data-z-index="3">
+																	<g class="highcharts-series highcharts-series-0 highcharts-spline-series"
+																		data-z-index="0.1" opacity="1" transform="translate(0,0) scale(1 1)"
+																		clip-path="url(#highcharts-2oux3d8-390-)">
+																		<path fill="none"
+																			d="M 23.171232876712 60.71428571428571 C 23.171232876712 60.71428571428571 51.3683387999224 64.28571428571428 70.166409415396 66.66666666666666 C 88.9644800308696 69.04761904761904 98.36351533860639 72.61904761904762 117.16158595408 72.61904761904762 C 135.959656569552 72.61904761904762 145.358691877288 72.61904761904762 164.15676249276 72.61904761904762 C 182.95483310823602 72.61904761904762 192.353868415974 76.19047619047593 211.15193903145 78.57142857142857 C 229.95000964692198 80.9523809523807 239.34904495465798 84.52380952380952 258.14711557013 84.52380952380952 C 276.945186185606 84.52380952380952 286.344221493344 84.52380952380952 305.14229210882 84.52380952380952 C 323.940362724292 84.52380952380952 333.339398032028 82.14285714285676 352.1374686475 78.57142857142857 C 370.935539262976 74.99999999999962 380.334574570714 71.42857142857193 399.13264518619 66.66666666666666 C 417.93071580166196 61.904761904762424 427.329751109398 58.33333333333333 446.12782172487 54.76190476190476 C 464.92589234034205 51.19047619047618 474.324927648078 51.190476190475934 493.12299826355 48.8095238095238 C 511.921068879026 46.42857142857117 521.320104186764 45.23809523809548 540.11817480224 42.85714285714285 C 558.9162454177119 40.47619047619072 568.315280725448 39.28571428571402 587.11335134092 36.9047619047619 C 605.911421956396 34.52380952380926 615.310457264134 30.95238095238095 634.10852787961 30.95238095238095 C 652.9065984950821 30.95238095238095 662.305633802818 30.95238095238095 681.10370441829 30.95238095238095 C 699.901775033762 30.95238095238095 709.300810341498 30.95238095238095 728.09888095697 30.95238095238095 C 746.896951572446 30.95238095238095 756.2959868801839 33.333333333332945 775.09405749566 36.9047619047619 C 793.892128111132 40.47619047619009 803.291163418868 45.238095238095596 822.08923403434 48.8095238095238 C 840.887304649816 52.38095238095274 850.2863399575541 52.38095238095214 869.08441057303 54.76190476190476 C 887.8824811885021 57.1428571428569 897.2815164962379 60.71428571428571 916.07958711171 60.71428571428571 C 934.8776577271859 60.71428571428571 944.276693034924 60.71428571428571 963.0747636504 60.71428571428571 C 981.87283426588 60.71428571428571 991.2718695736199 64.28571428571428 1010.0699401891 66.66666666666666 C 1028.8680108045799 69.04761904761904 1038.2670461123198 72.61904761904762 1057.0651167278 72.61904761904762 C 1075.86318734324 72.61904761904762 1085.26222265096 72.61904761904762 1104.0602932664 72.61904761904762 C 1122.85836388188 72.61904761904762 1132.2573991896202 72.61904761904762 1151.0554698051 72.61904761904762 C 1169.85354042058 72.61904761904762 1179.2525757283202 78.57142857142857 1198.0506463438 78.57142857142857 C 1216.8487169592802 78.57142857142857 1226.2477522670201 78.57142857142857 1245.0458228825 78.57142857142857 C 1263.84389349798 78.57142857142857 1273.2429288057199 84.52380952380952 1292.0409994212 84.52380952380952 C 1310.83907003668 84.52380952380952 1320.23810534442 84.52380952380952 1339.0361759599 84.52380952380952 C 1357.83424657538 84.52380952380952 1367.23328188312 84.52380952380952 1386.0313524986 84.52380952380952 C 1404.82942311404 84.52380952380952 1414.22845842176 84.52380952380952 1433.0265290372 84.52380952380952 C 1451.8245996526798 84.52380952380952 1461.2236349604198 78.57142857142861 1480.0217055759 72.61904761904762 C 1498.8197761913798 66.66666666666671 1508.21881149912 60.71428571428575 1527.0168821146 54.76190476190476 C 1545.81495273008 48.80952380952384 1555.21398803782 47.61904761904764 1574.0120586533 42.85714285714285 C 1592.81012926878 38.095238095238116 1602.2091645765202 34.5238095238095 1621.007235192 30.95238095238095 C 1639.8053058074802 27.380952380952355 1649.2043411152201 24.999999999999986 1668.0024117307 24.999999999999986 C 1686.8004823461401 24.999999999999986 1696.1995176538599 24.999999999999986 1714.9975882693 24.999999999999986 C 1733.7956588847799 24.999999999999986 1743.1946941925198 24.999999999999986 1761.992764808 24.999999999999986 C 1780.7908354234798 24.999999999999986 1790.18987073122 24.999999999999986 1808.9879413467 24.999999999999986 C 1827.78601196218 24.999999999999986 1837.18504726992 24.999999999999986 1855.9831178854 24.999999999999986 C 1874.78118850088 24.999999999999986 1884.1802238086202 28.57142857142858 1902.9782944241 30.95238095238095 C 1921.7763650395802 33.33333333333334 1931.1754003473202 34.52380952380698 1949.9734709628 36.9047619047619 C 1968.77154157824 39.28571428571174 1978.17057688596 40.47619047619299 1996.9686475014 42.85714285714285 C 2015.76671811688 45.23809523809775 2025.16575342462 48.8095238095238 2043.9638240401 48.8095238095238 C 2062.76189465558 48.8095238095238 2072.16092996332 48.8095238095238 2090.9590005788 48.8095238095238 C 2109.75707119428 48.8095238095238 2119.15610650202 54.76190476190476 2137.9541771175 54.76190476190476 C 2156.75224773298 54.76190476190476 2166.15128304072 54.76190476190476 2184.9493536562 54.76190476190476 C 2203.74742427168 54.76190476190476 2213.1464595794196 54.76190476190476 2231.9445301949 54.76190476190476 C 2250.7426008103803 54.76190476190476 2260.14163611812 60.71428571428571 2278.9397067336 60.71428571428571 C 2297.73777734904 60.71428571428571 2307.13681265676 60.71428571428571 2325.9348832722 60.71428571428571 C 2344.7329538876797 60.71428571428571 2354.13198919542 60.71428571428571 2372.9300598109 60.71428571428571 C 2391.7281304263797 60.71428571428571 2401.1271657341194 66.66666666666666 2419.9252363496 66.66666666666666 C 2438.72330696508 66.66666666666666 2448.12234227282 66.66666666666666 2466.9204128883 66.66666666666666 C 2485.7184835037797 66.66666666666666 2495.1175188115203 66.66666666666666 2513.915589427 66.66666666666666 C 2532.71366004248 66.66666666666666 2542.11269535022 66.66666666666666 2560.9107659657 66.66666666666666 C 2579.7088365811405 66.66666666666666 2589.1078718888602 64.28571428571047 2607.9059425043 60.71428571428571 C 2626.70401311978 57.14285714285333 2636.10304842752 53.57142857142856 2654.901119043 48.8095238095238 C 2673.69918965848 44.04761904761904 2683.09822496622 41.666666666666664 2701.8962955817 36.9047619047619 C 2720.69436619718 32.14285714285713 2730.0934015049197 28.57142857142856 2748.8914721204 24.999999999999986 C 2767.6895427358804 21.428571428571416 2777.08857804362 21.428571428571416 2795.8866486591 19.047619047619037 C 2814.68471927458 16.666666666666657 2824.0837545823197 15.476190476193034 2842.8818251978 13.095238095238088 C 2861.67989581324 10.71428571428827 2871.07893112096 7.142857142857125 2889.8770017364 7.142857142857125 C 2908.67507235188 7.142857142857125 2918.0741076596196 7.142857142857125 2936.8721782751 7.142857142857125 C 2955.6702488905803 7.142857142857125 2965.06928419832 7.142857142857125 2983.8673548138 7.142857142857125 C 3002.66542542928 7.142857142857125 3012.0644607370195 15.476190476190423 3030.8625313525 19.047619047619037 C 3049.66060196798 22.619047619047567 3059.05963727572 21.428571428571416 3077.8577078912 24.999999999999986 C 3096.65577850668 28.57142857142856 3106.05481381442 36.9047619047619 3124.8528844299 36.9047619047619 C 3143.6509550453798 36.9047619047619 3153.04999035312 36.9047619047619 3171.8480609686 36.9047619047619 C 3190.6461315840397 36.9047619047619 3200.0451668917594 42.85714285714285 3218.8432375072 42.85714285714285 C 3237.6413081226797 42.85714285714285 3247.04034343042 42.85714285714285 3265.8384140459 42.85714285714285 C 3284.6364846613806 42.85714285714285 3294.03551996912 48.8095238095238 3312.8335905846 48.8095238095238 C 3331.63166120008 48.8095238095238 3359.8287671233 48.8095238095238 3359.8287671233 48.8095238095238"
+																			class="highcharts-graph" data-z-index="1" stroke="#009AE0" stroke-width="2"
+																			stroke-linejoin="round" stroke-linecap="round"></path>
+																	</g>
+																	<g class="highcharts-markers highcharts-series-0 highcharts-spline-series"
+																		data-z-index="0.1" opacity="1" transform="translate(0,0) scale(1 1)"
+																		clip-path="none">
+																		<path fill="#009AE0" d="M 23 65 A 4 4 0 1 1 23.003999999333335 64.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 70 71 A 4 4 0 1 1 70.00399999933333 70.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 117 77 A 4 4 0 1 1 117.00399999933333 76.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 164 77 A 4 4 0 1 1 164.00399999933333 76.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 211 83 A 4 4 0 1 1 211.00399999933333 82.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 258 89 A 4 4 0 1 1 258.00399999933336 88.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 305 89 A 4 4 0 1 1 305.00399999933336 88.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 352 83 A 4 4 0 1 1 352.00399999933336 82.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 399 71 A 4 4 0 1 1 399.00399999933336 70.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 446 59 A 4 4 0 1 1 446.00399999933336 58.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 493 53 A 4 4 0 1 1 493.00399999933336 52.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 540 47 A 4 4 0 1 1 540.0039999993334 46.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 587 41 A 4 4 0 1 1 587.0039999993334 40.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 634 35 A 4 4 0 1 1 634.0039999993334 34.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 681 35 A 4 4 0 1 1 681.0039999993334 34.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 728 35 A 4 4 0 1 1 728.0039999993334 34.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 775 41 A 4 4 0 1 1 775.0039999993334 40.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 822 53 A 4 4 0 1 1 822.0039999993334 52.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 869 59 A 4 4 0 1 1 869.0039999993334 58.99999800000017 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 916 65 A 4 4 0 1 1 916.0039999993334 64.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0" d="M 963 65 A 4 4 0 1 1 963.0039999993334 64.99999800000016 Z"
+																			opacity="1" class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1010 71 A 4 4 0 1 1 1010.0039999993334 70.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1057 77 A 4 4 0 1 1 1057.0039999993332 76.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1104 77 A 4 4 0 1 1 1104.0039999993332 76.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1151 77 A 4 4 0 1 1 1151.0039999993332 76.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1198 83 A 4 4 0 1 1 1198.0039999993332 82.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1245 83 A 4 4 0 1 1 1245.0039999993332 82.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1292 89 A 4 4 0 1 1 1292.0039999993332 88.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1339 89 A 4 4 0 1 1 1339.0039999993332 88.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1386 89 A 4 4 0 1 1 1386.0039999993332 88.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1433 89 A 4 4 0 1 1 1433.0039999993332 88.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1480 77 A 4 4 0 1 1 1480.0039999993332 76.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1527 59 A 4 4 0 1 1 1527.0039999993332 58.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1574 47 A 4 4 0 1 1 1574.0039999993332 46.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1621 35 A 4 4 0 1 1 1621.0039999993332 34.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1668 29 A 4 4 0 1 1 1668.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1714 29 A 4 4 0 1 1 1714.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1761 29 A 4 4 0 1 1 1761.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1808 29 A 4 4 0 1 1 1808.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1855 29 A 4 4 0 1 1 1855.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1902 35 A 4 4 0 1 1 1902.0039999993332 34.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1949 41 A 4 4 0 1 1 1949.0039999993332 40.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 1996 47 A 4 4 0 1 1 1996.0039999993332 46.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2043 53 A 4 4 0 1 1 2043.0039999993332 52.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2090 53 A 4 4 0 1 1 2090.0039999993332 52.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2137 59 A 4 4 0 1 1 2137.0039999993332 58.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2184 59 A 4 4 0 1 1 2184.0039999993332 58.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2231 59 A 4 4 0 1 1 2231.0039999993332 58.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2278 65 A 4 4 0 1 1 2278.0039999993332 64.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2325 65 A 4 4 0 1 1 2325.0039999993332 64.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2372 65 A 4 4 0 1 1 2372.0039999993332 64.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2419 71 A 4 4 0 1 1 2419.0039999993332 70.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2466 71 A 4 4 0 1 1 2466.0039999993332 70.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2513 71 A 4 4 0 1 1 2513.0039999993332 70.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2560 71 A 4 4 0 1 1 2560.0039999993332 70.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2607 65 A 4 4 0 1 1 2607.0039999993332 64.99999800000016 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2654 53 A 4 4 0 1 1 2654.0039999993332 52.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2701 41 A 4 4 0 1 1 2701.0039999993332 40.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2748 29 A 4 4 0 1 1 2748.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2795 23 A 4 4 0 1 1 2795.0039999993332 22.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2842 17 A 4 4 0 1 1 2842.0039999993332 16.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2889 11 A 4 4 0 1 1 2889.0039999993332 10.999998000000167 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2936 11 A 4 4 0 1 1 2936.0039999993332 10.999998000000167 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 2983 11 A 4 4 0 1 1 2983.0039999993332 10.999998000000167 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3030 23 A 4 4 0 1 1 3030.0039999993332 22.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3077 29 A 4 4 0 1 1 3077.0039999993332 28.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3124 41 A 4 4 0 1 1 3124.0039999993332 40.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3171 41 A 4 4 0 1 1 3171.0039999993332 40.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3218 47 A 4 4 0 1 1 3218.0039999993332 46.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3265 47 A 4 4 0 1 1 3265.0039999993332 46.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3312 53 A 4 4 0 1 1 3312.0039999993332 52.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																		<path fill="#009AE0"
+																			d="M 3359 53 A 4 4 0 1 1 3359.0039999993332 52.99999800000017 Z" opacity="1"
+																			class="highcharts-point"></path>
+																	</g>
+																</g><text x="1692" text-anchor="middle" class="highcharts-title" data-z-index="4"
+																	style="color:#333333;font-size:18px;fill:#333333;" y="24"></text><text x="1692"
+																	text-anchor="middle" class="highcharts-subtitle" data-z-index="4"
+																	style="color:#666666;fill:#666666;" y="24"></text><text x="10" text-anchor="start"
+																	class="highcharts-caption" data-z-index="4" style="color:#666666;fill:#666666;"
+																	y="97"></text>
+																<g class="highcharts-data-labels highcharts-series-0 highcharts-spline-series"
+																	data-z-index="6" opacity="1" transform="translate(0,0) scale(1 1)">
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(50,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(97,46)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">13℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(144,46)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">13℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(191,52)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">12℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(238,58)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">11℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(285,58)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">11℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(332,52)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">12℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(379,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(426,28)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">16℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(473,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(520,16)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">18℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(567,10)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">19℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(614,4)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">20℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(661,4)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">20℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(708,4)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">20℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(755,10)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">19℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(802,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(849,28)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">16℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(896,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(943,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(990,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1037,46)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">13℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1084,46)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">13℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1131,46)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">13℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1178,52)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">12℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1225,52)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">12℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1272,58)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">11℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1319,58)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">11℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1366,58)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">11℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1413,58)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">11℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1460,46)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">13℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1507,28)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">16℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1554,16)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">18℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1601,4)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">20℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1648,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1695,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1742,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1789,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1836,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1883,4)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">20℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1930,10)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">19℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(1977,16)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">18℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2024,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2071,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2118,28)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">16℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2165,28)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">16℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2212,28)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">16℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2259,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2306,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2353,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2400,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2447,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2494,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2541,40)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">14℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2588,34)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">15℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2635,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2682,10)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">19℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2729,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2776,19)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">22℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2823,13)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">23℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2870,7)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">24℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2917,7)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">24℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(2964,7)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">24℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3011,19)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">22℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3058,-2)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">21℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3105,10)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">19℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3152,10)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">19℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3199,16)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">18℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3246,16)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">18℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3293,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																	<g class="highcharts-label highcharts-data-label highcharts-data-label-color-undefined"
+																		data-z-index="1" transform="translate(3340,22)"><text x="5" data-z-index="1" y="19"
+																			style="color:#000000;font-size:14px;font-weight:normal;fill:#000000;">17℃</text>
+																	</g>
+																</g>
+																<g class="highcharts-legend" data-z-index="7">
+																	<rect fill="none" class="highcharts-legend-box" rx="0" ry="0" x="0" y="0" width="8"
+																		height="8" visibility="hidden"></rect>
+																	<g data-z-index="1">
+																		<g></g>
+																	</g>
+																</g>
+																<g class="highcharts-axis-labels highcharts-xaxis-labels" data-z-index="7"></g>
+																<g class="highcharts-axis-labels highcharts-yaxis-labels" data-z-index="7"></g>
+															</svg></div>
+													</div>
+													<div id="my-tchart" style="width: 100%; height: 100%;"></div>
+												</div>
+												<div class="ptychart"
+													data-data="[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,20,20,20,0,0,0,0,0,0,0,0,20,20,20,0,0,20,20,20,20,20,30,20,20,20,20,0,20,0,0,0]]">
+												</div>
+												<div class="rainchart" data-snow-exists="false" data-rain-exists="false"
+													data-data="[[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]]">
+												</div>
+												<div class="snowchart" data-snow-exists="false" data-rain-exists="false"
+													data-data="[[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]]">
+												</div>
+												<div class="windchart"
+													data-data="[[1,2,3,3,3,3,2,3,3,3,3,2,2,2,3,2,2,2,2,2,1,1,1,1,2,1,1,1,1,2,2,3,3,3,4,5,5,4,5,5,4,3,3,3,3,3,3,2,2,2,2,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1],[&quot;W&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;NW&quot;,&quot;W&quot;,&quot;W&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;SW&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;S&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;SE&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;no wind&quot;,&quot;E&quot;,&quot;E&quot;,&quot;E&quot;,&quot;E&quot;]]">
+												</div>
+												<div class="hmchart"
+													data-data="[[55,50,50,50,50,50,50,45,40,35,30,25,25,30,30,35,40,50,55,60,60,65,65,65,70,75,75,75,75,75,75,70,60,55,55,50,50,50,55,55,60,70,70,75,75,75,75,80,80,80,85,85,85,90,90,80,75,70,65,60,55,50,50,50,55,65,75,75,75,75,80,80]]">
+												</div>
+												<div class="vshort-forecast" id="vshort-forecast">초단기 10분강수예측</div>
+											</div>
+											<div class="dfs-slider-border"></div>
+											<div class="iScrollHorizontalScrollbar iScrollLoneScrollbar" style="overflow: hidden;">
+												<div class="iScrollIndicator"
+													style="transition-duration: 0ms; display: block; width: 315px; transform: translate(0px, 0px) translateZ(0px);">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="cmp-dfs-updated">
+									<a href="/forecast/guide/fct-shrt-guide.html" title="새창열림" class="ts-open-box"
+										onclick="openPopGuide(event, this.href);"><span>시계열예보안내</span></a>
+									<a href="#" class="open-box"><span>최근발표시각</span></a>
+									<div class="shadow-box">
+										<div class="inner">
+											<a href="#close" class="close-box">닫기</a>
+											<h5>최근발표시각</h5>
+											<dl>
+												<dt>초단기예보(현재부터 +6시간까지):</dt>
+												<dd>10.13.(화) 23:30</dd>
+											</dl>
+											<dl>
+												<dt>단기예보(초단기예보 이후 모레까지):</dt>
+												<dd>10.13.(화) 23:00</dd>
+											</dl>
+											<dl>
+												<dt>중기예보(단기예보 이후 10일까지):</dt>
+												<dd>10.13.(화) 18:00</dd>
+											</dl>
+										</div>
+									</div>
+								</div>
+								<div class="cmp-cur-weather cmp-cur-weather-air">
+									<h3 class="cmp-cur-weather-head">대기질정보</h3>
+									<ul class="no-underline wrap-2 air-wrap">
+										<li>
+											<span class="lbl">초미세먼지<small>(PM2.5)</small></span>
+											<strong class="air-level val"><span class="air-lvv-wrap air-lvv-1"><span
+														class="air-lvv">7</span><small class="unit">㎍/m³</small></span><span class="air-lvt"
+													style="color:#1f6fdd">좋음<a href="#legend" data-air-type="pm25">초미세먼지 범례보기</a></span></strong>
+
+										</li>
+										<li>
+											<span class="lbl">미세먼지<small>(PM10)</small></span>
+											<strong class="air-level val"><span class="air-lvv-wrap air-lvv-1"><span
+														class="air-lvv">30</span><small class="unit">㎍/m³</small></span><span class="air-lvt"
+													style="color:#1f6fdd">좋음<a href="#legend" data-air-type="pm10">미세먼지 범례보기</a></span></strong>
+
+										</li>
+										<li>
+											<span class="lbl">오존<small>(O<small>3</small>)</small></span>
+											<strong class="air-level val"><span class="air-lvv-wrap air-lvv-2"><span
+														class="air-lvv">0.046</span><small class="unit">ppm</small></span><span class="air-lvt"
+													style="color:#01b56e">보통<a href="#legend" data-air-type="o3">오존 범례보기</a></span></strong>
+
+										</li>
+									</ul>
+									<div class="cmp-air-legend">
+										<div class="shadow-box" data-air-type="pm25">
+											<div class="inner">
+												<a href="#close" class="close-box">닫기</a>
+												<h5>초미세먼지(㎛)</h5>
+												<p>입자의 크기가 2.5㎛ 이하인 먼지</p>
+												<ul class="air-legend">
+													<li class="air-legend-1"><span>좋음<br>(0~15)</span></li>
+													<li class="air-legend-2"><span>보통<br>(16~35)</span></li>
+													<li class="air-legend-3"><span>나쁨<br>(36~75)</span></li>
+													<li class="air-legend-4"><span>매우나쁨<br>(76~)</span></li>
+												</ul>
+											</div>
+										</div>
+										<div class="shadow-box" data-air-type="pm10">
+											<div class="inner">
+												<a href="#close" class="close-box">닫기</a>
+												<h5>미세먼지(㎛)</h5>
+												<p>입자의 크기가 10㎛ 이하인 먼지</p>
+												<ul class="air-legend">
+													<li class="air-legend-1"><span>좋음<br>(0~30)</span></li>
+													<li class="air-legend-2"><span>보통<br>(31~80)</span></li>
+													<li class="air-legend-3"><span>나쁨<br>(81~150)</span></li>
+													<li class="air-legend-4"><span>매우나쁨<br>(151~)</span></li>
+												</ul>
+											</div>
+										</div>
+										<div class="shadow-box" data-air-type="o3">
+											<div class="inner">
+												<a href="#close" class="close-box">닫기</a>
+												<h5>오존(ppm)</h5>
+												<ul class="air-legend">
+													<li class="air-legend-1"><span>좋음<br>(0~0.03)</span></li>
+													<li class="air-legend-2"><span>보통<br>(0.031~0.09)</span></li>
+													<li class="air-legend-3"><span>나쁨<br>(0.091~0.15)</span></li>
+													<li class="air-legend-4"><span>매우나쁨<br>(0.151~)</span></li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="cmp-cmn-para cmp-cur-weather-air">
+									<p class="right">구로구측정소(도시대기) 10.13.(화) 23:00 기준</p>
+									<p class="right spon"><a href="http://m.airkorea.or.kr" target="_blank" title="새창열림">제공: 한국환경공단</a>
+									</p>
+								</div>
+								<script>
+									if (typeof weatherUI === 'object') weatherUI.popOpen('.iconguide.pop-open');
+									function openPopGuide(e, url) {
+										e.preventDefault();
+
+										if (window.innerWidth > 768) {
+											let windowName = url.split('/').pop();
+											window.open(url, windowName, 'width=1120, height=728').focus();
+										}
+										else {
+											window.open(url, '_blank');
+										}
+									}
+								</script>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="cont-wrap cmp-weather-short-term" id="after-dfs-forecast">
+
+					<div class="cmp-stack">
+						<ul class="flex flex-wrap items-center gap-2"> <!-- tab-wrap01 -->
+							<li>
+								<a href="short-term.do?stnId=108" class="active small button" title="선택됨" data-tab="tab1">전국</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=109" class="small button" data-tab="tab2">서울·인천·경기</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=159" class="small button" data-tab="tab3">부산·울산·경남</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=143" class="small button" data-tab="tab4">대구·경북</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=156" class="small button" data-tab="tab5">전남광주통합특별시</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=146" class="small button" data-tab="tab6">전북특별자치도</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=133" class="small button" data-tab="tab7">대전·세종·충남</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=131" class="small button" data-tab="tab8">충북</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=105" class="small button" data-tab="tab9">강원특별자치도</a>
+							</li>
+							<li>
+								<a href="short-term.do?stnId=184" class="small button" data-tab="tab10">제주특별자치도</a>
+							</li>
+						</ul>
+
+
+						<div class="cmp-pdf-download cmp-pdf-download-al cmp-pdf-download-sm"><a
+								href="/repositary/xml/fct/rpt_wid_day_202610131700_108.pdf" class="pdf-download" target="_blank"
+								title="새창열림">통보문 <strong>다운로드</strong></a></div>
+
+						<section class="cmp-view cmp-mg-top-20">
+							<div class="cmp-view-announce">
+								<span>2026년 10월 13일 (화)요일 17:00 발표</span>
+								<em>(총괄예보관: 변건영)</em>
+
+							</div>
+							<div class="cmp-view-header cmp-view-header-center">
+								<h4>오늘(10월 13일)~그글피(10월 17일)</h4>
+							</div>
+							<div class="cmp-view-content">
+								<p class="summary"><span class="depth_1">□ (종합) 오늘 밤부터 기온 낮아져 쌀쌀하겠음, 당분간 낮과 밤 기온차 큼, 풍랑.강풍 유의
+									</span><span class="depth_2">○ (오늘, 13일) 전국 가끔 구름많음,<br>
+										밤(18~24시)에 전라서해안 곳에 따라 가끔 비,<br>
+										저녁(18~21시)까지 수도권, 밤(18~24시)까지 강원도와 충청권, 그 밖의 전라권 곳에 따라 0.1mm 미만 빗방울</span><span class="depth_2">○
+										(내일, 14일) 전국 대체로 맑겠으나, 제주도 구름많다가 아침부터 차차 맑아짐,<br>
+										새벽(00~06시)에 제주도산지.중산간 곳에 따라 0.1mm 미만 빗방울</span><span class="depth_2">○ (모레, 15일) 전국 대체로 맑겠으나, 수도권과
+										강원도 오전부터, 제주도 오후부터 구름많음,<br>
+										늦은 오후(15~18시)부터 밤(18~24시) 사이 경기북부와 강원북부내륙 곳에 따라 비</span><span class="depth_2">○ (글피, 16일) 전국 대체로 맑다가
+										오후부터 구름많겠고, 제주도 구름많음</span><span class="depth_2">○ (그글피, 17일) 전국 구름많다가 저녁부터 차차 흐려짐<br>
+									</span><span class="depth_3">* 예상 강수량(13일)</span><span class="depth_4">- (전라권) 전북서해안, 전남서해안: 5mm
+										미만<br>
+									</span><span class="depth_3">* 예상 강수량(14일)</span><span class="depth_4">- (경상권) 울릉도.독도: 5mm 안팎<br>
+									</span><span class="depth_3">* 예상 강수량(15일)</span><span class="depth_4">- (수도권) 경기북부, 서해5도: 5mm
+										미만</span><span class="depth_4">- (강원도) 강원북부내륙: 5mm 미만</span></p>
+							</div>
+							<div class="cmp-stack">
+								<div class="over-scroll">
+									<table class="table-col whitespaced">
+										<caption class="hide-caption">현재위치의 단기예보의 정보를 비교해서 나타낸 표입니다.</caption>
+										<colgroup>
+											<col style="width:15%;">
+											<col style="width:calc(85% / 7);" span="7">
+										</colgroup>
+
+										<thead>
+											<tr>
+												<th scope="col" class="left-sticky"><span>예보요소</span></th>
+												<th scope="col" class="line2">평년(오늘)</th>
+												<th scope="col">어제(12일)</th>
+												<th scope="col">오늘(13일)</th>
+												<th scope="col">내일(14일)</th>
+												<th scope="col">모레(15일)</th>
+												<th scope="col">글피(16일)</th>
+												<th scope="col">그글피(17일)</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<th scope="row" rowspan="1" class="left-sticky normal"><span>최저기온 (℃)</span></th>
+
+												<td>6.0 ~ 15.3</td>
+												<td>14.5 ~ 21.5</td>
+												<td>14.6 ~ 22.1</td>
+												<td>5 ~ 14</td>
+												<td>4 ~ 12</td>
+												<td>7 ~ 15</td>
+												<td>8 ~ 17</td>
+
+
+											</tr>
+											<tr>
+												<th scope="row" rowspan="1" class="left-sticky normal"><span>최고기온 (℃)</span></th>
+
+												<td>19.9 ~ 23.3</td>
+												<td>23.6 ~ 31.5</td>
+												<td>19.3 ~ 27.3</td>
+												<td>18 ~ 22</td>
+												<td>20 ~ 24</td>
+												<td>22 ~ 25</td>
+												<td>21 ~ 26</td>
+
+
+											</tr>
+
+											<tr>
+												<th scope="row" rowspan="3" class="left-sticky"><span>파고(m)</span></th>
+
+
+												<td colspan="2">
+													<p>서해 앞바다/안쪽먼바다/바깥먼바다</p>
+
+												</td>
+
+												<td>0.5~2.0 / 1.0~3.5 / 1.0~3.5</td>
+												<td>0.5~3.0 / 1.0~3.5 / 1.0~3.5</td>
+												<td>0.5~1.5 / 0.5~2.5 / 0.5~2.5</td>
+												<td>0.5~1.0 / 0.5~1.5 / 0.5~1.5</td>
+												<td>0.5~1.0 / 0.5~2.5 / 0.5~2.5</td>
+
+											</tr>
+
+											<tr>
+
+
+
+												<td colspan="2">
+													<p>남해 앞바다/안쪽먼바다/바깥먼바다</p>
+
+												</td>
+
+												<td>0.5~1.5 / 0.5~2.0 / 1.0~2.0</td>
+												<td>0.5~1.5 / 1.0~3.0 / 1.0~3.5</td>
+												<td>0.5~1.5 / 0.5~2.0 / 0.5~2.5</td>
+												<td>0.5~1.0 / 0.5~1.0 / 0.5~1.5</td>
+												<td>0.5~1.5 / 0.5~2.0 / 0.5~1.0</td>
+
+											</tr>
+
+											<tr>
+
+
+
+												<td colspan="2">
+													<p>동해 앞바다/안쪽먼바다/바깥먼바다</p>
+
+												</td>
+
+												<td>0.5~2.0 / 1.0~2.5 / 1.0~2.5</td>
+												<td>1.0~3.5 / 1.0~4.0 / 1.5~5.0</td>
+												<td>0.5~2.5 / 0.5~3.5 / 0.5~3.5</td>
+												<td>0.5~1.0 / 0.5~1.5 / 0.5~1.5</td>
+												<td>0.5~1.5 / 0.5~1.5 / 0.5~1.5</td>
+
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</section>
+
+					</div>
+					<div class="cmp-stack">
+						<div class="cmp-info-message cmp-common-content">
+							<ul>
+								<li class="no-head">※ 최저/최고기온 설명
+									<ul>
+										<li>11시 발표 : 오늘의 최저기온은 03시~09시 사이에 관측된 아침 최저기온이며, 최고는 예보된 낮 최고기온임</li>
+										<li>17시 발표 : 오늘의 최저/최고기온은 관측된 아침최저/낮최고 기온이며, 아침 최저기온은 03시~09시 사이 가장 낮은 기온, 낮최고기온은 09시 이후 통보시(17시)까지
+											가장 높은 기온임</li>
+										<li>평년과 어제의 최저/최고기온은 일최저기온/일최고기온임</li>
+										<li class="no-head" style="margin-left: -10px;">※ 체감온도: 기온에 습도, 바람 등의 영향이 더해져 사람이 느끼는 더위나 추위를 정량적으로
+											나타낸 온도, 습도 10%p 증가시마다 체감온도 1도가량 증가하는 특징</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="cont-wrap">
+					<div class="bottom-info">
+						<nav class="cmp-ext-link com-ext-link-2banner com-ext-link-notitle">
+							<h3>더 많은 정보가 있어요</h3>
+							<ul>
+								<li><a href="https://astro.kasi.re.kr/kor/life/pageView/6" class="sun-riset-time" target="_blank"
+										title="새창열림"><span>해달 뜨고 지는 시각</span></a></li>
+								<li><a href="http://www.khoa.go.kr/swtc/main.html" class="tide-info" target="_blank"
+										title="새창열림"><span>밀물/썰물 정보</span></a></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+				<div class="modal-layer pop-local-search">
+					<div class="modal-layer-inner">
+						<a href="#" class="modal-layer-close" title="지역검색 창 닫기"><span
+								style="text-indent:-999999px; position:absolute;">지역검색 창 닫기</span></a>
+						<div class="cmp-local-search v2" id="pop-local-search">
+							<div class="cmp-local-search-input">
+								<div><input class="input" type="text" placeholder="주요지명으로 입력"></div>
+								<a href="#" class="sym-btn sch">검색</a>
+								<a href="#" class="sym-btn txt-only pop-open" data-pop-name="open-search-pop"><span>읍면동으로 선택</span></a>
+							</div>
+							<div class="cmp-local-search-items">
+								<ul></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+
+
+	<!-- footer -->
+	<footer class="nr__footer"></footer>
+	<!-- //footer -->
+
+	<script src="repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
+	<!-- START OF LOGGER TRACKING SCRIPT -->
+	<!-- 기존 logger2 로그 -->
+	<!--<script th:src="@{'/resources/js/logger2.weather.go.kr.1057.js?ver=' + ${appVersion}}"></script>
+    <noscript><img alt="로그" src="https://logger.kma.go.kr/tracker.tsp?u=7&amp;js=N" width="0" height="0" /></noscript>-->
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+	<script src="resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드 -->
+	<script type="module">
+		import { UX } from './resources/js-2026/ui-common.js';
+		import { initAsideMenu } from './resources/js-2026/component/ui-aside.js';
+
+		UX.init('sub');
+
+		// 원하는 메뉴 활성화를 직접 호출하여 제어할 수도 있습니다:
+		// initAsideMenu({ dep1: 1, dep2: 2, dep3: 4 });
+	</script>
+</body>
+
+</html>

@@ -3,47 +3,54 @@
 
 <head>
 	<meta charset="UTF-8">
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport"
 		content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-	<title>해상 예보 - 기상청 날씨누리</title>
+	<title>특보(종합) - 기상청 날씨누리</title>
 
-	<link rel="shortcut icon" href="../logo_mark.png">
-	<link rel="apple-touch-icon-precomposed" href="../logo_mark.png">
+	<link rel="shortcut icon" href="logo_mark.png">
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png">
 	<meta property="og:title" content="기상청 날씨누리">
 	<meta property="og:description" content="기상청 날씨누리">
 	<meta property="og:image" content="https://www.weather.go.kr/w/iphone-shortcut.png">
 	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY">
 
-	<link href="../resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
 
-	<link href="../resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
-	<link href="../resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
-	<link href="../resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
 
 	<script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
 	<script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
-	<script src="../resources/js/lodash.min.js"></script>
+	<script src="resources/js/lodash.min.js"></script>
 	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
-	<script src="../resources/js/clipboard.min.js"></script>
-	<script src="../resources/js/moment-with-locales.js"></script>
-	<script src="../resources/js/moment-timezone.js"></script>
-	<script src="../resources/js/jquery-3.5.0.min.js"></script>
-	<script src="../resources/js/jquery-ui.min.js"></script>
-	<script src="../resources/js/iscroll-probe.js"></script>
-	<script src="../resources/js/scrollbooster.min.js"></script>
-	<script src="../resources/js/slick.min.js"></script>
-	<script src="../resources/js/mustache.min.js"></script>
-	<script src="../resources/js/store.modern.min.js"></script>
-	<script src="../resources/js/object-assign.js"></script>
-	<script src="../resources/js/highcharts.js"></script>
-	<script src="../resources/js/fn.js?ver=202607091110"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
 	<script>
 		window.appBase = "\/w\/";
 		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
@@ -53,10 +60,10 @@
 	</script>
 
 	<!-- 신규코드 -->
-	<link rel="stylesheet" href="../resources/css-2026/plugin/swiper-bundle.min.css">
-	<link rel="stylesheet" href="../resources/css-2026/common.css">
-	<link rel="stylesheet" href="../resources/css-2026/sub.css">
-	<link rel="stylesheet" href="../resources/css-2026/icon.css">
+	<link rel="stylesheet" href="resources/css-2026/plugin/swiper-bundle.min.css">
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
 </head>
 
 <body class="subp subp01 subp01-02 wthema-a">
@@ -754,28 +761,28 @@
 	<footer class="nr__footer"></footer>
 	<!-- //footer -->
 
-	<script src="../repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
-	<script src="../resources/js/com.ui-2021.js?ver=202607091110"></script>
-	<script src="../resources/js/app-2021/app-config.js?ver=202607091110"></script>
-	<script src="../resources/js/app-2021/dong-config.js?ver=202607091110"></script>
-	<script src="../resources/js/app-2021/sea-config.js?ver=202607091110"></script>
-	<script src="../resources/js/app-2021/app-init.js?ver=202607091110"></script>
-	<script src="../resources/js/kmap-wrap.js?ver=202607091110"></script>
-	<script src="../resources/js/global.js?ver=202607091110"></script>
+	<script src="repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
 	<!-- START OF LOGGER TRACKING SCRIPT -->
 	<!-- 기존 logger2 로그 -->
 	<!--<script th:src="@{'/resources/js/logger2.weather.go.kr.1057.js?ver=' + ${appVersion}}"></script>
     <noscript><img alt="로그" src="https://logger.kma.go.kr/tracker.tsp?u=7&amp;js=N" width="0" height="0" /></noscript>-->
-	<script src="../resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
 	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
 			height="0" /></noscript>
 	<!-- END OF LOGGER TRACKING SCRIPT -->
-	<script src="../resources/js/UserScriptConf.js"></script>
+	<script src="resources/js/UserScriptConf.js"></script>
 
 	<!-- 신규 코드 -->
 	<script type="module">
-		import { UX } from '../resources/js-2026/ui-common.js';
-		import { initAsideMenu } from '../resources/js-2026/component/ui-aside.js';
+		import { UX } from './resources/js-2026/ui-common.js';
+		import { initAsideMenu } from './resources/js-2026/component/ui-aside.js';
 
 		UX.init('sub');
 

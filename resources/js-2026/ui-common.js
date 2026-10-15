@@ -6,6 +6,9 @@ import {
   initAllDropdowns,
   initNoticeHelpTooltips,
 } from "./component/ui-dropdown.js";
+import {
+  Tab
+} from "./component/ui-tab.js";
 import { Toast, showToast } from "./component/ui-toast.js";
 import { initMap } from "./component/ui-map.js";
 import { initAsideMenu } from "./component/ui-aside.js";
@@ -14,6 +17,7 @@ import { uiForecastExe } from "./component/ui-forecast.js";
 
 export const UX = {
   loadContent,
+  Tab,
   initNoticeDropdown,
   initSpecialReportTabs,
   initNoticeHelpTooltips,
@@ -49,7 +53,7 @@ export const UX = {
     if (nrHeader) {
       loadContent({
         area: nrHeader,
-        src: type === 'main' ? "./inc/header.html" : "../inc/header.html",
+        src: "inc/header.html",
         insert: true,
       })
         .then(async () => {
@@ -65,7 +69,7 @@ export const UX = {
     if (nrFooter) {
       loadContent({
         area: nrFooter,
-        src: type === 'main' ? "./inc/footer.html" : "../inc/footer.html",
+        src: "inc/footer.html",
         insert: true,
       })
         .then(() => {
@@ -84,13 +88,13 @@ export const UX = {
       nrLinks.forEach((nrLink) => {
         loadContent({
           area: nrLink,
-          src: "./inc/links.html",
+          src: "inc/links.html",
           insert: true,
         })
         .then(() => {
-          console.log("footer load");
+          console.log("links load");
         })
-        .catch((err) => console.error("Error loading footer content:", err));
+        .catch((err) => console.error("Error loading links content:", err));
       });
     }
 

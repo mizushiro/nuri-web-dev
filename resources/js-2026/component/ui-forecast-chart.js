@@ -227,12 +227,7 @@ export const defaultRenderTempChart = (layer, context) => {
     if (i === 0) {
       d += `M ${pt.x} ${pt.y}`;
     } else {
-      const prev = coords[i - 1];
-      const cx1 = prev.x + (pt.x - prev.x) / 2;
-      const cy1 = prev.y;
-      const cx2 = prev.x + (pt.x - prev.x) / 2;
-      const cy2 = pt.y;
-      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${pt.x} ${pt.y}`;
+      d += ` L ${pt.x} ${pt.y}`;
     }
   });
 
@@ -298,47 +293,29 @@ export const renderMinMaxTempChart = (layer, context, validDates = [], options =
     type: 'min'
   }));
 
-  // Bezier Path 생성기
+  // Line Path 생성기 (직선)
   const createBezierPath = (pts, yProp = 'y') => {
     if (!pts || pts.length === 0) return '';
     if (pts.length === 1) return `M ${pts[0].x} ${pts[0][yProp]}`;
     let d = `M ${pts[0].x} ${pts[0][yProp]}`;
     for (let i = 1; i < pts.length; i++) {
-      const prev = pts[i - 1];
-      const curr = pts[i];
-      const cx1 = prev.x + (curr.x - prev.x) / 2;
-      const cy1 = prev[yProp];
-      const cx2 = prev.x + (curr.x - prev.x) / 2;
-      const cy2 = curr[yProp];
-      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${curr.x} ${curr[yProp]}`;
+      d += ` L ${pts[i].x} ${pts[i][yProp]}`;
     }
     return d;
   };
 
-  // Band Path 생성기 (상단 곡선 -> 하단 곡선 역순 닫기)
+  // Band Path 생성기 (상단 직선 -> 하단 직선 역순 닫기)
   const createBandPath = (pts, topProp, botProp) => {
     if (!pts || pts.length === 0) return '';
     if (pts.length === 1) return '';
     let d = `M ${pts[0].x} ${pts[0][topProp]}`;
     for (let i = 1; i < pts.length; i++) {
-      const prev = pts[i - 1];
-      const curr = pts[i];
-      const cx1 = prev.x + (curr.x - prev.x) / 2;
-      const cy1 = prev[topProp];
-      const cx2 = prev.x + (curr.x - prev.x) / 2;
-      const cy2 = curr[topProp];
-      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${curr.x} ${curr[topProp]}`;
+      d += ` L ${pts[i].x} ${pts[i][topProp]}`;
     }
     const last = pts[pts.length - 1];
     d += ` L ${last.x} ${last[botProp]}`;
     for (let i = pts.length - 2; i >= 0; i--) {
-      const prev = pts[i + 1];
-      const curr = pts[i];
-      const cx1 = prev.x - (prev.x - curr.x) / 2;
-      const cy1 = prev[botProp];
-      const cx2 = prev.x - (prev.x - curr.x) / 2;
-      const cy2 = curr[botProp];
-      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${curr.x} ${curr[botProp]}`;
+      d += ` L ${pts[i].x} ${pts[i][botProp]}`;
     }
     d += ' Z';
     return d;
@@ -664,13 +641,8 @@ export const defaultRenderHumidityChart = (layer, context) => {
       d += `M ${pt.x} ${pt.y}`;
       areaD += `M ${pt.x} ${height} L ${pt.x} ${pt.y}`;
     } else {
-      const prev = coords[i - 1];
-      const cx1 = prev.x + (pt.x - prev.x) / 2;
-      const cy1 = prev.y;
-      const cx2 = prev.x + (pt.x - prev.x) / 2;
-      const cy2 = pt.y;
-      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${pt.x} ${pt.y}`;
-      areaD += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${pt.x} ${pt.y}`;
+      d += ` L ${pt.x} ${pt.y}`;
+      areaD += ` L ${pt.x} ${pt.y}`;
     }
   });
 

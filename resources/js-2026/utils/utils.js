@@ -116,3 +116,318 @@ export const deleteCookie = (name, path = '/') => {
   if (typeof document === 'undefined') return;
   document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
 };
+
+export class ArrowNavigator {
+  constructor(opt) {
+    const container = opt.container;
+    const foucsabledSelector = opt.foucsabledSelector;
+    const callback = opt.callback;
+
+    if (!container || !(container instanceof HTMLElement)) {
+      throw new Error("ArrowNavigator: 유효한 DOM 요소를 전달해야 합니다.");
+    }
+
+    this.container = container;
+    this.callback = typeof callback === "function" ? callback : () => {};
+    this.focusableSelectors = !foucsabledSelector
+      ? [
+          '[role="tab"]',
+          '[role="button"]',
+          "button:not([disabled])",
+          "a[href]",
+          "input:not([disabled])",
+          "select:not([disabled])",
+          "textarea:not([disabled])",
+          '[tabindex]:not([tabindex="-1"])',
+        ]
+      : [foucsabledSelector];
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+
+    this.container.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  getFocusableElements() {
+    // container가 null이 된 후에 호출될 경우를 대비한 방어 로직 추가
+    if (!this.container) return [];
+    return Array.from(
+      this.container.querySelectorAll(this.focusableSelectors.join(","))
+    ).filter((el) => el.offsetParent !== null);
+  }
+
+  handleKeyDown(e) {
+    const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+    if (!keys.includes(e.key)) return;
+
+    const elements = this.getFocusableElements();
+    // elements가 비어있을 경우 currentIndex가 -1이 될 수 있으므로 추가 확인
+    if (elements.length === 0) return;
+
+    const currentIndex = elements.indexOf(document.activeElement);
+
+    // 현재 포커스된 요소가 ArrowNavigator가 관리하는 요소가 아닌 경우 처리
+    if (currentIndex === -1) {
+      // 컨테이너 내의 첫 번째 또는 마지막 요소로 포커스 이동을 시작하도록 선택적으로 처리 가능
+      // 예: nextIndex = 0; 또는 nextIndex = elements.length - 1;
+      return; // 현재는 아무것도 하지 않음
+    }
+
+    let nextIndex;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      nextIndex = (currentIndex + 1) % elements.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      nextIndex = (currentIndex - 1 + elements.length) % elements.length;
+    }
+
+    const nextEl = elements[nextIndex];
+    if (nextEl) {
+      e.preventDefault();
+      nextEl.focus();
+      this.callback(nextEl, nextIndex);
+    }
+  }
+
+  destroy() {
+    // container가 유효한 경우에만 이벤트 리스너를 제거합니다.
+    if (this.container) {
+      this.container.removeEventListener("keydown", this.handleKeyDown);
+    }
+
+    // 내부 참조를 null로 설정하여 가비지 컬렉션에 도움을 줍니다.
+    this.container = null;
+    this.callback = null;
+    this.focusableSelectors = null;
+    this.handleKeyDown = null; // 바인딩된 함수 참조도 null
+  }
+}
+
+export class ScrollTrigger {
+  constructor(options) {
+    // 기본 옵션 설정
+    this.options = {
+      targetSelector: null, // 관찰할 요소의 CSS 선택자 (필수)
+      callback: () => {}, // 요소가 트리거될 때 실행할 함수 (필수)
+      root: null, // Intersection Observer의 root 옵션 (null = 뷰포트)
+      rootMargin: "0px", // Intersection Observer의 rootMargin 옵션
+      threshold: 0, // Intersection Observer의 threshold 옵션 (0.0 ~ 1.0 또는 배열)
+      once: false, // 한 번 트리거되면 관찰을 중지할지 여부
+    };
+
+    // 사용자가 제공한 옵션으로 기본 옵션 오버라이드
+    Object.assign(this.options, options);
+
+    // 필수 옵션 검증
+    if (!this.options.targetSelector) {
+      console.error("ScrollTrigger: targetSelector 옵션은 필수입니다.");
+      return;
+    }
+    if (typeof this.options.callback !== "function") {
+      console.error("ScrollTrigger: callback 옵션은 함수여야 합니다.");
+      return;
+    }
+
+    this.observer = null; // IntersectionObserver 인스턴스
+    this.init(); // 초기화 메서드 호출
+  }
+
+  init() {
+    const { root, rootMargin, threshold } = this.options;
+    console.log("rootMargin", rootMargin);
+    // Intersection Observer 생성
+    this.observer = new IntersectionObserver(
+      this.handleIntersection.bind(this),
+      {
+        root,
+        rootMargin,
+        threshold,
+      }
+    );
+
+    // 모든 대상 요소를 찾아 관찰 시작
+    this.targetElements = this.options.targetSelector;
+    if (this.targetElements.length === 0) {
+      console.warn(
+        `ScrollTrigger: '${this.options.targetSelector}'에 해당하는 요소를 찾을 수 없습니다.`
+      );
+      return;
+    }
+
+    this.targetElements.forEach((element) => {
+      this.observer.observe(element);
+    });
+  }
+
+  handleIntersection(entries, observer) {
+    entries.forEach((entry) => {
+      //target: 대상 요소
+      //isIntersecting: 교차 여부
+      //intersectionRatio: 교차 비율
+      if (entry.isIntersecting) {
+        // 요소가 뷰포트에 진입했을 때 콜백 실행
+        this.options.callback({
+          target: entry.target,
+          ratio: entry.intersectionRatio.toPrecision(2),
+          rect: entry.boundingClientRect,
+        }); // 콜백에 해당 요소 전달
+
+        // once 옵션이 true이면, 콜백 실행 후 해당 요소의 관찰 중지
+        if (this.options.once) {
+          observer.unobserve(entry.target);
+        }
+      }
+    });
+  }
+
+  // 모든 관찰 중지 메서드 (필요시 외부에서 호출)
+  destroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+  }
+}
+
+export class SmoothScroller {
+  /**
+   * @param {Object} opt
+   * @param {HTMLElement} opt.element
+   * @param {string} [opt.type=center|left|right]
+   */
+  constructor(opt) {
+    this.container = opt.element;
+    this.width = this.container.offsetWidth;
+    this.type = opt.type || "center";
+    const computedStyle = window.getComputedStyle(this.container);
+    this.gap = parseFloat(computedStyle.paddingLeft);
+  }
+
+  move(item) {
+    // If the container has been destroyed, do nothing
+    if (!this.container) {
+      console.warn(
+        "SmoothScroller: Attempted to move item on a destroyed instance."
+      );
+      return;
+    }
+
+    const rect = this.container.getBoundingClientRect();
+    const scrollLeft = this.container.scrollLeft;
+    const itemRect = item.getBoundingClientRect();
+
+    // targetLeft는 아이템의 시작점이 컨테이너의 시작점(paddingLeft 포함)으로부터 얼마나 떨어져 있는지 계산합니다.
+    const targetLeft = Math.abs(
+      rect.left + this.gap - (itemRect.left + scrollLeft)
+    );
+
+    switch (this.type) {
+      case "center":
+        // 중앙 정렬: 아이템의 중앙이 컨테이너의 중앙에 오도록 스크롤합니다.
+        this.container.scrollTo({
+          left: targetLeft - rect.width / 2 + itemRect.width / 2,
+          behavior: "smooth",
+        });
+        break;
+      case "left":
+        // 좌측 정렬: 아이템의 시작점이 컨테이너의 좌측 정렬 기준에 오도록 스크롤합니다. (paddingLeft 고려)
+        this.container.scrollTo({
+          left: targetLeft,
+          behavior: "smooth",
+        });
+        break;
+      case "right":
+        // 우측 정렬: 아이템의 끝점이 컨테이너의 우측 정렬 기준에 오도록 스크롤합니다.
+        // targetLeft는 아이템의 시작 위치이므로, 아이템 너비와 컨테이너 너비를 고려하여 계산합니다.
+        this.container.scrollTo({
+          left: targetLeft - (rect.width - itemRect.width), // 아이템 시작점에서 (컨테이너 너비 - 아이템 너비)를 빼서 우측 정렬
+          behavior: "smooth",
+        });
+        break;
+    }
+  }
+
+  /**
+   * Cleans up the SmoothScroller instance by nullifying internal references.
+   */
+  destroy() {
+    // Nullify references to DOM elements to aid garbage collection.
+    this.container = null;
+    this.width = null;
+    this.type = null;
+    this.gap = null;
+
+    // You might want to add a console log for debugging purposes,
+    // especially during development, but often omitted in production.
+    // console.log("SmoothScroller instance destroyed.");
+  }
+}
+
+export class FocusTrap {
+  constructor(container) {
+    if (!container || !(container instanceof HTMLElement)) {
+      throw new Error("FocusTrap requires a valid DOM element.");
+    }
+
+    this.container = container;
+    this.focusableElements = this.getFocusableElements();
+    this.firstElement = this.focusableElements[0];
+    this.lastElement =
+      this.focusableElements[this.focusableElements.length - 1];
+
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.activate();
+  }
+
+  getFocusableElements() {
+    const selectors = [
+      "a[href]",
+      "area[href]",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      "button:not([disabled])",
+      "iframe",
+      "object",
+      "embed",
+      "[contenteditable]",
+      '[tabindex]:not([tabindex="-1"])',
+    ];
+    return Array.from(
+      this.container.querySelectorAll(selectors.join(","))
+    ).filter((el) => el.offsetParent !== null);
+  }
+
+  handleKeyDown(e) {
+    if (e.key !== "Tab") return;
+
+    this.focusableElements = this.getFocusableElements(); // update in case of dynamic changes
+    this.firstElement = this.focusableElements[0];
+    this.lastElement =
+      this.focusableElements[this.focusableElements.length - 1];
+
+    if (this.focusableElements.length === 0) return;
+
+    if (e.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === this.firstElement) {
+        e.preventDefault();
+        this.lastElement.focus();
+      } else if (e.target === this.container) {
+        e.preventDefault();
+        this.lastElement.focus();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === this.lastElement) {
+        e.preventDefault();
+        this.firstElement.focus();
+      }
+    }
+  }
+
+  activate() {
+    this.container.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  deactivate() {
+    this.container.removeEventListener("keydown", this.handleKeyDown);
+  }
+}

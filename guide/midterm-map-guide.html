@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <script>
+    (function () {
+      var isGhPages = window.location.pathname.startsWith('/nuri-web');
+      var baseHref = isGhPages ? '/nuri-web/' : '/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>중기예보 지도 &amp; 타임라인 플레이어 가이드 - 기상청 날씨누리</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- 2026 신규 CSS -->
+  <link rel="stylesheet" href="resources/css-2026/common.css">
+  <link rel="stylesheet" href="resources/css-2026/sub.css">
+  <link rel="stylesheet" href="resources/css-2026/icon.css">
+
+  <style>
+    :root {
+      --primary: #006fe8;
+      --primary-dark: #0050a8;
+      --primary-light: #eaf3fe;
+      --surface: #ffffff;
+      --surface-sub: #f8fafc;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --code-bg: #1e293b;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background-color: #f1f5f9;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* 상단 네비게이션 헤더 */
+    .guide-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .guide-header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .guide-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .guide-brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .guide-brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .guide-nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .guide-nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .guide-nav-links a:hover,
+    .guide-nav-links a.active {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .guide-nav-links a.active {
+      font-weight: 700;
+      box-shadow: inset 0 -2px 0 var(--primary);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    /* 본문 컨테이너 */
+    .guide-container {
+      max-width: 1240px;
+      margin: 32px auto 80px;
+      padding: 0 24px;
+    }
+
+    /* 인트로 히어로 배너 */
+    .hero-banner {
+      background: linear-gradient(135deg, #091e42 0%, #0050a8 60%, #006fe8 100%);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 40px 48px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      scroll-margin-top: 80px;
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      bottom: -60px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 820px;
+      line-height: 1.6;
+    }
+
+    /* 가이드 섹션 */
+    .guide-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow-sm);
+      scroll-margin-top: 80px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .section-title-badge {
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* 라이브 프리뷰 상단 테스트 툴바 */
+    .demo-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+    .demo-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .demo-toolbar-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      margin-right: 4px;
+    }
+    .demo-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border-dark);
+      background: #fff;
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .demo-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .demo-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .demo-status-pill {
+      font-size: 12px;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 카드 그리드 */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .feature-card {
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+    .feature-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+    .feature-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .feature-card-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* 코드 블록 */
+    .code-box {
+      position: relative;
+      background: var(--code-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-top: 16px;
+    }
+    .code-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #0f172a;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .code-box-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    pre {
+      margin: 0;
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    /* 테이블 스타일 */
+    .guide-table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .guide-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+    .guide-table th {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .guide-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #334155;
+    }
+    .guide-table tr:last-child td {
+      border-bottom: none;
+    }
+    .guide-table code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #f1f5f9;
+      color: #0284c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* 알림 및 보안 안내 박스 */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: #f0f7ff;
+      padding: 16px 20px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 18px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+      line-height: 1.6;
+    }
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+    }
+    .callout-warn {
+      border-left-color: #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+    }
+    .callout-success {
+      border-left-color: #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    .callout code {
+      background: rgba(0, 0, 0, 0.06);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .guide-header-inner { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .guide-nav-links { flex-wrap: wrap; gap: 4px; }
+      .guide-nav-links a { padding: 4px 8px; font-size: 13px; }
+      .hero-banner { padding: 28px 24px; }
+      .hero-title { font-size: 24px; }
+      .guide-section { padding: 24px 20px; }
+      .demo-toolbar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 상단 헤더 -->
+  <header class="guide-header">
+    <div class="guide-header-inner">
+      <a href="guide/midterm-map-guide.html" class="guide-brand">
+        <span class="guide-brand-badge">COMPONENT GUIDE</span>
+        <span class="guide-brand-title">날씨누리 컴포넌트 가이드</span>
+      </a>
+      <ul class="guide-nav-links">
+        <li><a href="guide/markup-list.html">목록으로</a></li>
+        <li><a href="#demo">라이브 데모</a></li>
+        <li><a href="#features">주요 기능</a></li>
+        <li><a href="#markup">HTML 마크업</a></li>
+        <li><a href="#api">JS API</a></li>
+        <li><a href="#best-practices">연동 &amp; 보안 가이드</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="guide-container">
+    <!-- 히어로 배너 -->
+    <section class="hero-banner">
+      <span class="hero-tag">FORECAST &amp; TIMELINE PLAYER</span>
+      <h1 class="hero-title">중기예보 지도 &amp; 타임라인 플레이어 가이드</h1>
+      <p class="hero-desc">
+        기준시간(3시간, 6시간 등 가변 시간 범위)을 22칸으로 균등(1/n) 분할하여 분 단위 시점 이동, 실시간 파란 진행 바 채움 애니메이션, 파란 말풍선 툴팁 연동 및 자정 넘김 표기를 제공하는 표준 지도 플레이어 컴포넌트입니다.
+      </p>
+    </section>
+
+    <!-- 1. 라이브 프리뷰 데모 -->
+    <section class="guide-section" id="demo">
+      <div class="section-title">
+        <span>라이브 인터랙티브 데모</span>
+        <span class="section-title-badge">LIVE DEMO</span>
+      </div>
+      <p class="section-desc">
+        아래 데모에서 이전/다음 버튼, 재생 버튼, 트랙 직접 클릭을 통해 플레이바 인터랙션을 체험할 수 있습니다. 상단의 시나리오 버튼으로 3시간, 6시간, 자정 넘김 시간대를 즉시 테스트할 수 있습니다.
+      </p>
+
+      <!-- 테스트 제어 툴바 -->
+      <div class="demo-toolbar">
+        <div class="demo-toolbar-group">
+          <span class="demo-toolbar-label">시간 범위 테스트:</span>
+          <button type="button" class="demo-btn active" id="btn-mode-3h">3시간 (09~12시)</button>
+          <button type="button" class="demo-btn" id="btn-mode-6h">6시간 (09~15시)</button>
+          <button type="button" class="demo-btn" id="btn-mode-midnight">자정 넘김 (23시~02시)</button>
+        </div>
+        <div class="demo-toolbar-group">
+          <span class="demo-toolbar-label">현재 스텝:</span>
+          <span class="demo-status-pill" id="demo-step-status">STEP: 0 / 21</span>
+        </div>
+      </div>
+
+      <!-- 실제 컴포넌트 마크업 영역 -->
+      <div class="nr__midterm-player-wrap">
+        <!-- 지도 영역 (영역만 잡아둠) -->
+        <div class="nr__midterm-map-area" id="nr-midterm-map-area" aria-label="중기예보 지도 영역">
+          <div class="nr__midterm-map-inner">
+            <div class="nr__midterm-map-placeholder">
+              <span class="nr__midterm-map-text">지도 영역 (kmap / 지도 라이브러리 연동 영역)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 지도 하단 컨트롤 바 -->
+        <div class="nr__midterm-control-bar">
+          <!-- 기준시간 행 -->
+          <div class="nr__midterm-time-row">
+            <span class="nr__midterm-time-label">기준시간</span>
+            <div class="nr__midterm-time-box">
+              <span class="nr__midterm-time-value" id="nr-midterm-time-text">11.24.(화) 09~12시</span>
+            </div>
+          </div>
+
+          <!-- 타임라인 플레이어 컨트롤러 -->
+          <div class="nr__midterm-timeline-box">
+            <!-- 컨트롤 버튼 그룹 -->
+            <div class="nr__midterm-btn-group">
+              <button type="button" class="nr__midterm-btn nr__midterm-btn--prev" id="nr-midterm-prev-btn" title="이전 시간" aria-label="이전 시간">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button type="button" class="nr__midterm-btn nr__midterm-btn--play" id="nr-midterm-play-btn" title="재생" aria-label="재생">
+                <svg class="nr__midterm-icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                  <polygon points="7,4 20,12 7,20"></polygon>
+                </svg>
+                <svg class="nr__midterm-icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="display: none;">
+                  <rect x="6" y="4" width="4" height="16"></rect>
+                  <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+              </button>
+              <button type="button" class="nr__midterm-btn nr__midterm-btn--next" id="nr-midterm-next-btn" title="다음 시간" aria-label="다음 시간">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <!-- 타임라인 슬라이더 트랙 영역 -->
+            <div class="nr__midterm-track-area" id="nr-midterm-track-area">
+              <!-- 파란 말풍선 툴팁 -->
+              <div class="nr__midterm-tooltip" id="nr-midterm-tooltip" style="left: 0%;">
+                <span class="nr__midterm-tooltip-text" id="nr-midterm-tooltip-text">11/24.09:00</span>
+              </div>
+
+              <!-- 트랙 바 -->
+              <div class="nr__midterm-track">
+                <div class="nr__midterm-track-bg"></div>
+                <div class="nr__midterm-track-fill" id="nr-midterm-track-fill" style="width: 0%;"></div>
+
+                <!-- 22개 눈금(Tick) -->
+                <div class="nr__midterm-ticks" id="nr-midterm-ticks">
+                  <span class="nr__midterm-tick nr__midterm-tick--active"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                  <span class="nr__midterm-tick"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 주요 기능 및 설계 원칙 -->
+    <section class="guide-section" id="features">
+      <div class="section-title">
+        <span>주요 기능 및 동작 특징</span>
+        <span class="section-title-badge">FEATURES</span>
+      </div>
+      <p class="section-desc">
+        기상청 누리웹의 사용자 경험 및 정밀한 예보 시점 확인을 위한 핵심 설계 사항입니다.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">22</div>
+          <h3 class="feature-card-title">22칸 1/n 동적 분할</h3>
+          <p class="feature-card-desc">
+            총 기준시간 범위(기본 3시간)를 21개 균등 구간으로 나누어 22개의 시점을 분 단위까지 정밀하게 계산합니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-icon">▶</div>
+          <h3 class="feature-card-title">파란 진행 바 &amp; 툴팁 연동</h3>
+          <p class="feature-card-desc">
+            현재 재생 위치에 맞추어 흰색 트랙 위로 파란색 진행 바가 채워지며, 상단 말풍선이 1/n 비율로 부드럽게 실시간 이동합니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-icon">🌙</div>
+          <h3 class="feature-card-title">자정 넘김(자정 분기) 지원</h3>
+          <p class="feature-card-desc">
+            23시~02시처럼 날짜가 바뀌는 시간대에는 <code>11.24.(화) 23시 ~ 11.25(수) 02시</code>와 같이 날짜와 요일이 자동으로 분기 표기됩니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-icon">⏱</div>
+          <h3 class="feature-card-title">3H / 6H 가변 범위 대응</h3>
+          <p class="feature-card-desc">
+            3시간에 국한되지 않고 6시간, 12시간 등 다양한 예보 기준 시간에 맞춰 22칸이 가변 분할됩니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-icon">👆</div>
+          <h3 class="feature-card-title">모바일 터치 &amp; 드래그 (스크러빙)</h3>
+          <p class="feature-card-desc">
+            모바일 손가락 터치 및 드래그, PC 마우스 드래그를 통해 트랙 위를 스크러빙하며 원하는 예보 시점을 부드럽고 직관적으로 탐색할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 마크업 구조 -->
+    <section class="guide-section" id="markup">
+      <div class="section-title">
+        <span>HTML 마크업 구조</span>
+        <span class="section-title-badge">MARKUP</span>
+      </div>
+      <p class="section-desc">
+        모든 클래스명에 <code>nr__</code> 프리픽스를 적용하여 KRDS 및 기존 레거시 CSS와의 충돌을 방지합니다.
+      </p>
+
+      <div class="code-box">
+        <div class="code-box-header">
+          <span class="code-box-title">HTML (mid-term.html 삽입 마크업)</span>
+          <button type="button" class="copy-btn" onclick="copyCode('code-html')">복사</button>
+        </div>
+        <pre><code id="code-html">&lt;div class="nr__midterm-player-wrap"&gt;
+  &lt;!-- 지도 영역 (영역 확보) --&gt;
+  &lt;div class="nr__midterm-map-area" id="nr-midterm-map-area" aria-label="중기예보 지도 영역"&gt;
+    &lt;div class="nr__midterm-map-inner"&gt;
+      &lt;div class="nr__midterm-map-placeholder"&gt;
+        &lt;span class="nr__midterm-map-text"&gt;지도 영역&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 지도 하단 컨트롤 바 --&gt;
+  &lt;div class="nr__midterm-control-bar"&gt;
+    &lt;!-- 기준시간 행 --&gt;
+    &lt;div class="nr__midterm-time-row"&gt;
+      &lt;span class="nr__midterm-time-label"&gt;기준시간&lt;/span&gt;
+      &lt;div class="nr__midterm-time-box"&gt;
+        &lt;span class="nr__midterm-time-value" id="nr-midterm-time-text"&gt;11.24.(화) 09~12시&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 타임라인 슬라이더 박스 --&gt;
+    &lt;div class="nr__midterm-timeline-box"&gt;
+      &lt;!-- 이전/재생/다음 버튼 --&gt;
+      &lt;div class="nr__midterm-btn-group"&gt;
+        &lt;button type="button" class="nr__midterm-btn nr__midterm-btn--prev" id="nr-midterm-prev-btn" aria-label="이전 시간"&gt;&lt;/button&gt;
+        &lt;button type="button" class="nr__midterm-btn nr__midterm-btn--play" id="nr-midterm-play-btn" aria-label="재생"&gt;&lt;/button&gt;
+        &lt;button type="button" class="nr__midterm-btn nr__midterm-btn--next" id="nr-midterm-next-btn" aria-label="다음 시간"&gt;&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 트랙 및 툴팁 --&gt;
+      &lt;div class="nr__midterm-track-area" id="nr-midterm-track-area"&gt;
+        &lt;div class="nr__midterm-tooltip" id="nr-midterm-tooltip" style="left: 0%;"&gt;
+          &lt;span class="nr__midterm-tooltip-text" id="nr-midterm-tooltip-text"&gt;11/24.09:00&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="nr__midterm-track"&gt;
+          &lt;div class="nr__midterm-track-bg"&gt;&lt;/div&gt;
+          &lt;div class="nr__midterm-track-fill" id="nr-midterm-track-fill" style="width: 0%;"&gt;&lt;/div&gt;
+          &lt;div class="nr__midterm-ticks" id="nr-midterm-ticks"&gt;
+            &lt;!-- 22개 눈금 --&gt;
+            &lt;span class="nr__midterm-tick nr__midterm-tick--active"&gt;&lt;/span&gt;
+            &lt;!-- ... (총 22개 tick) ... --&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. JavaScript API 명세 -->
+    <section class="guide-section" id="api">
+      <div class="section-title">
+        <span>JavaScript API 가이드</span>
+        <span class="section-title-badge">API REFERENCE</span>
+      </div>
+      <p class="section-desc">
+        외부 컴포넌트나 비동기 데이터 갱신 시 전역 컨트롤러 객체인 <code>window.nrMidtermPlayer</code> 또는 모듈 인스턴스를 통해 제어할 수 있습니다.
+      </p>
+
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th style="width: 28%;">메서드 (Method)</th>
+              <th style="width: 32%;">파라미터 (Parameters)</th>
+              <th style="width: 40%;">설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>goToStep(index)</code></td>
+              <td><code>index: number (0 ~ 21)</code></td>
+              <td>지정한 눈금(0~21) 위치로 즉시 이동 및 진행 바/툴팁/텍스트 UI 동기화</td>
+            </tr>
+            <tr>
+              <td><code>setPlaying(boolean)</code></td>
+              <td><code>playing: boolean</code></td>
+              <td>자동 순차 재생 시작(true) 또는 일시정지(false). 끝 도달 시 처음(0)부터 루프 재생</td>
+            </tr>
+            <tr>
+              <td><code>setDuration(hours)</code></td>
+              <td><code>hours: number (예: 3, 6, 12)</code></td>
+              <td>시작 시간은 유지하고 기준 시간 간격(3시간, 6시간 등)을 변경 후 22칸 재계산</td>
+            </tr>
+            <tr>
+              <td><code>setStartDate(date, hours?)</code></td>
+              <td><code>date: string|Date, hours?: number</code></td>
+              <td>기준 시작 일시 및 간격 변경 (예: 자정 넘김 테스트 등, 안전한 파싱 내장)</td>
+            </tr>
+            <tr>
+              <td><code>setRange(start, end)</code></td>
+              <td><code>start: string|Date, end: string|Date</code></td>
+              <td>시작 일시와 종료 일시를 명시적으로 직접 지정하여 22칸 1/n 분할</td>
+            </tr>
+            <tr>
+              <td><code>getCurrentIndex()</code></td>
+              <td>-</td>
+              <td>현재 선택된 스텝 인덱스(0~21) 반환</td>
+            </tr>
+            <tr>
+              <td><code>getInfo()</code></td>
+              <td>-</td>
+              <td>현재 시점의 상세 정보 객체 반환 <code>{ tooltipText, rangeText }</code></td>
+            </tr>
+            <tr>
+              <td><code>destroy()</code></td>
+              <td>-</td>
+              <td>재생 타이머(setInterval) 해제 및 드래그 상태 리셋 (탭 전환 시 메모리 누수 방지용)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 커스텀 이벤트 명세 -->
+      <div class="callout callout-success" style="margin-top: 24px;">
+        <div class="callout-title">📡 실시간 동기화 커스텀 이벤트: <code>midtermPlayerChange</code></div>
+        <p>플레이어의 시점이 바뀔 때마다 <code>window</code> 객체로 <code>midtermPlayerChange</code> 이벤트가 자동 디스패치됩니다. 지도 레이어나 데이터 그리드 연동에 활용할 수 있습니다.</p>
+        <pre style="background: rgba(0,0,0,0.06); padding: 10px 14px; border-radius: 6px; margin-top: 8px; font-size: 13px;"><code>window.addEventListener('midtermPlayerChange', function (e) {
+  var currentIndex = e.detail.currentIndex; // 0 ~ 21
+  var totalSteps = e.detail.totalSteps;     // 22
+  var tooltipText = e.detail.info.tooltipText; // '11/24.09:00'
+  var rangeText = e.detail.info.rangeText;     // '11.24.(화) 09~12시'
+});</code></pre>
+      </div>
+
+      <div class="code-box">
+        <div class="code-box-header">
+          <span class="code-box-title">JavaScript 제어 예시</span>
+          <button type="button" class="copy-btn" onclick="copyCode('code-js')">복사</button>
+        </div>
+        <pre><code id="code-js">// 1. 6시간 기준 시간대로 변경 (09:00 ~ 15:00)
+window.nrMidtermPlayer.setDuration(6);
+
+// 2. 자정을 넘기는 시간대로 변경 (23:00 ~ 02:00)
+window.nrMidtermPlayer.setStartDate('2026-11-24T23:00:00', 3);
+
+// 3. 5번째 스텝으로 강제 이동
+window.nrMidtermPlayer.goToStep(5);
+
+// 4. 자동 재생 실행
+window.nrMidtermPlayer.setPlaying(true);
+
+// 5. 탭 종료 또는 페이지 언로드 시 타이머 해제
+window.nrMidtermPlayer.destroy();</code></pre>
+      </div>
+    </section>
+
+    <!-- 5. 연동 & 보안 베스트 프랙티스 -->
+    <section class="guide-section" id="best-practices">
+      <div class="section-title">
+        <span>연동 &amp; 보안 베스트 프랙티스</span>
+        <span class="section-title-badge">SECURITY &amp; BEST PRACTICES</span>
+      </div>
+      <p class="section-desc">
+        기상청 날씨누리 실제 시스템에 중기예보 플레이어를 탑재할 때 준수해야 할 메모리 관리, XSS 보안 대책, 지도 동기화 패턴 및 웹 접근성 가이드입니다.
+      </p>
+
+      <!-- 4개 핵심 원칙 카드 그리드 -->
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-title">🛡️ 1. XSS 방어 및 안전한 데이터 바인딩</div>
+          <p class="feature-card-desc">
+            외부 REST API로 받은 일시 문자열을 DOM에 렌더링할 때 <code>innerHTML</code>을 사용하지 않고 <code>textContent</code>를 통해 안전하게 바인딩합니다. <code>parseSafeDate()</code> 헬퍼가 내장되어 유효하지 않은 날짜 파라미터 유입 시 NaN 오류를 원천 차단합니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">🧹 2. 탭 전환 시 생명주기 (메모리 누수 방지)</div>
+          <p class="feature-card-desc">
+            <code>UX.Tab</code> 연동 시 다른 서브탭(예: 3일~10일, 11일~30일 등)으로 전환되면 플레이어의 재생 타이머가 백그라운드에서 불필요하게 돌지 않도록 <code>setPlaying(false)</code> 또는 <code>destroy()</code>를 호출하여 타이머를 해제합니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">🗺️ 3. 지도(OpenLayers / Kmap) 실시간 레이어 연동</div>
+          <p class="feature-card-desc">
+            <code>midtermPlayerChange</code> 이벤트를 구독하여 스텝 이동 시 지도 인스턴스의 타일 레이어나 WMS 시간 파라미터(<code>TIME=...</code>), GeoJSON 강수 확률 벡터 소스를 즉시 업데이트합니다.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">♿ 4. WAI-ARIA &amp; 키보드 접근성 준수</div>
+          <p class="feature-card-desc">
+            슬라이더 트랙에 <code>role="slider"</code>, <code>aria-valuenow</code>, <code>aria-valuetext</code>가 실시간 연동되며, 키보드 방향키(좌/우/상/하 1스텝, Home 처음, End 끝, Space/Enter 재생 토글) 및 Focus 링 스타일이 지원됩니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- 보안 및 안정성 경고 박스 -->
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ 개발자 보안 주의사항: 날짜 파라미터 유효성 검증</div>
+        <p>URL 쿼리스트링(<code>?tm=...</code>)이나 비동기 응답 데이터를 플레이어에 주입할 때, 반드시 ISO 8601 형식(<code>YYYY-MM-DDTHH:mm:ss</code>)을 준수하고, <code>isNaN(new Date(...).getTime())</code> 여부를 사전 검증해야 날짜 연산 오류를 방지할 수 있습니다.</p>
+      </div>
+
+      <!-- 완결형 서비스 연동 템플릿 코드 -->
+      <div class="code-box">
+        <div class="code-box-header">
+          <span class="code-box-title">실제 서비스 연동 완결형 예제 (Tab + Map + Player Integration)</span>
+          <button type="button" class="copy-btn" onclick="copyCode('code-integration')">복사</button>
+        </div>
+        <pre><code id="code-integration">&lt;script type="module"&gt;
+  import { initMidtermPlayer } from './resources/js-2026/component/ui-midterm-player.js';
+
+  // 1. 플레이어 인스턴스 초기화
+  const player = initMidtermPlayer({
+    startDate: '2026-11-24T09:00:00',
+    durationHours: 3 // 기본 3시간 (09~12시)
+  });
+
+  // 2. 플레이어 시점 이동 이벤트 수신 -> 지도 레이어 갱신
+  window.addEventListener('midtermPlayerChange', (e) => {
+    const { currentIndex, totalSteps, info } = e.detail;
+    console.log(`[중기예보 시점 갱신] ${currentIndex}단계 / 시간: ${info.tooltipText}`);
+
+    // [예시] 지도 라이브러리(Kmap / OpenLayers) 타일 또는 데이터 갱신
+    if (window.kmapInstance && typeof window.kmapInstance.updateForecastLayer === 'function') {
+      window.kmapInstance.updateForecastLayer({
+        stepIndex: currentIndex,
+        forecastTime: info.tooltipText
+      });
+    }
+  });
+
+  // 3. 표준 탭(UX.Tab)과 연동 시 생명주기 관리
+  const forecastSubTab = new UX.Tab({
+    id: 'tab-midterm-type',
+    renderMode: 'static',
+    selected: 1,
+    callback: (v) => {
+      // 탭 번호(v.n)에 따라 생명주기 제어
+      if (v.n === 1) {
+        // 중기예보 탭 활성화 시 UI 재정렬
+        player.goToStep(0);
+      } else {
+        // 다른 탭으로 이동 시 백그라운드 재생 타이머 일시 정지 (메모리 절약)
+        player.setPlaying(false);
+      }
+    }
+  });
+  forecastSubTab.init();
+&lt;/script&gt;</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <!-- 중기예보 플레이어 컴포넌트 스크립트 로드 -->
+  <script src="resources/js-2026/component/ui-midterm-player.js"></script>
+
+  <!-- 가이드 전용 인터랙션 스크립트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1. 상단 네비게이션 부드러운 스크롤 이동 및 base 태그 간섭 방지
+      var navAnchors = document.querySelectorAll('.guide-nav-links a[href^="#"]');
+      var trackedSections = [];
+
+      navAnchors.forEach(function (anchor) {
+        var targetId = anchor.getAttribute('href').replace('#', '');
+        var targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          trackedSections.push({ id: targetId, el: targetEl, link: anchor });
+        }
+
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (targetEl) {
+            var headerOffset = 70;
+            var elementPosition = targetEl.getBoundingClientRect().top;
+            var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: Math.max(0, offsetPosition),
+              behavior: 'smooth'
+            });
+
+            if (history.pushState) {
+              history.pushState(null, '', '#' + targetId);
+            }
+          }
+        });
+      });
+
+      // 브랜드 로고 클릭 시 최상단 부드러운 스크롤
+      var brandLink = document.querySelector('.guide-brand');
+      if (brandLink) {
+        brandLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (history.pushState) {
+            history.pushState(null, '', window.location.pathname);
+          }
+        });
+      }
+
+      // 페이지 로드 시 기존 URL 해시가 있다면 헤더 오프셋 고려하여 스크롤
+      if (window.location.hash) {
+        var initialTarget = document.querySelector(window.location.hash);
+        if (initialTarget) {
+          setTimeout(function () {
+            var headerOffset = 70;
+            var elementPosition = initialTarget.getBoundingClientRect().top;
+            var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
+          }, 100);
+        }
+      }
+
+      // 스크롤 시 활성 네비게이션 메뉴 갱신 (ScrollSpy)
+      function updateActiveNav() {
+        var scrollPos = window.pageYOffset + 120;
+        var currentId = '';
+
+        trackedSections.forEach(function (sec) {
+          var top = sec.el.offsetTop;
+          var height = sec.el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            currentId = sec.id;
+          }
+        });
+
+        trackedSections.forEach(function (sec) {
+          if (sec.id === currentId) {
+            sec.link.classList.add('active');
+          } else {
+            sec.link.classList.remove('active');
+          }
+        });
+      }
+
+      window.addEventListener('scroll', updateActiveNav, { passive: true });
+      updateActiveNav();
+
+      // 2. 데모 시나리오 제어
+      var stepStatusEl = document.getElementById('demo-step-status');
+      var btn3h = document.getElementById('btn-mode-3h');
+      var btn6h = document.getElementById('btn-mode-6h');
+      var btnMidnight = document.getElementById('btn-mode-midnight');
+      var allBtns = [btn3h, btn6h, btnMidnight];
+
+      function setActiveBtn(target) {
+        allBtns.forEach(function (btn) { if (btn) btn.classList.remove('active'); });
+        if (target) target.classList.add('active');
+      }
+
+      // 플레이어 변경 이벤트 수신하여 가이드 헤더 상태 갱신
+      window.addEventListener('midtermPlayerChange', function (e) {
+        if (stepStatusEl && e.detail) {
+          stepStatusEl.textContent = 'STEP: ' + e.detail.currentIndex + ' / ' + (e.detail.totalSteps - 1);
+        }
+      });
+
+      if (btn3h) {
+        btn3h.onclick = function () {
+          setActiveBtn(btn3h);
+          if (window.nrMidtermPlayer) {
+            window.nrMidtermPlayer.setStartDate('2026-11-24T09:00:00', 3);
+          }
+        };
+      }
+
+      if (btn6h) {
+        btn6h.onclick = function () {
+          setActiveBtn(btn6h);
+          if (window.nrMidtermPlayer) {
+            window.nrMidtermPlayer.setStartDate('2026-11-24T09:00:00', 6);
+          }
+        };
+      }
+
+      if (btnMidnight) {
+        btnMidnight.onclick = function () {
+          setActiveBtn(btnMidnight);
+          if (window.nrMidtermPlayer) {
+            window.nrMidtermPlayer.setStartDate('2026-11-24T23:00:00', 3);
+          }
+        };
+      }
+    });
+
+    // 코드 복사 헬퍼
+    function copyCode(elementId) {
+      var code = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(code).then(function () {
+        alert('코드가 클립보드에 복사되었습니다.');
+      });
+    }
+  </script>
+</body>
+
+</html>

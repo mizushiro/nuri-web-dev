@@ -25,6 +25,16 @@ const getBookIconHtml = () => `
 export let cachedMenuData = null;
 
 /**
+ * 절대/상대 링크 경로에서 선행 슬래시를 제거하여 <base href> 기준 상대경로로 변환
+ */
+export const resolveLinkPath = (linkStr) => {
+  if (!linkStr || linkStr === '#' || linkStr.startsWith('http') || linkStr.startsWith('//')) {
+    return linkStr || '#';
+  }
+  return linkStr.replace(/^\/+/, '');
+};
+
+/**
  * JSON 데이터 불러오기
  */
 export const fetchMenuData = async (jsonPath) => {
@@ -204,7 +214,7 @@ export const renderAsideMenu = (container, category, quickBanner, selectedState 
       <!-- 1. 사이드바 대제목 -->
       <div class="nr__aside-header">
         <h2 class="nr__aside-title">
-          <a href="${category.link || '#'}" class="nr__aside-title-link">${category.title}</a>
+          <a href="${resolveLinkPath(category.link)}" class="nr__aside-title-link">${category.title}</a>
         </h2>
       </div>
 
@@ -224,7 +234,7 @@ export const renderAsideMenu = (container, category, quickBanner, selectedState 
 
       html += `
         <li class="nr__aside-depth2-item ${isD2Active ? 'is-active' : ''}">
-          <a href="${d2.link || '#'}" 
+          <a href="${resolveLinkPath(d2.link)}" 
              class="nr__aside-depth2-link ${isD2Active ? 'active' : ''}" 
              data-id="${d2.id}"
              data-index="${d2Idx + 1}"
@@ -254,7 +264,7 @@ export const renderAsideMenu = (container, category, quickBanner, selectedState 
 
               html += `
                 <li class="nr__aside-depth3-item">
-                  <a href="${item.link || '#'}" 
+                  <a href="${resolveLinkPath(item.link)}" 
                      class="nr__aside-depth3-link ${isItemActive ? 'active' : ''}" 
                      data-id="${item.id}"
                      data-index="${itemCounter}"
@@ -287,7 +297,7 @@ export const renderAsideMenu = (container, category, quickBanner, selectedState 
     const bannerTargetAttr = isBannerExternal ? 'target="_blank" title="새창열림"' : '';
     html += `
       <div class="nr__aside-footer">
-        <a href="${quickBanner.link || 'https://www.kma.go.kr/kma/'}" 
+        <a href="${resolveLinkPath(quickBanner.link || 'https://www.kma.go.kr/kma/')}" 
         ${bannerTargetAttr} 
         class="nr__aside-banner">
           <span class="nr__aside-banner-icon icon-aspect-book" data-size="24"></span>
@@ -348,17 +358,8 @@ export const initAsideMenu = async (options = {}) => {
   const container = document.querySelector(options.target || '.nr__aside, aside');
   if (!container) return;
 
-  // JSON 경로 결정 (서브 디렉터리 경로 자동 보정)
-  const isSubPage = window.location.pathname.includes('/sub/') ||
-                    window.location.pathname.includes('/special-report/') ||
-                    window.location.pathname.includes('/forecast/') ||
-                    window.location.pathname.includes('/weather/') ||
-                    window.location.pathname.includes('/typhoon/') ||
-                    window.location.pathname.includes('/climate/') ||
-                    window.location.pathname.includes('/earthquake/') ||
-                    !!document.querySelector('.nr__sub');
-
-  const defaultJsonPath = isSubPage ? '../resources/json/aside-menu.json' : './resources/json/aside-menu.json';
+  // <base href> 기준 공통 JSON 경로
+  const defaultJsonPath = 'resources/json/aside-menu.json';
   const jsonPath = options.jsonPath || defaultJsonPath;
 
   try {

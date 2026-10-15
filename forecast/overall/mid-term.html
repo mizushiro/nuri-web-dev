@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko" class=" localstorage">
+
+<head>
+	<meta charset="UTF-8">
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+	<title>예보 종합 - 기상청 날씨누리</title>
+
+	<link rel="shortcut icon" href="logo_mark.png">
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png">
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY">
+
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
+	<script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
+	<script src="resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+
+	<!-- 지도 및 영상 플레이어 라이브러리 -->
+	<link rel="stylesheet" href="https://www.weather.go.kr/wgis-nuri/css/ol.css?ver=202607091110" />
+	<link rel="stylesheet" href="https://www.weather.go.kr/wgis-nuri/css/kmap.css?ver=202607091110" />
+	<link rel="stylesheet" href="resources/lib/kmap/legend.css?ver=202607091110" />
+
+	<script src="resources/lib/fetch.umd-3.6.1.min.js?ver=202607091110"></script>
+	<script src="resources/lib/promise-polyfill-8.min.js?ver=202607091110"></script>
+	<script src="resources/lib/babel-polyfill-7.12.1.min.js?ver=202607091110"></script>
+	<script src="resources/lib/abortcontroller-polyfill-1.7.1.min.js?ver=202607091110"></script>
+	<script src="resources/lib/vshrt-rain-fetch.js?ver=202607091110"></script>
+	<script src="https://www.weather.go.kr/wgis-nuri/js/proj4/proj4.js?ver=202607091110"></script>
+	<script src="resources/lib/v6.5.0-dist/ol.bb.js?ver=202607091110"></script>
+	<script src="resources/js/kmap.bb.js?ver=202607091110"></script>
+	<script src="https://www.weather.go.kr/wgis-nuri/js/common/windy.js?ver=202607091110"></script>
+
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="resources/css-2026/plugin/swiper-bundle.min.css">
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
+</head>
+
+<body class="subp subp01 subp01-11 wthema-a">
+	<div id="krds-skip-link">
+		<a href="#content">본문 바로가기</a>
+	</div>
+	<header class="nr__header"></header>
+
+	<div id="main" class="nr__sub">
+		<aside class="nr__aside"></aside>
+
+		<main class="nr__sub-content style-ocean">
+			<a id="content"></a>
+
+			<div class="flex items-center justify-between" data-zoom="true">
+				<nav aria-label="페이지 경로">
+					<ul id="breadcrumb">
+						<li class="home">
+							<a href="/index.html"><span class="sr-only">홈</span></a>
+						</li>
+						<li>
+							<a href="/special-report/overall.html"><span>특보·예보</span></a>
+						</li>
+						<li>
+							<a href=""><span>예보 종합</span></a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- TEMP: fixme -->
+			<h2 class="pb-2 text-2xl font-semibold border-bborder-gray-200">예보 종합</h2>
+			<div class="!max-w-full mid-term--content-gap">
+
+				<ul class="tab">
+					<li><a href="/forecast/overall/short-term.html">단기예보</a></li>
+					<li><a class="active" href="/forecast/overall/mid-term.html" title="선택됨">중기예보</a></li>
+				</ul>
+
+				<div data-zoom-area="1">
+					<div data-tab="subtab" data-tab-style="roundbox-small">
+						<div role="tablist">
+							<button type="button" role="tab">
+								<span>기상전망 및 분포도</span>
+							</button>
+							<button type="button" role="tab">
+								<span>권역별 요약표</span>
+							</button>
+							<button type="button" role="tab">
+								<span>기상전망·날씨해설</span>
+							</button>
+							<button type="button" role="tab">
+								<span>중기예보 안내</span>
+							</button>
+						</div>
+					</div>
+
+					<div data-tab-wrap="subtab">
+						<section role="tabpanel">
+							<h2 class="sr-only">기상전망 및 분포도</h2>
+							<div class="cont-wrap cmp-midterm">
+								<div class="nr__subtit-wrap" data-line="null">
+									<h3 class="nr__subtit-tit">중기예보 개황</h3>
+								</div>
+								<div class="box-summary">
+									<div class="text-box">
+										<ul class="txt">
+											<li>○ (강수) 24일(화)~25일(수) 중부지방을 중심으로 비 또는 눈이 올 가능성이 있겠습니다.</li>
+											<li>○ (기온) 아침 기온은 -1~7℃, 낮 기온은 6~13℃로 평년과 비슷하겠습니다.</li>
+										</ul>
+									</div>
+								</div>
+
+								<div class="nr__subtit-wrap">
+									<h3 class="nr__subtit-tit">분포도</h3>
+									<div data-tab="subtab2" data-tab-style="text_|_text">
+										<div role="tablist">
+											<button type="button" role="tab" data-value="subtab2-1">
+												<span>강수가능성</span>
+											</button>
+											<button type="button" role="tab" data-value="subtab2-2">
+												<span>하늘상태</span>
+											</button>
+											<button type="button" role="tab" data-value="subtab2-3">
+												<span>기온</span>
+											</button>
+											<button type="button" role="tab" data-value="subtab2-4">
+												<span>최고기온</span>
+											</button>
+											<button type="button" role="tab" data-value="subtab2-5">
+												<span>최저기온</span>
+											</button>
+										</div>
+									</div>
+								</div>
+
+								<div data-tab-wrap="subtab2">
+									<section role="tabpanel">
+										<h4 class="sr-only">강수가능성</h4>
+
+										<div class="nr__radio-list" data-style="line-round">
+											<input type="radio" name="강수가능성area" id="강수가능성area-1" class="sr-only" checked>
+											<label class="nr__label" for="강수가능성area-1">전국</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-2" class="sr-only">
+											<label class="nr__label" for="강수가능성area-2">수도권</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-3" class="sr-only">
+											<label class="nr__label" for="강수가능성area-3">강원</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-4" class="sr-only">
+											<label class="nr__label" for="강수가능성area-4">충북</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-5" class="sr-only">
+											<label class="nr__label" for="강수가능성area-5">충남권</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-6" class="sr-only">
+											<label class="nr__label" for="강수가능성area-6">전북</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-7" class="sr-only">
+											<label class="nr__label" for="강수가능성area-7">전남광주권</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-8" class="sr-only">
+											<label class="nr__label" for="강수가능성area-8">경북권</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-9" class="sr-only">
+											<label class="nr__label" for="강수가능성area-9">경남권</label>
+											<input type="radio" name="강수가능성area" id="강수가능성area-10" class="sr-only">
+											<label class="nr__label" for="강수가능성area-10">제주</label>
+										</div>
+
+										<div class="nr__midterm-player-wrap">
+											<!-- 지도 영역 (영역만 잡아둠) -->
+											<div class="nr__midterm-map-area" id="nr-midterm-map-area" aria-label="중기예보 지도 영역">
+												<div class="nr__midterm-map-inner">
+													<div class="nr__midterm-map-placeholder">
+														<span class="nr__midterm-map-text">지도 영역</span>
+													</div>
+												</div>
+											</div>
+											<!-- 지도 하단 컨트롤 바 -->
+											<div class="nr__midterm-control-bar">
+												<!-- 기준시간 행 -->
+												<div class="nr__midterm-time-row">
+													<span class="nr__midterm-time-label">기준시간</span>
+													<div class="nr__midterm-time-box">
+														<span class="nr__midterm-time-value" id="nr-midterm-time-text"></span>
+													</div>
+												</div>
+
+												<!-- 타임라인 플레이어 컨트롤러 -->
+												<div class="nr__midterm-timeline-box">
+													<!-- 컨트롤 버튼 그룹 -->
+													<div class="nr__midterm-btn-group">
+														<button type="button" class="nr__midterm-btn nr__midterm-btn--prev" id="nr-midterm-prev-btn"
+															title="이전 시간" aria-label="이전 시간">
+															<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+																stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+																<polyline points="15 18 9 12 15 6"></polyline>
+															</svg>
+														</button>
+														<button type="button" class="nr__midterm-btn nr__midterm-btn--play" id="nr-midterm-play-btn"
+															title="재생" aria-label="재생">
+															<svg class="nr__midterm-icon-play" viewBox="0 0 24 24" width="14" height="14"
+																fill="currentColor">
+																<polygon points="7,4 20,12 7,20"></polygon>
+															</svg>
+															<svg class="nr__midterm-icon-pause" viewBox="0 0 24 24" width="14" height="14"
+																fill="currentColor" style="display: none;">
+																<rect x="6" y="4" width="4" height="16"></rect>
+																<rect x="14" y="4" width="4" height="16"></rect>
+															</svg>
+														</button>
+														<button type="button" class="nr__midterm-btn nr__midterm-btn--next" id="nr-midterm-next-btn"
+															title="다음 시간" aria-label="다음 시간">
+															<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+																stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+																<polyline points="9 18 15 12 9 6"></polyline>
+															</svg>
+														</button>
+													</div>
+
+													<!-- 타임라인 슬라이더 트랙 영역 -->
+													<div class="nr__midterm-track-area" id="nr-midterm-track-area">
+														<!-- 파란 말풍선 툴팁 -->
+														<div class="nr__midterm-tooltip" id="nr-midterm-tooltip" style="left: 0%;">
+															<span class="nr__midterm-tooltip-text" id="nr-midterm-tooltip-text">11/24.09</span>
+														</div>
+
+														<!-- 트랙 바 -->
+														<div class="nr__midterm-track">
+															<div class="nr__midterm-track-bg"></div>
+															<div class="nr__midterm-track-fill" id="nr-midterm-track-fill" style="width: 0%;"></div>
+															<div class="nr__midterm-ticks" id="nr-midterm-ticks">
+																<span class="nr__midterm-tick nr__midterm-tick--active"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+																<span class="nr__midterm-tick"></span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="nr__box">
+											<p>지도 내 지점 클릭 시 해당지점 시간별 예보로 이동합니다.</p>
+										</div>
+
+										<div class="nr__box-point">
+											<h4 class="nr__midterm-legend-tit">강수가능성 범례</h4>
+											<ul class="nr__midterm-legend" data-legend="강수가능성">
+												<li class="nr__midterm-legend-item">
+													<b>거의없음</b>
+													<span>30% 이하</span>
+												</li>
+												<li class="nr__midterm-legend-item">
+													<b>조금</b>
+													<span>30% ~ 60%</span>
+												</li>
+												<li class="nr__midterm-legend-item">
+													<b>보통</b>
+													<span>60% ~ 80%</span>
+												</li>
+												<li class="nr__midterm-legend-item">
+													<b>높음</b>
+													<span>80% 이상</span>
+												</li>
+											</ul>
+											<ul class="nr__midterm-legend" data-legend="하늘상태">
+												<li class="nr__midterm-legend-item">
+													맑음
+												</li>
+												<li class="nr__midterm-legend-item">
+													구름많음
+												</li>
+												<li class="nr__midterm-legend-item">
+													흐림
+												</li>
+											</ul>
+											<div class="nr__midterm-legend" data-legend="기온">
+												<div class="nr__midterm-legend-bar">
+													<span style="background-color: #EEEEEE;"><span>5</span></span>
+													<span style="background-color: #DA86FF;"><span>6</span></span>
+													<span style="background-color: #C23EFF;"><span>7</span></span>
+													<span style="background-color: #AD07FF;"><span>8</span></span>
+													<span style="background-color: #9200E4;"><span>9</span></span>
+													<span style="background-color: #7F00BF;"><span>10</span></span>
+													<span style="background-color: #B3B4DE;"><span>11</span></span>
+													<span style="background-color: #8081C7;"><span>12</span></span>
+													<span style="background-color: #6567bc;"><span>13</span></span>
+													<span style="background-color: #1F219D;"><span>14</span></span>
+													<span style="background-color: #000390;"><span>15</span></span>
+													<span style="background-color: #87D9FF;"><span>16</span></span>
+													<span style="background-color: #3EC1FF;"><span>17</span></span>
+													<span style="background-color: #07ABFF;"><span>18</span></span>
+													<span style="background-color: #008DDE;"><span>19</span></span>
+													<span style="background-color: #0077B2;"><span>20</span></span>
+													<span style="background-color: #68FB68;"><span>21</span></span>
+													<span style="background-color: #1EF31E;"><span>22</span></span>
+													<span style="background-color: #00D500;"><span>23</span></span>
+													<span style="background-color: #00A400;"><span>24</span></span>
+													<span style="background-color: #008000;"><span>25</span></span>
+													<span style="background-color: #FFEA6E;"><span>26</span></span>
+													<span style="background-color: #FFDC1F;"><span>27</span></span>
+													<span style="background-color: #F9CD00;"><span>28</span></span>
+													<span style="background-color: #E0B900;"><span>29</span></span>
+													<span style="background-color: #CCAA00;"><span>30</span></span>
+													<span style="background-color: #FA8585;"><span>31</span></span>
+													<span style="background-color: #F63E3E;"><span>32</span></span>
+													<span style="background-color: #EE0B0B;"><span>33</span></span>
+													<span style="background-color: #D50000;"><span>34</span></span>
+													<span style="background-color: #BF0000;"><span>35</span></span>
+												</div>
+											</div>
+											<div class="nr__midterm-legend" data-legend="최고기온">
+												<div class="nr__midterm-legend-bar">
+													<span style="background-color: #E5ACFF;"><span>-19</span></span>
+													<span style="background-color: #DA87FF;"><span>-18</span></span>
+													<span style="background-color: #CD61FF;"><span>-17</span></span>
+													<span style="background-color: #C23EFF;"><span>-16</span></span>
+													<span style="background-color: #B71FFF;"><span>-15</span></span>
+													<span style="background-color: #AD07FF;"><span>-14</span></span>
+													<span style="background-color: #A000F7;"><span>-13</span></span>
+													<span style="background-color: #9200E4;"><span>-12</span></span>
+													<span style="background-color: #8700CE;"><span>-11</span></span>
+													<span style="background-color: #7F00BF;"><span>-10</span></span>
+													<span style="background-color: #CBCCE8;"><span>-9</span></span>
+													<span style="background-color: #B3B4DE;"><span>-8</span></span>
+													<span style="background-color: #9A9BD3;"><span>-7</span></span>
+													<span style="background-color: #8081C7;"><span>-6</span></span>
+													<span style="background-color: #6567BC;"><span>-5</span></span>
+													<span style="background-color: #4C4EB1;"><span>-4</span></span>
+													<span style="background-color: #3436A7;"><span>-3</span></span>
+													<span style="background-color: #1F219D;"><span>-2</span></span>
+													<span style="background-color: #0D1096;"><span>-1</span></span>
+													<span style="background-color: #000390;"><span>0</span></span>
+													<span style="background-color: #ACE5FF;"><span>1</span></span>
+													<span style="background-color: #87D9FF;"><span>2</span></span>
+													<span style="background-color: #61CDFF;"><span>3</span></span>
+													<span style="background-color: #3EC1FF;"><span>4</span></span>
+													<span style="background-color: #1FB5FF;"><span>5</span></span>
+													<span style="background-color: #07ABFF;"><span>6</span></span>
+													<span style="background-color: #009DF6;"><span>7</span></span>
+													<span style="background-color: #008DDE;"><span>8</span></span>
+													<span style="background-color: #0080C4;"><span>9</span></span>
+													<span style="background-color: #0077B3;"><span>10</span></span>
+													<span style="background-color: #96FE96;"><span>11</span></span>
+													<span style="background-color: #69FC69;"><span>12</span></span>
+													<span style="background-color: #40F940;"><span>13</span></span>
+													<span style="background-color: #1EF31E;"><span>14</span></span>
+													<span style="background-color: #08E908;"><span>15</span></span>
+													<span style="background-color: #00D500;"><span>16</span></span>
+													<span style="background-color: #00BD00;"><span>17</span></span>
+													<span style="background-color: #00A400;"><span>18</span></span>
+													<span style="background-color: #008E00;"><span>19</span></span>
+													<span style="background-color: #008000;"><span>20</span></span>
+													<span style="background-color: #FFF09A;"><span>21</span></span>
+													<span style="background-color: #FFEA6E;"><span>22</span></span>
+													<span style="background-color: #FFE343;"><span>23</span></span>
+													<span style="background-color: #FFDC1F;"><span>24</span></span>
+													<span style="background-color: #FFD604;"><span>25</span></span>
+													<span style="background-color: #F9CD00;"><span>26</span></span>
+													<span style="background-color: #EDC300;"><span>27</span></span>
+													<span style="background-color: #E0B900;"><span>28</span></span>
+													<span style="background-color: #D4B000;"><span>29</span></span>
+													<span style="background-color: #CCAA00;"><span>30</span></span>
+													<span style="background-color: #FCABAB;"><span>31</span></span>
+													<span style="background-color: #FA8585;"><span>32</span></span>
+													<span style="background-color: #F86060;"><span>33</span></span>
+													<span style="background-color: #F63E3E;"><span>34</span></span>
+													<span style="background-color: #F32121;"><span>35</span></span>
+													<span style="background-color: #EE0B0B;"><span>36</span></span>
+													<span style="background-color: #E30000;"><span>37</span></span>
+													<span style="background-color: #D50000;"><span>38</span></span>
+													<span style="background-color: #C80000;"><span>39</span></span>
+													<span style="background-color: #BF0000;"><span>40</span></span>
+													<span style="background-color: #000000;"><span></span></span>
+												</div>
+											</div>
+										</div>
+									</section>
+								</div>
+
+							</div>
+						</section>
+						<section role="tabpanel">
+							<h2 class="sr-only">권역별 요약표</h2>
+							<div class="cont-wrap cmp-midterm">
+								<!-- 소제목 -->
+								<div class="nr__subtit-wrap" data-style="no-line">
+									<h3 class="nr__subtit-tit">권역별 중기예보 요약표</h3>
+								</div>
+
+								<!-- 권역 탭 네비게이션 & 우측 컨트롤 버튼 그룹 -->
+								<div class="nr__summary-control-bar">
+									<div class="nr__region-nav" role="tablist" aria-label="권역 선택">
+										<button type="button" class="nr__region-btn active" data-region="all">전국</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="수도권">수도권</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="강원">강원</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="충북">충북</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="충남권">충남권</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="전북">전북</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="전남광주권">전남광주권</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="경북권">경북권</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="경남권">경남권</button>
+										<span class="nr__region-sep">|</span>
+										<button type="button" class="nr__region-btn" data-region="제주">제주</button>
+									</div>
+
+									<div class="nr__summary-tools">
+										<button type="button" class="nr__summary-tool-btn" id="nr-summary-legend-btn">
+											범례 설명
+										</button>
+
+										<div class="nr__summary-dropdown-wrap">
+											<button type="button" class="nr__summary-tool-btn" id="nr-summary-element-toggle" aria-expanded="false">
+												표출요소 보기 <i class="icon-aspect-select-arrow" data-size="24"></i>
+											</button>
+
+											<!-- 표출요소 레이어 팝오버 -->
+											<div class="nr__summary-popover" id="nr-summary-popover">
+												<ul class="nr__summary-filter-list">
+													<li>
+														<label class="nr__checkbox-item">
+															<input type="checkbox" id="filter-sky" checked>
+															<span class="nr__checkbox-text">하늘상태</span>
+														</label>
+													</li>
+													<li>
+														<label class="nr__checkbox-item">
+															<input type="checkbox" id="filter-precip" checked>
+															<span class="nr__checkbox-text">강수가능성</span>
+														</label>
+													</li>
+													<li>
+														<label class="nr__checkbox-item">
+															<input type="checkbox" id="filter-trend" checked>
+															<span class="nr__checkbox-text">강수가능성 예보 변화 추이</span>
+														</label>
+													</li>
+													<li>
+														<label class="nr__checkbox-item">
+															<input type="checkbox" id="filter-temp">
+															<span class="nr__checkbox-text">최저/최고기온</span>
+														</label>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<p class="nr__summary-table-desc">
+									대상기간: 11.22(일)~11.27.(금) · 오전/오후
+								</p>
+								<!-- 요약표 테이블 컨테이너 (JSON 기반 컴포넌트로 동적 렌더링) -->
+								<div class="nr__summary-table-container" id="nr-summary-table-container"></div>
+
+								<!-- 범례 설명 모달 -->
+								<div class="nr__legend-modal-wrap" id="nr-summary-legend-modal" aria-hidden="true" role="dialog" aria-modal="true">
+									<div class="nr__legend-modal">
+										<div class="nr__legend-modal-header">
+											<h4 class="nr__legend-modal-title">범례 설명</h4>
+											<button type="button" class="nr__legend-modal-close" id="nr-summary-legend-close" aria-label="닫기">×</button>
+										</div>
+										<div class="nr__legend-modal-body">
+											<table class="nr__legend-table" summary="하늘상태 및 강수형태, 강수가능성, 강수가능성 예보 변화 추이에 대한 기호와 설명 제공">
+												<caption class="sr-only">범례 설명 상세 표</caption>
+												<thead>
+													<tr>
+														<th scope="col" colspan="2">하늘상태·강수형태</th>
+														<th scope="col" colspan="2">강수가능성</th>
+														<th scope="col" colspan="2">강수가능성 예보 변화 추이</th>
+													</tr>
+													<tr>
+														<th scope="col">기호</th>
+														<th scope="col">설명</th>
+														<th scope="col">기호</th>
+														<th scope="col">설명</th>
+														<th scope="col">기호</th>
+														<th scope="col">설명</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td><span data-icon-weather="NB01" aria-hidden="true"></span></td>
+														<td>맑음</td>
+														<td><span class="nr__legend-chip nr__legend-chip--none"></span></td>
+														<td>거의없음</td>
+														<td><span class="nr__legend-trend-icon nr__legend-trend-icon--up">▲</span></td>
+														<td>높음</td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB02" aria-hidden="true"></span></td>
+														<td>구름조금</td>
+														<td><span class="nr__legend-chip nr__legend-chip--low"></span></td>
+														<td>조금</td>
+														<td><span class="nr__legend-trend-icon nr__legend-trend-icon--down">▼</span></td>
+														<td>낮음</td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB03" aria-hidden="true"></span></td>
+														<td>구름많음</td>
+														<td><span class="nr__legend-chip nr__legend-chip--mid"></span></td>
+														<td>보통</td>
+														<td><span class="nr__legend-trend-icon nr__legend-trend-icon--same">≈</span></td>
+														<td>비슷</td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB04" aria-hidden="true"></span></td>
+														<td>흐림</td>
+														<td><span class="nr__legend-chip nr__legend-chip--high"></span></td>
+														<td>높음</td>
+														<td></td>
+														<td></td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB08" aria-hidden="true"></span></td>
+														<td>비</td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB12" aria-hidden="true"></span></td>
+														<td>비/눈</td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB13" aria-hidden="true"></span></td>
+														<td>눈/비</td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB11" aria-hidden="true"></span></td>
+														<td>눈</td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+													</tr>
+													<tr>
+														<td><span data-icon-weather="NB07" aria-hidden="true"></span></td>
+														<td>소나기</td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+
+								<!-- 하단 안내 박스 -->
+								<div class="nr__box">
+									<p class="nr__box-desc">※ 권역별 중기예보는 5km 격자의 중기예보를 권역별로 요약한 정보로, 같은 권역 안에서도 지점별로 예보가 다를 수 있습니다.<br>보다 상세한 예보는 지점별 중기예보를 함께 참고하시기 바랍니다.</p>
+								</div>
+							</div>
+						</section>
+						<section role="tabpanel">
+							<h2>기상전망·날씨해설</h2>
+							<div>
+								tab4 내용이 들어갑니다.<br />
+								tab4 내용이 들어갑니다.<br />
+							</div>
+						</section>
+						<section role="tabpanel">
+							<h2>중기예보 안내</h2>
+							<div>
+								tab4 내용이 들어갑니다.<br />
+								tab4 내용이 들어갑니다.<br />
+							</div>
+						</section>
+
+					</div>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+
+
+	<!-- footer -->
+	<footer class="nr__footer"></footer>
+	<!-- //footer -->
+
+	<script src="repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
+	<script src="resources/lib/vue/vue.min.js?ver=202607091110"></script>
+	<script src="resources/lib/kmap/dfsLegends.js?ver=202607091110"></script>
+	<script src="resources/lib/kmap/legend.js?ver=202607091110"></script>
+	<script src="resources/lib/kmap/kmap_overlay.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/image-player.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-image-radar.js?ver=202607091110"></script>
+	<!-- START OF LOGGER TRACKING SCRIPT -->
+	<!-- 기존 logger2 로그 -->
+	<!--<script th:src="@{'/resources/js/logger2.weather.go.kr.1057.js?ver=' + ${appVersion}}"></script>
+    <noscript><img alt="로그" src="https://logger.kma.go.kr/tracker.tsp?u=7&amp;js=N" width="0" height="0" /></noscript>-->
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+	<script src="resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드 -->
+	<script type="module">
+		import { UX } from './resources/js-2026/ui-common.js';
+		import { initAsideMenu } from './resources/js-2026/component/ui-aside.js';
+		import { initMidtermPlayer } from './resources/js-2026/component/ui-midterm-player.js';
+		import { initRegionalSummaryTable } from './resources/js-2026/component/ui-midterm-summary.js';
+
+		UX.init('sub');
+		UI.subTab = new UX.Tab({
+			id: "subtab",
+			renderMode: "static",
+			selected: 1,
+			callback: (v) => {
+				console.log("선택된 탭 정보:", v); // { index: 0, n: 1, tab: button, data: ... }
+				switch (v.index) {
+					case 0:
+						console.log("기상전망 및 분포도 open");
+						UI.subtab2.init();
+						break;
+					case 1:
+						console.log("권역별 요약표 open");
+						initRegionalSummary();
+						break;
+				}
+			}
+		});
+
+		// 권역별 요약표 컴포넌트 초기화 함수
+		let summaryTableInstance = null;
+		const initRegionalSummary = () => {
+			if (summaryTableInstance) return;
+			summaryTableInstance = initRegionalSummaryTable({
+				container: '#nr-summary-table-container',
+				url: './resources/json/midterm-summary.json',
+				initialFilters: {
+					sky: true,
+					precip: true,
+					trend: true,
+					temp: false
+				}
+			});
+		};
+
+		// 초기 실행 바인딩
+		initRegionalSummary();
+
+		// 중기예보 지도 레이어/데이터 갱신 함수 (플레이어 콜백 수신)
+		const updateMidtermMap = (type, playerState) => {
+			console.log(`[중기예보 지도 갱신] ${type} | ${playerState.currentIndex + 1}/${playerState.totalSteps}단계 | 시간: ${playerState.info.tooltipText}`);
+
+			// 화면 지도 플레이스홀더 영역 텍스트 갱신 (시각적 피드백)
+			const mapArea = document.getElementById('nr-midterm-map-area');
+			const mapText = mapArea ? mapArea.querySelector('.nr__midterm-map-text') : null;
+			if (mapText) {
+				mapText.textContent = `${type} 지도 (${playerState.info.tooltipText})`;
+			}
+
+			// 실제 지도(Kmap 등) 인스턴스 연동 지점
+			if (window.kmapInstance && typeof window.kmapInstance.updateForecastLayer === 'function') {
+				window.kmapInstance.updateForecastLayer({
+					type: type,
+					stepIndex: playerState.currentIndex,
+					timeText: playerState.info.tooltipText,
+					rangeText: playerState.info.rangeText
+				});
+			}
+		};
+
+		// 탭별 플레이어 옵션 설정 (옵션값 분기)
+		const midtermPlayerConfigs = [
+			{
+				name: "강수가능성",
+				startDate: "2026-11-24T09:00:00",
+				durationHours: 3,
+				onChange: (state) => updateMidtermMap("강수가능성", state)
+			},
+			{
+				name: "하늘상태",
+				startDate: "2026-11-25T09:00:00",
+				durationHours: 3,
+				onChange: (state) => updateMidtermMap("하늘상태", state)
+			},
+			{
+				name: "기온",
+				startDate: "2026-11-26T09:00:00",
+				durationHours: 3,
+				onChange: (state) => updateMidtermMap("기온", state)
+			},
+			{
+				name: "최고기온",
+				startDate: "2026-11-27T09:00:00",
+				durationHours: 6,
+				onChange: (state) => updateMidtermMap("최고기온", state)
+			},
+			{
+				name: "최저기온",
+				startDate: "2026-11-28T09:00:00",
+				durationHours: 6,
+				onChange: (state) => updateMidtermMap("최저기온", state)
+			}
+		];
+
+		UI.subtab2 = new UX.Tab({
+			id: "subtab2",
+			renderMode: "static",
+			singlePanel: true,
+			selected: 1,
+			callback: (v) => {
+				console.log("선택된 탭 정보:", v); // { index: 0, n: 1, tab: button, data: ... }
+				const currentTab = v.tab;
+				const legendTit = document.querySelector('.nr__midterm-legend-tit');
+				if (legendTit && currentTab) {
+					legendTit.textContent = `${currentTab.textContent.trim()} 범례`;
+				}
+
+				// 선택한 탭에 해당하는 옵션으로 플레이어 새로 초기화 (기존 인스턴스는 내부에서 자동 destroy 처리)
+				const config = midtermPlayerConfigs[v.index] || midtermPlayerConfigs[0];
+				initMidtermPlayer(config);
+			}
+		});
+		UI.subTab.init()
+
+		// 원하는 메뉴 활성화를 직접 호출하여 제어할 수도 있습니다:
+		// initAsideMenu({ dep1: 1, dep2: 2, dep3: 4 });
+	</script>
+</body>
+
+</html>

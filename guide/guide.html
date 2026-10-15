@@ -2,6 +2,13 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
+  <script>
+    (function () {
+      var isGhPages = window.location.pathname.startsWith('/nuri-web');
+      var baseHref = isGhPages ? '/nuri-web/' : '/';
+      document.write('<base href="' + baseHref + '">');
+    })();
+  </script>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,9 +22,9 @@
 
   <title>기후변화 상황지도</title>
 
-  <link rel="stylesheet" href="../resources/cdn/krds.min.css">
-  <link rel="stylesheet" href="../resources/css-2026/custom.css">
-  <link rel="stylesheet" href="../resources/css-2026/icon.css">
+  <link rel="stylesheet" href="resources/cdn/krds.min.css">
+  <link rel="stylesheet" href="resources/css-2026/custom.css">
+  <link rel="stylesheet" href="resources/css-2026/icon.css">
 
   <style>
     .guide-page-content {padding:2rem}

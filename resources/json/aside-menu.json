@@ -28,7 +28,7 @@
             {
               "items": [
                 { "id": "forecast-tv", "title": "날씨해설·웹TV", "link": "/forecast/commentary.html" },
-                { "id": "forecast-summary", "title": "예보 종합", "link": "/forecast/overall.html" },
+                { "id": "forecast-summary", "title": "예보 종합", "link": "/forecast/overall/short-term.html" },
                 { "id": "forecast-notice", "title": "예보 통보문", "link": "/forecast/notice.html" }
               ]
             },
