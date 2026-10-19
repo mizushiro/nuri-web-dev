@@ -3781,6 +3781,9 @@
 	min-height: 2.4rem;
   padding: 0 1.2rem;
   font-size: 1.2rem;
+	line-height: 1.1;
+	display: flex;
+	align-items: center;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -5450,6 +5453,9 @@
 
 /* 11-2. Tablet & Mobile (1024px 이하) */
 @media (max-width: 1024px) {
+	.nr__btn-station-chip {
+		min-height: 3.4rem;
+	}
 	.nr__main-tab {
 		width: 100%;
 		border-radius: 0 !important;
@@ -5512,6 +5518,10 @@
 		display: block;
 		stroke-width: 100%;
   }
+
+	.nr__station-header{
+		gap:0;
+	}
 
 	.nr__main-head {
 		padding:0 1.6rem;

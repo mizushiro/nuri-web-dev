@@ -38,13 +38,17 @@ export const resolveLinkPath = (linkStr) => {
  * JSON 데이터 불러오기
  */
 export const fetchMenuData = async (jsonPath) => {
-  if (cachedMenuData) return cachedMenuData;
-  const response = await fetch(jsonPath);
-  if (!response.ok) {
-    throw new Error(`Failed to load aside menu JSON from ${jsonPath}: ${response.status}`);
-  }
-  cachedMenuData = await response.json();
-  return cachedMenuData;
+	if (cachedMenuData) return cachedMenuData;
+	// 선행 슬래시 제거하여 <base href> 기준 상대 경로로 보정
+	const safePath = (typeof jsonPath === 'string' && jsonPath.startsWith('/') && !jsonPath.startsWith('//'))
+		? jsonPath.replace(/^\/+/, '')
+		: jsonPath;
+	const response = await fetch(safePath);
+	if (!response.ok) {
+		throw new Error(`Failed to load aside menu JSON from ${safePath}: ${response.status}`);
+	}
+	cachedMenuData = await response.json();
+	return cachedMenuData;
 };
 
 /**
@@ -358,9 +362,12 @@ export const initAsideMenu = async (options = {}) => {
   const container = document.querySelector(options.target || '.nr__aside, aside');
   if (!container) return;
 
-  // <base href> 기준 공통 JSON 경로
-  const defaultJsonPath = 'resources/json/aside-menu.json';
-  const jsonPath = options.jsonPath || defaultJsonPath;
+	// <base href> 기준 공통 JSON 경로
+	const defaultJsonPath = 'resources/json/aside-menu.json';
+	const rawJsonPath = options.jsonPath || defaultJsonPath;
+	const jsonPath = (typeof rawJsonPath === 'string' && rawJsonPath.startsWith('/') && !rawJsonPath.startsWith('//'))
+		? rawJsonPath.replace(/^\/+/, '')
+		: rawJsonPath;
 
   try {
     const data = await fetchMenuData(jsonPath);

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko" class=" localstorage">
+
+<head>
+	<meta charset="UTF-8">
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+	<title>예보 종합 - 기상청 날씨누리</title>
+
+	<link rel="shortcut icon" href="logo_mark.png">
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png">
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY">
+
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css">
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script async="" src="//webstats.kma.go.kr/fs4/logger.v4.sol.js"></script>
+	<script async="" src="//webstats.kma.go.kr/fs4/bstrk.sol.js"></script>
+	<script src="resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="resources/css-2026/plugin/swiper-bundle.min.css">
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
+</head>
+
+<body class="wthema-a">
+	<div id="krds-skip-link">
+		<a href="# ">본문 바로가기</a>
+	</div>
+	<header class="nr__header"></header>
+
+	<div id="main" class="nr__sub">
+		<aside class="nr__aside"></aside>
+
+		<main class="nr__sub-content style-ocean">
+			<a id="content"></a>
+
+			<div class="flex items-center justify-between">
+				<nav aria-label="페이지 경로">
+					<ul id="breadcrumb">
+						<li class="home">
+							<a href="/w/index.do"><span class="sr-only">홈</span></a>
+						</li>
+						<li>
+							<a href="/w/earthquake-volcano/recent.do"><span>지진·화산</span></a>
+						</li>
+						<li>
+							<a href=""><span>최근 발표</span></a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<h2 class="pb-2 text-2xl font-semibold border-b border-gray-200">최근 발표</h2>
+			<div class="!max-w-full">
+				<a id="container"></a>
+				<div class="cont-wrap">
+
+					<div class="cont-box01">
+						<h3 class="tit">최근발표 <i class="icon tooltip-btn" tabindex="0"><span class="tooltip">기상청에서 발표하는 각종 지진과 지진해일
+									정보를 확인할 수 있습니다.</span></i></h3>
+
+						<ul class="txt-list" id="no-eqk-24hours">
+							<li class="no-eqk" style=""><strong>- 오늘은 국내 규모 2.0 이상의 자연지진과 발표기준 이상의 국외지진은 발생하지 않았습니다.</strong></li>
+							<li>- 최근 발생한 규모 2.0 미만의 미소지진은 하단의 정보를 참고하시기 바랍니다.</li>
+							<li>- 과거 국내외 자연지진 발생현황은 국내지진 목록 또는 국외지진 목록을 참조하시기 바랍니다.</li>
+
+							<li>- 지진 재난문자 발송기준 안내<button type="button" class="btn-more" data-role="popup-to" data-width="1000"
+									data-height="703" data-link="http://www.weather.go.kr/wnuri_help/html/eqk-vol/eqk-message.jsp"
+									data-target="helpwindow" title="새창열림">기준보기</button></li>
+						</ul>
+						<!-- <div id="eqk-912" class="txt"></div>-->
+						<div id="eqk-micro" class="txt">
+
+
+
+							<p class="p_hypen"><span style="color:#0000ff; font-weight:bold;">[최근 미소지진 발생 현황(규모 2.0미만)]</span><br>
+								2026/10/17 11:19:33 경남 통영시 남남동쪽 18km 해역 (규모:1.3 / 깊이:12km)</p>
+						</div>
+						<div id="eqk-issue" class="txt">
+
+
+
+
+						</div>
+					</div>
+					<div id="eqk-report">
+						<div class="cont-box02">
+							<h3 class="tit hid">지진검색</h3>
+							<div class="sub-select-wrap">
+								<div class="select">
+									<div>
+										<select name="eqkType" title="진앙 범위">
+											<option value="a">진앙:전체</option>
+											<option value="d">지진(국내)</option>
+											<option value="f">지진(국외)</option>
+											<option value="t">지진해일</option>
+											<option value="v">화산</option>
+										</select>
+									</div>
+									<button type="button" data-role="eqk-type-select"><span class="sr-only">진앙 범위</span> 선택</button>
+								</div>
+								<div class="select">
+									<div>
+										<select class="w-96" name="eqk" title="통보문">
+											<option value="eqk_web_2_20261016123532.xml">[국외지진정보] 2026. 10. 16 12:53</option>
+											<option value="eqk_web_2_20261014034503.xml">[국외지진정보] 2026. 10. 14 04:12</option>
+											<option value="eqk_web_2_20261013212307.xml">[국외지진정보] 2026. 10. 13 21:41</option>
+											<option value="eqk_web_2_20261013144446.xml">[국외지진정보] 2026. 10. 13 15:08</option>
+											<option value="eqk_web_2_20261013082036.xml">[국외지진정보] 2026. 10. 13 08:41</option>
+											<option value="eqk_web_2_20261011230723.xml">[국외지진정보] 2026. 10. 11 23:35</option>
+											<option value="eqk_web_2_20261010131401.xml">[국외지진정보] 2026. 10. 10 13:35</option>
+											<option value="eqk_web_2_20261010052539.xml">[국외지진정보] 2026. 10. 10 05:40</option>
+											<option value="eqk_web_2_20261010025605.xml">[국외지진정보] 2026. 10. 10 03:16</option>
+											<option value="eqk_web_2_20261008180007.xml">[국외지진정보] 2026. 10. 08 18:22</option>
+											<option value="eqk_web_2_20261001212700.xml">[국외지진정보] 2026. 10. 01 21:34</option>
+											<option value="eqk_web_2_20260930140000.xml">[국외지진정보] 2026. 09. 30 14:18</option>
+											<option value="eqk_web_3_20260927112844.xml">[지진정보] 2026. 09. 27 11:32</option>
+											<option value="eqk_web_2_20260926062303.xml">[국외지진정보] 2026. 09. 26 06:43</option>
+											<option value="eqk_web_2_20260920181735.xml">[국외지진정보] 2026. 09. 20 18:40</option>
+											<option value="eqk_web_2_20260920162800.xml">[국외지진정보] 2026. 09. 20 16:34</option>
+											<option value="eqk_web_2_20260917231952.xml">[국외지진정보] 2026. 09. 17 23:44</option>
+											<option value="eqk_web_3_20260915212249.xml">[지진정보] 2026. 09. 15 21:26</option>
+											<option value="eqk_web_3_20260915204417.xml">[지진정보] 2026. 09. 15 20:49</option>
+											<option value="eqk_web_2_20260912062355.xml">[국외지진정보] 2026. 09. 12 06:45</option>
+											<option value="eqk_web_3_20260909090405.xml">[지진정보] 2026. 09. 09 09:07</option>
+											<option value="eqk_web_3_20260906122235.xml">[지진정보] 2026. 09. 06 12:26</option>
+											<option value="eqk_web_30_20260905013000.xml">[화산정보] 2026. 09. 05 02:14</option>
+											<option value="eqk_web_2_20260903201723.xml">[국외지진정보] 2026. 09. 03 20:28</option>
+											<option value="eqk_web_2_20260903084657.xml">[국외지진정보] 2026. 09. 03 09:07</option>
+											<option value="eqk_web_3_20260831024920.xml">[지진정보] 2026. 08. 31 02:52</option>
+											<option value="eqk_web_3_20260829103013.xml">[지진정보] 2026. 08. 29 10:33</option>
+											<option value="eqk_web_3_20260828074426.xml">[지진정보] 2026. 08. 28 07:47</option>
+											<option value="eqk_web_2_20260828060738.xml">[국외지진정보] 2026. 08. 28 06:27</option>
+											<option value="eqk_web_2_20260827042100.xml">[국외지진정보] 2026. 08. 27 04:30</option>
+											<option value="eqk_web_3_20260826160459.xml">[지진정보] 2026. 08. 26 16:08</option>
+											<option value="eqk_web_30_20260825192400.xml">[화산정보] 2026. 08. 25 19:39</option>
+											<option value="eqk_web_3_20260825094122.xml">[지진정보] 2026. 08. 25 09:44</option>
+											<option value="eqk_web_2_20260824231017.xml">[국외지진정보] 2026. 08. 24 23:32</option>
+											<option value="eqk_web_3_20260824205552.xml">[지진정보] 2026. 08. 24 21:00</option>
+											<option value="eqk_web_2_20260823224500.xml">[국외지진정보] 2026. 08. 23 22:51</option>
+											<option value="eqk_web_3_20260823064301.xml">[지진정보] 2026. 08. 23 06:46</option>
+											<option value="eqk_web_2_20260823020000.xml">[국외지진정보] 2026. 08. 23 02:08</option>
+											<option value="eqk_web_3_20260823014438.xml">[지진정보] 2026. 08. 23 01:48</option>
+											<option value="eqk_web_3_20260822190927.xml">[지진정보] 2026. 08. 22 19:13</option>
+											<option value="eqk_web_2_20260822172237.xml">[국외지진정보] 2026. 08. 22 17:46</option>
+											<option value="eqk_web_3_20260822042129.xml">[지진정보] 2026. 08. 22 04:25</option>
+											<option value="eqk_web_3_20260821085000.xml">[지진정보] 2026. 08. 21 08:53</option>
+											<option value="eqk_web_2_20260821030015.xml">[국외지진정보] 2026. 08. 21 03:21</option>
+											<option value="eqk_web_30_20260817180000.xml">[화산정보] 2026. 08. 17 18:25</option>
+											<option value="eqk_web_2_20260817063700.xml">[국외지진정보] 2026. 08. 17 06:46</option>
+											<option value="eqk_web_3_20260816193411.xml">[지진정보] 2026. 08. 16 19:37</option>
+											<option value="eqk_web_2_20260816122024.xml">[국외지진정보] 2026. 08. 16 12:44</option>
+											<option value="eqk_web_3_20260816092344.xml">[지진정보] 2026. 08. 16 09:27</option>
+											<option value="eqk_web_2_20260815195452.xml">[국외지진정보] 2026. 08. 15 20:18</option>
+											<option value="eqk_web_3_20260815083134.xml">[지진정보] 2026. 08. 15 08:35</option>
+											<option value="eqk_web_2_20260815072837.xml">[국외지진정보] 2026. 08. 15 07:46</option>
+											<option value="eqk_web_2_20260815065821.xml">[국외지진정보] 2026. 08. 15 07:25</option>
+											<option value="eqk_web_3_20260814174338.xml">[지진정보] 2026. 08. 14 17:47</option>
+											<option value="eqk_web_2_20260812204712.xml">[국외지진정보] 2026. 08. 12 21:15</option>
+											<option value="eqk_web_2_20260812130500.xml">[국외지진정보] 2026. 08. 12 13:14</option>
+											<option value="eqk_web_2_20260810213427.xml">[국외지진정보] 2026. 08. 10 21:52</option>
+											<option value="eqk_web_30_20260807052000.xml">[화산정보] 2026. 08. 07 09:06</option>
+											<option value="eqk_web_2_20260806075900.xml">[국외지진정보] 2026. 08. 06 08:05</option>
+											<option value="eqk_web_2_20260805164327.xml">[국외지진정보] 2026. 08. 05 17:12</option>
+											<option value="eqk_web_2_20260805131406.xml">[국외지진정보] 2026. 08. 05 13:32</option>
+											<option value="eqk_web_30_20260731023200.xml">[화산정보] 2026. 07. 31 03:22</option>
+											<option value="eqk_web_2_20260729221900.xml">[국외지진정보] 2026. 07. 29 22:25</option>
+											<option value="eqk_web_2_20260728171800.xml">[국외지진정보] 2026. 07. 28 17:26</option>
+											<option value="eqk_web_2_20260728170800.xml">[국외지진정보] 2026. 07. 28 17:16</option>
+											<option value="eqk_web_2_20260728162700.xml">[국외지진정보] 2026. 07. 28 16:34</option>
+											<option value="eqk_web_2_20260726213617.xml">[국외지진정보] 2026. 07. 26 21:44</option>
+											<option value="eqk_web_2_20260725063756.xml">[국외지진정보] 2026. 07. 25 06:58</option>
+											<option value="eqk_web_3_20260723034704.xml">[지진정보] 2026. 07. 23 03:51</option>
+											<option value="eqk_web_2_20260717234844.xml">[국외지진정보] 2026. 07. 18 00:02</option>
+											<option value="eqk_web_2_20260715004941.xml">[국외지진정보] 2026. 07. 15 01:09</option>
+											<option value="eqk_web_2_20260713234549.xml">[국외지진정보] 2026. 07. 14 00:11</option>
+											<option value="eqk_web_2_20260713175327.xml">[국외지진정보] 2026. 07. 13 18:12</option>
+											<option value="eqk_web_2_20260711192645.xml">[국외지진정보] 2026. 07. 11 19:48</option>
+											<option value="eqk_web_3_20260706205724.xml">[지진정보] 2026. 07. 06 21:01</option>
+											<option value="eqk_web_30_20260705144500.xml">[화산정보] 2026. 07. 05 15:50</option>
+											<option value="eqk_web_2_20260703130500.xml">[국외지진정보] 2026. 07. 03 13:14</option>
+											<option value="eqk_web_2_20260703125300.xml">[국외지진정보] 2026. 07. 03 13:04</option>
+											<option value="eqk_web_2_20260703113128.xml">[국외지진정보] 2026. 07. 03 11:45</option>
+											<option value="eqk_web_2_20260701210800.xml">[국외지진정보] 2026. 07. 01 21:14</option>
+											<option value="eqk_web_2_20260701084000.xml">[국외지진정보] 2026. 07. 01 08:46</option>
+											<option value="eqk_web_2_20260701044540.xml">[국외지진정보] 2026. 07. 01 05:08</option>
+											<option value="eqk_web_2_20260628052100.xml">[국외지진정보] 2026. 06. 28 05:28</option>
+											<option value="eqk_web_2_20260627223453.xml">[국외지진정보] 2026. 06. 27 23:00</option>
+											<option value="eqk_web_2_20260626222900.xml">[국외지진정보] 2026. 06. 26 22:34</option>
+											<option value="eqk_web_2_20260626203442.xml">[국외지진정보] 2026. 06. 26 20:56</option>
+											<option value="eqk_web_2_20260626124600.xml">[국외지진정보] 2026. 06. 26 12:53</option>
+											<option value="eqk_web_2_20260625073000.xml">[국외지진정보] 2026. 06. 25 07:38</option>
+											<option value="eqk_web_2_20260625070432.xml">[국외지진정보] 2026. 06. 25 07:28</option>
+											<option value="eqk_web_2_20260619155127.xml">[국외지진정보] 2026. 06. 19 16:17</option>
+											<option value="eqk_web_2_20260618035658.xml">[국외지진정보] 2026. 06. 18 04:15</option>
+											<option value="eqk_web_2_20260616194600.xml">[국외지진정보] 2026. 06. 16 19:54</option>
+											<option value="eqk_web_2_20260616180655.xml">[국외지진정보] 2026. 06. 16 18:27</option>
+											<option value="eqk_web_3_20260616160653.xml">[지진정보] 2026. 06. 16 16:12</option>
+											<option value="eqk_web_2_20260616122744.xml">[국외지진정보] 2026. 06. 16 12:44</option>
+											<option value="eqk_web_2_20260615181838.xml">[국외지진정보] 2026. 06. 15 18:39</option>
+											<option value="eqk_web_30_20260615052100.xml">[화산정보] 2026. 06. 15 06:31</option>
+											<option value="eqk_web_3_20260613204758.xml">[지진정보] 2026. 06. 13 20:51</option>
+											<option value="eqk_web_2_20260610193417.xml">[국외지진정보] 2026. 06. 10 19:51</option>
+											<option value="eqk_web_2_20260610094420.xml">[국외지진정보] 2026. 06. 10 10:06</option>
+											<option value="eqk_web_3_20260610031657.xml">[지진정보] 2026. 06. 10 03:20</option>
+											<option value="eqk_web_2_20260609030025.xml">[국외지진정보] 2026. 06. 09 03:18</option>
+											<option value="eqk_web_3_20260608090714.xml">[지진정보] 2026. 06. 08 09:11</option>
+											<option value="eqk_web_2_20260608083740.xml">[국외지진정보] 2026. 06. 08 09:00</option>
+											<option value="eqk_web_2_20260607194158.xml">[국외지진정보] 2026. 06. 07 20:04</option>
+											<option value="eqk_web_3_20260605130518.xml">[지진정보] 2026. 06. 05 13:16</option>
+											<option value="eqk_web_3_20260605085805.xml">[지진정보] 2026. 06. 05 09:08</option>
+											<option value="eqk_web_2_20260602071236.xml">[국외지진정보] 2026. 06. 02 07:30</option>
+											<option value="eqk_web_2_20260601063417.xml">[국외지진정보] 2026. 06. 01 06:57</option>
+											<option value="eqk_web_3_20260530082055.xml">[지진정보] 2026. 05. 30 08:25</option>
+											<option value="eqk_web_2_20260527235104.xml">[국외지진정보] 2026. 05. 28 00:09</option>
+											<option value="eqk_web_2_20260526065218.xml">[국외지진정보] 2026. 05. 26 07:02</option>
+											<option value="eqk_web_2_20260523164601.xml">[국외지진정보] 2026. 05. 23 17:09</option>
+											<option value="eqk_web_2_20260521024302.xml">[국외지진정보] 2026. 05. 21 03:10</option>
+											<option value="eqk_web_2_20260520114600.xml">[국외지진정보] 2026. 05. 20 11:53</option>
+											<option value="eqk_web_2_20260517094614.xml">[국외지진정보] 2026. 05. 17 09:57</option>
+											<option value="eqk_web_3_20260517082852.xml">[지진정보] 2026. 05. 17 08:33</option>
+											<option value="eqk_web_2_20260516235003.xml">[국외지진정보] 2026. 05. 17 00:15</option>
+											<option value="eqk_web_2_20260515202200.xml">[국외지진정보] 2026. 05. 15 20:30</option>
+											<option value="eqk_web_2_20260515025314.xml">[국외지진정보] 2026. 05. 15 03:13</option>
+											<option value="eqk_web_2_20260514050100.xml">[국외지진정보] 2026. 05. 14 05:08</option>
+											<option value="eqk_web_2_20260513194330.xml">[국외지진정보] 2026. 05. 13 19:51</option>
+											<option value="eqk_web_30_20260508080000.xml">[화산정보] 2026. 05. 08 09:00</option>
+											<option value="eqk_web_2_20260504150950.xml">[국외지진정보] 2026. 05. 04 15:27</option>
+											<option value="eqk_web_3_20260503235936.xml">[지진정보] 2026. 05. 04 00:03</option>
+											<option value="eqk_web_2_20260502182800.xml">[국외지진정보] 2026. 05. 02 18:35</option>
+											<option value="eqk_web_2_20260501213955.xml">[국외지진정보] 2026. 05. 01 21:48</option>
+											<option value="eqk_web_3_20260430033603.xml">[지진정보] 2026. 04. 30 03:45</option>
+											<option value="eqk_web_3_20260428212610.xml">[지진정보] 2026. 04. 28 21:35</option>
+											<option value="eqk_web_2_20260427052400.xml">[국외지진정보] 2026. 04. 27 05:30</option>
+											<option value="eqk_web_2_20260420165300.xml">[국외지진정보] 2026. 04. 20 17:01</option>
+											<option value="eqk_web_2_20260420023443.xml">[국외지진정보] 2026. 04. 20 02:53</option>
+											<option value="eqk_web_2_20260418145400.xml">[국외지진정보] 2026. 04. 18 15:01</option>
+											<option value="eqk_web_2_20260418132000.xml">[국외지진정보] 2026. 04. 18 13:26</option>
+											<option value="eqk_web_3_20260418042728.xml">[지진정보] 2026. 04. 18 04:31</option>
+											<option value="eqk_web_2_20260416223001.xml">[국외지진정보] 2026. 04. 16 22:49</option>
+											<option value="eqk_web_3_20260415164036.xml">[지진정보] 2026. 04. 15 16:44</option>
+											<option value="eqk_web_2_20260406003403.xml">[국외지진정보] 2026. 04. 06 00:42</option>
+											<option value="eqk_web_3_20260405221026.xml">[지진정보] 2026. 04. 05 22:14</option>
+											<option value="eqk_web_2_20260405021458.xml">[국외지진정보] 2026. 04. 05 02:28</option>
+											<option value="eqk_web_3_20260404230305.xml">[지진정보] 2026. 04. 05 00:10</option>
+											<option value="eqk_web_2_20260404193431.xml">[국외지진정보] 2026. 04. 04 19:54</option>
+											<option value="eqk_web_2_20260402074812.xml">[국외지진정보] 2026. 04. 02 08:09</option>
+											<option value="eqk_web_2_20260401202025.xml">[국외지진정보] 2026. 04. 01 20:47</option>
+											<option value="eqk_web_2_20260401100600.xml">[국외지진정보] 2026. 04. 01 10:13</option>
+											<option value="eqk_web_2_20260330174408.xml">[국외지진정보] 2026. 03. 30 18:04</option>
+											<option value="eqk_web_2_20260329160800.xml">[국외지진정보] 2026. 03. 29 16:37</option>
+											<option value="eqk_web_2_20260326231800.xml">[국외지진정보] 2026. 03. 26 23:25</option>
+											<option value="eqk_web_2_20260324133750.xml">[국외지진정보] 2026. 03. 24 13:54</option>
+											<option value="eqk_web_2_20260323002756.xml">[국외지진정보] 2026. 03. 23 00:57</option>
+											<option value="eqk_web_2_20260322151536.xml">[국외지진정보] 2026. 03. 22 15:43</option>
+											<option value="eqk_web_2_20260321211646.xml">[국외지진정보] 2026. 03. 21 21:36</option>
+											<option value="eqk_web_2_20260320113033.xml">[국외지진정보] 2026. 03. 20 11:58</option>
+											<option value="eqk_web_2_20260320092202.xml">[국외지진정보] 2026. 03. 20 09:42</option>
+											<option value="eqk_web_3_20260320005151.xml">[지진정보] 2026. 03. 20 00:54</option>
+											<option value="eqk_web_3_20260314090020.xml">[지진정보] 2026. 03. 14 09:04</option>
+											<option value="eqk_web_2_20260313223918.xml">[국외지진정보] 2026. 03. 13 22:55</option>
+											<option value="eqk_web_2_20260312211413.xml">[국외지진정보] 2026. 03. 12 21:24</option>
+											<option value="eqk_web_3_20260311221104.xml">[지진정보] 2026. 03. 11 22:15</option>
+											<option value="eqk_web_3_20260311204129.xml">[지진정보] 2026. 03. 11 21:29</option>
+											<option value="eqk_web_3_20260311180549.xml">[지진정보] 2026. 03. 11 18:09</option>
+											<option value="eqk_web_2_20260310080354.xml">[국외지진정보] 2026. 03. 10 08:24</option>
+											<option value="eqk_web_2_20260310004600.xml">[국외지진정보] 2026. 03. 10 00:53</option>
+											<option value="eqk_web_3_20260309104012.xml">[지진정보] 2026. 03. 09 10:43</option>
+											<option value="eqk_web_2_20260308221700.xml">[국외지진정보] 2026. 03. 08 22:23</option>
+											<option value="eqk_web_2_20260308182824.xml">[국외지진정보] 2026. 03. 08 18:49</option>
+											<option value="eqk_web_3_20260307183844.xml">[지진정보] 2026. 03. 07 18:42</option>
+											<option value="eqk_web_3_20260307100659.xml">[지진정보] 2026. 03. 07 10:11</option>
+											<option value="eqk_web_2_20260307073900.xml">[국외지진정보] 2026. 03. 07 07:46</option>
+											<option value="eqk_web_2_20260306232747.xml">[국외지진정보] 2026. 03. 06 23:51</option>
+											<option value="eqk_web_2_20260305194800.xml">[국외지진정보] 2026. 03. 05 19:57</option>
+											<option value="eqk_web_2_20260305025436.xml">[국외지진정보] 2026. 03. 05 03:13</option>
+											<option value="eqk_web_2_20260303205249.xml">[국외지진정보] 2026. 03. 03 21:00</option>
+											<option value="eqk_web_2_20260303135647.xml">[국외지진정보] 2026. 03. 03 14:16</option>
+											<option value="eqk_web_2_20260303091100.xml">[국외지진정보] 2026. 03. 03 09:18</option>
+											<option value="eqk_web_2_20260303022100.xml">[국외지진정보] 2026. 03. 03 02:27</option>
+											<option value="eqk_web_2_20260302193900.xml">[국외지진정보] 2026. 03. 02 19:45</option>
+											<option value="eqk_web_2_20260302135600.xml">[국외지진정보] 2026. 03. 02 14:03</option>
+											<option value="eqk_web_2_20260302125522.xml">[국외지진정보] 2026. 03. 02 13:10</option>
+											<option value="eqk_web_2_20260301180000.xml">[국외지진정보] 2026. 03. 01 18:07</option>
+											<option value="eqk_web_2_20260301144443.xml">[국외지진정보] 2026. 03. 01 15:06</option>
+											<option value="eqk_web_2_20260301064200.xml">[국외지진정보] 2026. 03. 01 06:48</option>
+											<option value="eqk_web_2_20260228215700.xml">[국외지진정보] 2026. 02. 28 22:03</option>
+											<option value="eqk_web_2_20260228145400.xml">[국외지진정보] 2026. 02. 28 15:01</option>
+											<option value="eqk_web_2_20260228104900.xml">[국외지진정보] 2026. 02. 28 10:57</option>
+											<option value="eqk_web_2_20260227234800.xml">[국외지진정보] 2026. 02. 27 23:55</option>
+											<option value="eqk_web_2_20260227115500.xml">[국외지진정보] 2026. 02. 27 12:05</option>
+											<option value="eqk_web_2_20260227080600.xml">[국외지진정보] 2026. 02. 27 08:21</option>
+											<option value="eqk_web_2_20260227035200.xml">[국외지진정보] 2026. 02. 27 04:18</option>
+											<option value="eqk_web_2_20260223141151.xml">[국외지진정보] 2026. 02. 23 14:23</option>
+											<option value="eqk_web_2_20260223015746.xml">[국외지진정보] 2026. 02. 23 02:13</option>
+											<option value="eqk_web_2_20260222164326.xml">[국외지진정보] 2026. 02. 22 17:02</option>
+											<option value="eqk_web_2_20260222014207.xml">[국외지진정보] 2026. 02. 22 02:06</option>
+											<option value="eqk_web_3_20260219202407.xml">[지진정보] 2026. 02. 19 20:28</option>
+											<option value="eqk_web_3_20260219082543.xml">[지진정보] 2026. 02. 19 08:30</option>
+											<option value="eqk_web_2_20260217064253.xml">[국외지진정보] 2026. 02. 17 06:59</option>
+											<option value="eqk_web_2_20260216005848.xml">[국외지진정보] 2026. 02. 16 01:22</option>
+											<option value="eqk_web_3_20260215041338.xml">[지진정보] 2026. 02. 15 04:16</option>
+											<option value="eqk_web_2_20260214112738.xml">[국외지진정보] 2026. 02. 14 11:50</option>
+											<option value="eqk_web_2_20260212223431.xml">[국외지진정보] 2026. 02. 12 22:59</option>
+											<option value="eqk_web_2_20260211054452.xml">[국외지진정보] 2026. 02. 11 06:10</option>
+											<option value="eqk_web_3_20260209103329.xml">[지진정보] 2026. 02. 09 10:36</option>
+											<option value="eqk_web_2_20260204193929.xml">[국외지진정보] 2026. 02. 04 19:58</option>
+											<option value="eqk_web_3_20260131163600.xml">[지진정보] 2026. 01. 31 16:40</option>
+											<option value="eqk_web_2_20260129163040.xml">[국외지진정보] 2026. 01. 29 16:53</option>
+											<option value="eqk_web_30_20260125072100.xml">[화산정보] 2026. 01. 25 08:10</option>
+											<option value="eqk_web_3_20260123014821.xml">[지진정보] 2026. 01. 23 01:51</option>
+											<option value="eqk_web_2_20260122214235.xml">[국외지진정보] 2026. 01. 22 22:04</option>
+											<option value="eqk_web_2_20260122154900.xml">[국외지진정보] 2026. 01. 22 15:59</option>
+											<option value="eqk_web_2_20260122013745.xml">[국외지진정보] 2026. 01. 22 02:01</option>
+											<option value="eqk_web_3_20260121020840.xml">[지진정보] 2026. 01. 21 02:13</option>
+											<option value="eqk_web_2_20260119220220.xml">[국외지진정보] 2026. 01. 19 22:35</option>
+											<option value="eqk_web_2_20260116122552.xml">[국외지진정보] 2026. 01. 16 12:46</option>
+											<option value="eqk_web_2_20260115144800.xml">[국외지진정보] 2026. 01. 15 14:57</option>
+											<option value="eqk_web_2_20260113163400.xml">[국외지진정보] 2026. 01. 13 16:44</option>
+											<option value="eqk_web_2_20260113015800.xml">[국외지진정보] 2026. 01. 13 02:06</option>
+											<option value="eqk_web_3_20260112165101.xml">[지진정보] 2026. 01. 12 16:53</option>
+											<option value="eqk_web_2_20260112095000.xml">[국외지진정보] 2026. 01. 12 09:58</option>
+											<option value="eqk_web_2_20260111131500.xml">[국외지진정보] 2026. 01. 11 13:21</option>
+											<option value="eqk_web_2_20260110235825.xml">[국외지진정보] 2026. 01. 11 00:16</option>
+											<option value="eqk_web_3_20260107170037.xml">[지진정보] 2026. 01. 07 17:27</option>
+											<option value="eqk_web_2_20260107120258.xml">[국외지진정보] 2026. 01. 07 12:21</option>
+											<option value="eqk_web_2_20260106101800.xml">[국외지진정보] 2026. 01. 06 10:25</option>
+											<option value="eqk_web_3_20260103142719.xml">[지진정보] 2026. 01. 03 14:31</option>
+											<option value="eqk_web_2_20260102225818.xml">[국외지진정보] 2026. 01. 02 23:16</option>
+											<option value="eqk_web_30_20260102181000.xml">[화산정보] 2026. 01. 02 19:27</option>
+											<option value="eqk_web_2_20260101105301.xml">[국외지진정보] 2026. 01. 01 11:14</option>
+										</select>
+									</div>
+									<button type="button" data-role="eqk-select"><span class="sr-only">통보문</span> 선택</button>
+								</div>
+							</div>
+							<div data-role="eqk-info-holder">
+
+
+
+
+
+
+
+
+
+
+
+
+								<div class="cont-box04">
+									<h3 class="tit">
+
+
+
+
+
+										국외지진정보
+										기상청 <small>| 2026년 10월 16일 12시 53분 현재</small></h3>
+
+								</div>
+
+
+
+
+								<div class="over-scroll cont-box-eqk">
+									<table class="table-col">
+										<caption>
+
+
+
+
+
+											국외지진정보
+										</caption>
+										<colgroup>
+
+
+
+											<col style="width:20%;">
+
+
+											<col style="width:45%;">
+											<col style="width:15%;">
+											<col style="width:20%;">
+										</colgroup>
+										<tbody>
+
+
+
+
+
+
+											<tr>
+												<th scope="row">발생시각</th>
+
+
+
+												<td colspan="3">2026년 10월 16일 12시 35분 32초</td>
+											</tr>
+											<tr>
+												<th scope="row" class="">
+
+
+
+
+
+
+
+
+
+
+													규&nbsp;&nbsp;&nbsp;모
+
+
+
+												</th>
+												<td class="eqkmt" colspan="3"><strong>6.9
+
+
+
+
+
+
+
+													</strong>
+													<!-- 2019-06-25 불확실정보 추가 표출-->
+
+												</td>
+											</tr>
+
+
+
+
+
+
+
+											<tr>
+
+
+
+
+
+
+
+												<th scope="row">발생위치</th>
+												<td class="td_loc">러시아 캄차카반도 페트로파블롭스크-캄차츠키 남서쪽 148km 지역 <br>&nbsp;(위도: 52.00 N, 경도: 157.25 E)
+												</td>
+												<th scope="row">발생깊이</th>
+												<td>143 km</td>
+
+
+
+
+											</tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+											<tr>
+												<th scope="row">참고사항</th>
+												<td colspan="3">국내영향없음. 발생시각, 규모, 발생위치, 발생깊이는 미국지질조사소(USGS) 분석결과임.</td>
+											</tr>
+
+
+
+
+
+
+
+
+
+
+
+										</tbody>
+									</table>
+								</div>
+
+
+								<div class="cont-box04">
+
+									<h3 class="tit">
+
+
+
+
+										지진 발생위치
+
+									</h3>
+
+									<div class="map-box">
+										<div>
+											<img src="/w/repositary/xml/eqk/img/eqk_img_2_20261016123532.png" alt="지진 발생위치 설명" width="685">
+										</div>
+									</div>
+								</div>
+
+
+
+
+
+
+
+
+
+
+
+
+								<script type="text/javascript">
+									$(document).ready(function () {
+										$('#eqList tr button').on('click', function () {
+											var sido_code = $(this).attr('value');
+											$('.sigungu_' + sido_code).toggle();
+
+											var _txt = $(this).text();
+											if (_txt == '+') {
+												_txt = '-';
+											} else {
+												_txt = '+';
+											}
+											$(this).text(_txt);
+										});
+									});
+								</script>
+							</div>
+						</div>
+						<div class="loading_wrap" style="display: none;">
+							<div class="lds-spinner light">
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+								<div></div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- <div class="bottom-info">
+					<h3 class="tit">더보기</h3>
+					<ul class="ban-wrap">
+						<li class="ban01">
+							<a th:href="@{/eqk-vol/baro/phenom.do}" onclick="window.open(this.href,'baro_win','width=1000, height=728').focus(); return false;"target="_blank" title="새창열림"><img th:src="@{/resources/image/banner20.png}" alt="">
+							<div class="wr">
+								<div class="cel">
+									<img th:src="@{/resources/image/ban_cel14.png}" alt="">
+									<p>지진 바로알기 <img th:src="@{/resources/image/ban_cel_bu.png}" alt=""></p>
+								</div>
+							</div>
+							</a>
+						</li>
+					</ul>
+				</div> -->
+				</div>
+
+			</div>
+
+
+		</main>
+	</div>
+
+
+	<!-- footer -->
+	<footer class="nr__footer"></footer>
+	<!-- //footer -->
+
+	<script src="repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
+	<!-- START OF LOGGER TRACKING SCRIPT -->
+	<!-- 기존 logger2 로그 -->
+	<!--<script th:src="@{'/resources/js/logger2.weather.go.kr.1057.js?ver=' + ${appVersion}}"></script>
+    <noscript><img alt="로그" src="https://logger.kma.go.kr/tracker.tsp?u=7&amp;js=N" width="0" height="0" /></noscript>-->
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+	<script src="resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드 -->
+	<script type="module">
+		import { UX } from './resources/js-2026/ui-common.js';
+		import { initAsideMenu } from './resources/js-2026/component/ui-aside.js';
+
+		UX.init('sub');
+
+		// 원하는 메뉴 활성화를 직접 호출하여 제어할 수도 있습니다:
+		// initAsideMenu({ dep1: 1, dep2: 2, dep3: 4 });
+	</script>
+</body>
+
+</html>

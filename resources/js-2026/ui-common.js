@@ -14,19 +14,21 @@ import { initMap } from "./component/ui-map.js";
 import { initAsideMenu } from "./component/ui-aside.js";
 import { initHeaderMenu } from "./component/ui-header.js";
 import { uiForecastExe } from "./component/ui-forecast.js";
+import { initTableSort } from "./component/ui-table-sort.js";
 
 export const UX = {
-  loadContent,
-  Tab,
-  initNoticeDropdown,
-  initSpecialReportTabs,
-  initNoticeHelpTooltips,
-  initDropdown,
-  initAllDropdowns,
-  initMap,
-  initAsideMenu,
-  initHeaderMenu,
-  uiForecastExe,
+	loadContent,
+	Tab,
+	initNoticeDropdown,
+	initSpecialReportTabs,
+	initNoticeHelpTooltips,
+	initDropdown,
+	initAllDropdowns,
+	initMap,
+	initAsideMenu,
+	initHeaderMenu,
+	uiForecastExe,
+	initTableSort,
   noticeDropdown: null,
   openNotice: (target) => UX.noticeDropdown?.open(target) ?? window.openNotice?.(target),
   closeNotice: (restoreFocus) => UX.noticeDropdown?.close(restoreFocus) ?? window.closeNotice?.(restoreFocus),

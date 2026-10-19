@@ -249,9 +249,9 @@
       ]
     },
     {
-      "id": "earthquake",
+      "id": "earthquake-volcano",
       "title": "지진·화산",
-      "link": "/earthquake/recent.html",
+      "link": "/earthquake-volcano/recent.html",
       "depth2": [
         {
           "id": "eqk-realtime",
@@ -262,17 +262,17 @@
         {
           "id": "eqk-recent",
           "title": "최근발표",
-          "link": "/earthquake/recent.html"
+          "link": "/earthquake-volcano/recent.html"
         },
         {
           "id": "eqk-search",
           "title": "지진조회",
-          "link": "/earthquake/search.html"
+          "link": "/earthquake-volcano/search.html"
         },
         {
           "id": "eqk-history",
           "title": "과거지진",
-          "link": "/earthquake/history.html"
+          "link": "/earthquake-volcano/history.html"
         },
         {
           "id": "eqk-report",
@@ -283,27 +283,27 @@
         {
           "id": "eqk-tsunami",
           "title": "지진해일",
-          "link": "/earthquake/tsunami.html"
+          "link": "/earthquake-volcano/tsunami.html"
         },
         {
           "id": "eqk-volcano",
           "title": "화산",
-          "link": "/earthquake/volcano.html"
+          "link": "/earthquake-volcano/volcano.html"
         },
         {
           "id": "eqk-standard",
           "title": "통보기준",
-          "link": "/earthquake/standard.html"
+          "link": "/earthquake-volcano/standard.html"
         },
         {
           "id": "eqk-scale",
           "title": "진도등급 별 현상",
-          "link": "/earthquake/scale.html"
+          "link": "/earthquake-volcano/scale.html"
         },
         {
           "id": "eqk-safety",
           "title": "지진·화산 대피요령",
-          "link": "/earthquake/safety.html"
+          "link": "/earthquake-volcano/safety.html"
         },
         {
           "id": "eqk-museum",

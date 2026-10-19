@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
+
+	<title>화산 조회 지도 - 기상청 날씨누리</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes">
+	<meta name="format-detection" content="telephone=no">
+
+	<link rel="shortcut icon" href="logo_mark.png" />
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png" />
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/w/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY" />
+
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css" />
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script src="resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+	<link rel="stylesheet" href="resources/lib/tablesorter/css/theme.blue.css" />
+	<script src="resources/lib/tablesorter/js/jquery.tablesorter.min.js"></script>
+	<script src="resources/lib/tablesorter/widgets/jquery.tablesorter.staticrow.min.js"></script>
+
+	
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
+</head>
+
+<body class="subp nr__popup">
+	<a id="skip-to-content" href="#content">본문 바로가기</a>
+
+	<header class="mb-4 border-b border-gray-200 ">
+		<div class="flex items-center justify-between container mx-auto px-2 max-w-5xl">
+			<h1 id="logo-kma" class="order-2 !hidden md:!block !w-20 !h-10" >
+				<span class="sr-only">기상청</span>
+			</h1>
+			<h2 class="popup-title order-1">화산 조회 지도</h2>
+			<i id="popup-close-button" class="icon order-3 md:hidden" role="button" data-role="tab-close"
+				aria-label="닫기 버튼">close</i>
+		</div>
+	</header>
+
+	<main class="container px-2 mx-auto space-y-4 lg:px-0 lg:space-y-8 max-w-5xl nr__sub-content">
+		<a id="content"></a>
+
+		<div class="cont-wrap">
+			<div class="nr__tsunami-mapimg">
+				<div class="nr__tsunami-mapimg-item">
+					<h3 class="nr__tsunami-mapimg-tit">[ 특보구역 ]</h3>
+					<div>
+						<img src="https://www.weather.go.kr/w/XML/eqk/img/eqk_img_3_20260927112844.png" alt="특보구역 지도">
+					</div>
+				</div>
+				<div class="nr__tsunami-mapimg-item">
+					<h3 class="nr__tsunami-mapimg-tit">[ 화산위치 ]</h3>
+					<div>
+						<img src="https://www.weather.go.kr/w/XML/eqk/img/eqk_img_3_20260927112844.png" alt="특보구역 지도">
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
+
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+
+	<script src="resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드: 테이블 3단계 정렬(오름차순 -> 내림차순 -> 기본상태) 연동 -->
+	<script type="module">
+		import { initTableSort } from '../../resources/js-2026/component/ui-table-sort.js';
+
+		document.addEventListener('DOMContentLoaded', () => {
+			initTableSort('#excel_body');
+		});
+	</script>
+</body>
+
+</html>

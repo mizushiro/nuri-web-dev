@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
+
+	<title>지진해일 조회 - 기상청 날씨누리</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes">
+	<meta name="format-detection" content="telephone=no">
+
+	<link rel="shortcut icon" href="logo_mark.png" />
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png" />
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/w/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY" />
+
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css" />
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script src="resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+	<link rel="stylesheet" href="resources/lib/tablesorter/css/theme.blue.css" />
+	<script src="resources/lib/tablesorter/js/jquery.tablesorter.min.js"></script>
+	<script src="resources/lib/tablesorter/widgets/jquery.tablesorter.staticrow.min.js"></script>
+
+	
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
+</head>
+
+<body class="subp nr__popup">
+	<a id="skip-to-content" href="#content">본문 바로가기</a>
+
+	<header class="mb-4 border-b border-gray-200 ">
+		<div class="flex items-center justify-between container mx-auto px-2 max-w-5xl">
+			<h1 id="logo-kma" class="order-2 !hidden md:!block !w-20 !h-10" >
+				<span class="sr-only">기상청</span>
+			</h1>
+			<h2 class="popup-title order-1">지진해일 조회</h2>
+			<i id="popup-close-button" class="icon order-3 md:hidden" role="button" data-role="tab-close"
+				aria-label="닫기 버튼">close</i>
+		</div>
+	</header>
+
+	<main class="container px-2 mx-auto space-y-4 lg:px-0 lg:space-y-8 max-w-5xl nr__sub-content">
+		<a id="content"></a>
+		<div class="flex items-center justify-between">
+			<nav aria-label="페이지 경로">
+				<ul id="breadcrumb">
+					<li class="home">
+						<a href="/index.do"><span class="sr-only">홈</span></a>
+					</li>
+					<li>
+						<a href="earthquake-volcano/recent.do"><span>지진&middot;화산</span></a>
+					</li>
+					<li>
+						<a href=""><span>지진해일</span></a>
+					</li>
+					<li>
+						<a href=""><span>지진해일 조회</span></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+
+		<div class="cont-wrap cmp-eqk-search">
+			<div class="cmp-stack">
+				<form id="default-form" name="schform" class="cmp-form" action="korea.do" method="get" autocomplete="off">
+					<input type="hidden" name="schOption" value="">
+					<input type="hidden" name="xls" value="">
+					<div class="cmp-form-row">
+						<div class="cmp-form-input cmp-form-input-value-range label-on">
+							<label for="input-start-tm">발생기간</label>
+							<input type="text" id="input-start-tm" name="startTm" value="2026-01-01" title="발생기간 시작" maxlength="10"
+								class="hasDatepicker">
+							<span>~</span>
+							<input type="text" id="input-end-tm" name="endTm" value="2026-10-18" title="발생기간 끝" maxlength="10"
+								class="hasDatepicker">
+						</div>
+						<div class="cmp-form-select cmp-form-select-value-range label-on">
+							<label for="input-start-tm">규모범위</label>
+							<div class="select"><select id="select-start-size" name="startSize" title="규모범위 시작">
+									<option value="">선택 이상</option>
+									<option value="0">0.0 이상</option>
+									<option value="1">1.0 이상</option>
+									<option value="2" selected="selected">2.0 이상</option>
+									<option value="2.5">2.5 이상</option>
+									<option value="3.0">3.0 이상</option>
+									<option value="3.5">3.5 이상</option>
+									<option value="4.0">4.0 이상</option>
+									<option value="4.5">4.5 이상</option>
+									<option value="5.0">5.0 이상</option>
+									<option value="5.5">5.5 이상</option>
+									<option value="6">6.0 이상</option>
+									<option value="7">7.0 이상</option>
+									<option value="8">8.0 이상</option>
+									<option value="9">9.0 이상</option>
+									<option value="10">10.0 이상</option>
+								</select></div>
+							<span>~</span>
+							<div class="select"><select id="select-end-size" name="endSize" title="규모범위 끝">
+									<option value="">선택 미만</option>
+									<option value="0">0.0 미만</option>
+									<option value="1">1.0 미만</option>
+									<option value="2">2.0 미만</option>
+									<option value="2.5">2.5 미만</option>
+									<option value="3.0">3.0 미만</option>
+									<option value="3.5">3.5 미만</option>
+									<option value="4.0">4.0 미만</option>
+									<option value="4.5">4.5 미만</option>
+									<option value="5.0">5.0 미만</option>
+									<option value="5.5">5.5 미만</option>
+									<option value="6">6.0 미만</option>
+									<option value="7">7.0 미만</option>
+									<option value="8">8.0 미만</option>
+									<option value="9">9.0 미만</option>
+									<option value="10">10.0 미만</option>
+								</select></div>
+						</div>
+					</div>
+
+					<div class="cmp-form-row">
+						<div class="cmp-form-input cmp-form-input-value-range label-on">
+							<label for="input-start-lat">위도범위</label>
+							<input type="text" id="input-start-lat" name="startLat" value="" title="위도범위 시작" placeholder="-90 ~ 90">
+							<span>~</span>
+							<input type="text" id="input-end-lat" name="endLat" value="" title="위도범위 끝" placeholder="-90 ~ 90">
+						</div>
+						<div class="cmp-form-input cmp-form-input-value-range label-on">
+							<label for="input-start-lon">경도범위</label>
+							<input type="text" id="input-start-lon" name="startLon" value="" title="경도범위 시작" placeholder="-180 ~ 180">
+							<span>~</span>
+							<input type="text" id="input-end-lon" name="endLon" value="" title="경도범위 끝" placeholder="-180 ~ 180">
+						</div>
+					</div>
+
+					<div class="cmp-form-row">
+						<div class="cmp-form-input cmp-form-input-twin label-on">
+							<label for="input-lat">위도</label>
+							<input type="text" id="input-lat" name="lat" value="" title="위도">
+							<label for="input-start-lat">경도</label>
+							<input type="text" id="input-lon" name="lon" value="" title="경도">
+						</div>
+					</div>
+					<div class="cmp-form-row">
+						<div class="cmp-form-input cmp-form-input-twin cmp-eqk-search-keyword label-on">
+							<label for="input-keyword">검색어</label>
+							<input type="text" id="input-keyword" name="keyword" value="" title="검색어 입력">
+						</div>
+						<div class="cmp-form-input cmp-form-buttons">
+							<input type="submit" data-form-role="submit" value="검색하기">
+							<a href="javascript:void(0);" data-form-role="button" data-action="xls-download">엑셀 다운로드</a>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="cmp-stack">
+				<div class="over-scroll">
+					<table class="table-col eqk-search-table whitespaced table-fixed" id="excel_body">
+						<caption>지진해일 조회에 대한 결과 정보표입니다.</caption>
+						<colgroup>
+							<col style="width: 6rem;">
+							<col style="width: 8rem;">
+							<col style="width: 11rem;">
+							<col style="width: 8rem;">
+							<col style="width: 12rem;">
+							<col style="width: auto;">
+							<col style="width: auto;">
+							<col style="width: 11rem;">
+							<col style="width: 6rem;">
+							<col style="width: 9rem;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">순번</th>
+								<th scope="col">구분 <br>(통합 <br>지진ID)</th>
+								<th scope="col">통보문 <br>발표시각</th>
+								<th scope="col">경보<br>지역</th>
+								<th scope="col">주의보지역</th>
+								<th scope="col">구역별<br>정보</th>
+								<th scope="col">지점별<br>정보</th>
+								<th scope="col">발효시각</th>
+								<th scope="col" data-sort="false">지도<br>보기</th>
+								<th scope="col" data-sort="false">지진<br>정보</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><span>55</span></td>
+								<td><span>지진해일 특보<br /> (2026003259)</span></td>
+								<td><span>2026-09-27<br /> 11:28:44</span></td>
+								<td><span>울산해안</span></td>
+								<td>
+									<div class="flex flex-col gap-2">
+										<span>경북남부해안</span>
+										<span>부산해안</span>
+										<span>거제시동부해안</span>
+									</div>
+								</td>
+								<td>
+									<div class="flex flex-col gap-2">
+										<span>경북북부해안<br />
+											2026-05-24<br />
+											23:58 0.2~0.4m</span>
+										<span>경북남부해안<br />
+											2026-05-24<br />
+											22:51 0.5~1.0m</span>
+										<span>울산해안<br />
+											2026-05-24<br />
+											22:35 0.5~2.0m</span>
+										<span>부산해안<br />
+											2026-05-24<br />
+											22:31 0.5~1.0m</span>
+										<span>경남중부남해해안<br />
+											2026-05-24<br />
+											22:54 0.2~0.4m</span>
+									</div>
+								</td>
+								<td>
+									<div class="flex flex-col gap-2">
+										<span>부산<br /> 2026-05-24<br />
+											22:44 0.8m</span>
+										<span>울산<br /> 2026-05-24<br />
+											22:51 2.0m</span>
+										<span>거제<br /> 2026-05-24<br />
+											22:52 0.5m</span>
+										<span>경주<br /> 2026-05-24<br />
+											22:52 0.4m</span>
+										<span>포항<br /> 2026-05-24<br />
+											22:58 0.6m</span>
+										<span>창원<br /> 2026-05-24<br />
+											23:05 0.4m</span>
+									</div>
+								</td>
+								<td><span>2026-05-24<br /> 21:20:11</span></td>
+								<td>
+									<a class="map-button" href="earthquake-volcano/archive/tsunami-check-map.html"
+										target="_blank" data-target="popup" title="지도 새창열림" data-title="지도"><span>지도</span></a>
+								</td>
+								<td>
+									<a href="earthquake-volcano/archive/tsunami-check-info.html" target="_blank" data-target="popup" 
+										title="새창열림"><span>지진정보</span></a>
+								</td>
+							</tr>
+							<tr>
+								<td><span>1</span></td>
+								<td><span>지진해일 특보<br />(2026003258)</span></td>
+								<td><span>2026-09-26<br /> 11:28:44</span></td>
+								<td><span>울산해안</span></td>
+								<td>
+									<div class="flex flex-col gap-2">
+										<span>경남남부해안</span>
+										<span>부산해안</span>
+										<span>거제시동부해안</span>
+									</div>
+								</td>
+								<td>
+									<div class="flex flex-col gap-2">
+										<span>충북북부해안<br />
+											2026-05-24<br />
+											23:58 0.2~0.4m</span>
+										<span>경북남부해안<br />
+											2026-05-24<br />
+											22:51 0.5~1.0m</span>
+										<span>울산해안<br />
+											2026-05-24<br />
+											22:35 0.5~2.0m</span>
+										<span>부산해안<br />
+											2026-05-24<br />
+											22:31 0.5~1.0m</span>
+										<span>경남중부남해해안<br />
+											2026-05-24<br />
+											22:54 0.2~0.4m</span>
+									</div>
+								</td>
+								<td>
+									<div class="flex flex-col gap-2">
+										<span>인천<br /> 2026-05-24<br />
+											22:44 0.8m</span>
+										<span>울산<br /> 2026-05-24<br />
+											22:51 2.0m</span>
+										<span>거제<br /> 2026-05-24<br />
+											22:52 0.5m</span>
+										<span>경주<br /> 2026-05-24<br />
+											22:52 0.4m</span>
+										<span>포항<br /> 2026-05-24<br />
+											22:58 0.6m</span>
+										<span>창원<br /> 2026-05-24<br />
+											23:05 0.4m</span>
+									</div>
+								</td>
+								<td><span>2026-05-22<br /> 21:20:11</span></td>
+								<td>
+									<a class="map-button" href=""
+										target="_blank" title="지도 새창열림"
+										data-title="지도"><span>지도</span></a>
+								</td>
+								<td>
+									<a href="https://www.weather.go.kr/w/XML/INTENSITY/i_3_20260927112844.html" target="_blank"
+										title="새창열림"><span>지진정보</span></a>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+				<div class="cmp-paging">
+					<a href="#" class="bbs_btn first sprite">처음</a>
+					<a href="#" class="bbs_btn mgr10_i prev sprite">이전</a>
+					<a href="#" class="now" title="현재페이지">1<span class="sun sprite"></span></a>
+					<a href="#">2</a>
+					<a href="#">3</a>
+					<a href="#" class="bbs_btn mgl10_i next sprite">다음</a>
+					<a href="#" class="bbs_btn last sprite">마지막</a>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
+
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+
+	<script src="resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드: 테이블 3단계 정렬(오름차순 -> 내림차순 -> 기본상태) 연동 -->
+	<script type="module">
+		import { initTableSort } from '../../resources/js-2026/component/ui-table-sort.js';
+
+		document.addEventListener('DOMContentLoaded', () => {
+			initTableSort('#excel_body');
+		});
+	</script>
+</body>
+
+</html>

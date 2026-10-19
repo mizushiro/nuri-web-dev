@@ -751,12 +751,12 @@ video {
   margin-top: 1rem;
 }
 
-.mr-3 {
-  margin-right: 0.75rem;
-}
-
 .mt-5 {
   margin-top: 1.25rem;
+}
+
+.mr-3 {
+  margin-right: 0.75rem;
 }
 
 .\!block {
@@ -974,6 +974,10 @@ video {
   justify-content: space-between;
 }
 
+.gap-1 {
+  gap: 0.25rem;
+}
+
 .gap-2 {
   gap: 0.5rem;
 }
@@ -982,9 +986,6 @@ video {
   gap: 1rem;
 }
 
-.gap-1 {
-  gap: 0.25rem;
-}
 
 .gap-x-1 {
   -moz-column-gap: 0.25rem;
@@ -1060,6 +1061,10 @@ video {
   white-space: nowrap;
 }
 
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
 .break-all {
   word-break: break-all;
 }
@@ -1127,11 +1132,11 @@ video {
 }
 
 .bg-\[url\(\/w\/resources\/images\/logo\.png\)\] {
-  background-image: url(/w/resources/images/logo.png);
+  background-image: url(/resources/images/logo.png);
 }
 
 .bg-\[url\(\/w\/resources\/images\/icon_main_sns_youtube\.png\)\] {
-  background-image: url(/w/resources/images/icon_main_sns_youtube.png);
+  background-image: url(/resources/images/icon_main_sns_youtube.png);
 }
 
 .bg-contain {
@@ -1283,16 +1288,16 @@ video {
   font-size: 10px;
 }
 
-.font-bold {
-  font-weight: 700;
-}
-
 .font-medium {
   font-weight: 500;
 }
 
 .font-semibold {
   font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 900;
 }
 
 .uppercase {
@@ -1316,10 +1321,6 @@ video {
   font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
 }
 
-.leading-tight {
-  line-height: 1.25;
-}
-
 .\!text-white {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
@@ -1327,7 +1328,7 @@ video {
 
 .text-black {
   --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
+  color: rgb(0 0 0 / var(--tw-text-opacity)) !important;
 }
 
 .text-brand {
@@ -1350,17 +1351,16 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.text-gray-800 {
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity));
-}
-
 .underline {
   text-decoration-line: underline;
 }
 
 .overline {
   text-decoration-line: overline;
+}
+
+.no-underline {
+  text-decoration-line: none;
 }
 
 .antialiased {
@@ -1436,7 +1436,7 @@ http://scripts.sil.org/OFL
 	font-family: 'Pretendard GOV';
 	font-weight: 900;
 	font-display: swap;
-	src: local('Pretendard GOV Black'), url(/w/resources/font/woff2-subset/PretendardGOV-Black.subset.woff2) format('woff2'), url(/w/resources/font/woff-subset/PretendardGOV-Black.subset.woff) format('woff');
+	src: local('Pretendard GOV Black'), url(/resources/font/woff2-subset/PretendardGOV-Black.subset.woff2) format('woff2'), url(/resources/font/woff-subset/PretendardGOV-Black.subset.woff) format('woff');
 } */
 
 @font-face {
@@ -1446,7 +1446,7 @@ http://scripts.sil.org/OFL
 
   font-display: swap;
 
-  src: local('Pretendard GOV ExtraBold'), url(/w/resources/font/woff2-subset/PretendardGOV-ExtraBold.subset.woff2) format('woff2'), url(/w/resources/font/woff-subset/PretendardGOV-ExtraBold.subset.woff) format('woff');
+  src: local('Pretendard GOV ExtraBold'), url(/resources/font/woff2-subset/PretendardGOV-ExtraBold.subset.woff2) format('woff2'), url(/resources/font/woff-subset/PretendardGOV-ExtraBold.subset.woff) format('woff');
 }
 
 @font-face {
@@ -1456,7 +1456,7 @@ http://scripts.sil.org/OFL
 
   font-display: swap;
 
-  src: local('Pretendard GOV Bold'), url(/w/resources/font/woff2-subset/PretendardGOV-Bold.subset.woff2) format('woff2'), url(/w/resources/font/woff-subset/PretendardGOV-Bold.subset.woff) format('woff');
+  src: local('Pretendard GOV Bold'), url(/resources/font/woff2-subset/PretendardGOV-Bold.subset.woff2) format('woff2'), url(/resources/font/woff-subset/PretendardGOV-Bold.subset.woff) format('woff');
 }
 
 @font-face {
@@ -1466,7 +1466,7 @@ http://scripts.sil.org/OFL
 
   font-display: swap;
 
-  src: local('Pretendard GOV SemiBold'), url(/w/resources/font/woff2-subset/PretendardGOV-SemiBold.subset.woff2) format('woff2'), url(/w/resources/font/woff-subset/PretendardGOV-SemiBold.subset.woff) format('woff');
+  src: local('Pretendard GOV SemiBold'), url(/resources/font/woff2-subset/PretendardGOV-SemiBold.subset.woff2) format('woff2'), url(/resources/font/woff-subset/PretendardGOV-SemiBold.subset.woff) format('woff');
 }
 
 @font-face {
@@ -1476,7 +1476,7 @@ http://scripts.sil.org/OFL
 
   font-display: swap;
 
-  src: local('Pretendard GOV Medium'), url(/w/resources/font/woff2-subset/PretendardGOV-Medium.subset.woff2) format('woff2'), url(/w/resources/font/woff-subset/PretendardGOV-Medium.subset.woff) format('woff');
+  src: local('Pretendard GOV Medium'), url(/resources/font/woff2-subset/PretendardGOV-Medium.subset.woff2) format('woff2'), url(/resources/font/woff-subset/PretendardGOV-Medium.subset.woff) format('woff');
 }
 
 @font-face {
@@ -1486,7 +1486,7 @@ http://scripts.sil.org/OFL
 
   font-display: swap;
 
-  src: local('Pretendard GOV Regular'), url(/w/resources/font/woff2-subset/PretendardGOV-Regular.subset.woff2) format('woff2'), url(/w/resources/font/woff-subset/PretendardGOV-Regular.subset.woff) format('woff');
+  src: local('Pretendard GOV Regular'), url(/resources/font/woff2-subset/PretendardGOV-Regular.subset.woff2) format('woff2'), url(/resources/font/woff-subset/PretendardGOV-Regular.subset.woff) format('woff');
 }
 
 @font-face {
@@ -1496,7 +1496,7 @@ http://scripts.sil.org/OFL
 
   font-weight: 100 700;
 
-  src: url(/w/resources/font/material-symbols-outlined.woff2) format('woff2');
+  src: url(/resources/font/material-symbols-outlined.woff2) format('woff2');
 }
 
 .material-symbols-outlined,
@@ -2149,7 +2149,7 @@ aside {
 }
 
 #logo-kma {
-  background-image: url('/w/resources/images/logo_kma.png');
+  background-image: url('/resources/images/logo_kma.png');
 }
 
 #breadcrumb {
@@ -2328,30 +2328,32 @@ aside {
 }
 
 footer #logos {
+  .logo {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
   .logo-131 {
     height: 2rem;
-  }
-  .logo-131 {
     width: 5rem;
+    background-image: url('/resources/images/footer_logos_131.png');
   }
-  .logo-131 {
-    background-size: contain;
+
+  .logo-wa {    
+    height: 3rem;
+    width: 5rem;
+    background-image: url('/resources/images/footer_logos_wa.png');
   }
-  .logo-131 {
-    background-repeat: no-repeat;
-  }
+
   @media (min-width: 1024px) {
     .logo-131 {
       height: 3rem;
-    }
-  }
-  @media (min-width: 1024px) {
-    .logo-131 {
       width: 8rem;
     }
-  }
-  .logo-131 {
-    background-image: url('/w/resources/images/footer_logos_131.png');
+    .logo-wa {
+      height: 4rem;
+      width: 8rem;
+    }
   }
 }
 
@@ -2388,6 +2390,9 @@ footer #logos {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
   }
+  &.primary:focus-visible {
+    box-shadow: 0 0 3px 2px #e87900 !important;
+  }
   &.small {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
@@ -2406,9 +2411,6 @@ footer #logos {
   overflow: hidden;
   border-radius: 0.75rem;
   border-width: 1px;
-  a {
-    display: block;
-  }
   .title {
     display: flex;
   }
@@ -2440,15 +2442,6 @@ footer #logos {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
   }
-  a[target="_popup"] .title:after {
-    content: '\f4c8';
-    font-family: 'Material Symbols Outlined';
-    transform: rotate(180deg);
-  }
-  a[target="_blank"] .title:after {
-    content: '\e89e';
-    font-family: 'Material Symbols Outlined';
-  }
   .content {
     min-height: 4rem;
   }
@@ -2462,6 +2455,17 @@ footer #logos {
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
+}
+
+a[data-target="popup"] .card .title:after {
+  content: '\f4c8';
+  font-family: 'Material Symbols Outlined';
+  transform: rotate(180deg);
+}
+
+a[target="_blank"]:not([data-target="popup"]) .card .title:after {
+  content: '\e89e';
+  font-family: 'Material Symbols Outlined';
 }
 
 ul.tab {
@@ -2493,6 +2497,9 @@ ul.tab {
   a {
     font-size: 0.875rem;
     line-height: 1.25rem;
+  }
+  a:focus-visible {
+    position: relative; z-index: 10;
   }
   @media (min-width: 1024px) {
     a {
@@ -2918,7 +2925,7 @@ ul.tab.small {
        column-gap: 0px;
   border-top-width: 1px;
   --tw-border-opacity: 1;
-  border-color: rgb(158 158 158 / var(--tw-border-opacity));
+  border-color: rgb(153 153 153 / var(--tw-border-opacity));
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   padding-left: 0px;
@@ -2995,6 +3002,28 @@ dl.listed {
       display: block;
     }
   }
+}
+
+*:focus-visible {
+  /* outline: 2px dotted red !important;
+  outline-offset: -2px !important; */
+  outline: none !important;
+  box-shadow: 0 0 3px 2px #006fe8 !important;
+  z-index: 1;
+}
+
+#skip-to-content {
+  position: absolute;
+  top: -40px;
+  background-color: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  z-index: 9999;
+}
+
+#skip-to-content:focus {
+  top: 4px !important;
+  left: 4px !important;
 }
 
 table caption {
@@ -3134,6 +3163,10 @@ div.bottom-info {
 
   .lg\:right-0 {
     right: 0px;
+  }
+
+  .lg\:flex-col {
+    flex-direction: column;
   }
 
   .lg\:order-1 {

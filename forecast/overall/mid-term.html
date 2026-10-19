@@ -100,7 +100,7 @@
 							<a href="/index.html"><span class="sr-only">홈</span></a>
 						</li>
 						<li>
-							<a href="/special-report/overall.html"><span>특보·예보</span></a>
+							<a href="special-report/overall.html"><span>특보·예보</span></a>
 						</li>
 						<li>
 							<a href=""><span>예보 종합</span></a>
@@ -114,8 +114,8 @@
 			<div class="!max-w-full mid-term--content-gap">
 
 				<ul class="tab">
-					<li><a href="/forecast/overall/short-term.html">단기예보</a></li>
-					<li><a class="active" href="/forecast/overall/mid-term.html" title="선택됨">중기예보</a></li>
+					<li><a href="forecast/overall/short-term.html">단기예보</a></li>
+					<li><a class="active" href="forecast/overall/mid-term.html" title="선택됨">중기예보</a></li>
 				</ul>
 
 				<div data-zoom-area="1">
@@ -468,7 +468,7 @@
 									</div>
 
 									<div class="nr__summary-tools">
-										<button type="button" class="nr__summary-tool-btn" id="nr-summary-legend-btn">
+										<button type="button" class="nr__summary-tool-btn pop-open" id="nr-summary-legend-btn" data-pop-name="open-iconguide-pop">
 											범례 설명
 										</button>
 
@@ -516,109 +516,6 @@
 								<!-- 요약표 테이블 컨테이너 (JSON 기반 컴포넌트로 동적 렌더링) -->
 								<div class="nr__summary-table-container" id="nr-summary-table-container"></div>
 
-								<!-- 범례 설명 모달 -->
-								<div class="nr__legend-modal-wrap" id="nr-summary-legend-modal" aria-hidden="true" role="dialog" aria-modal="true">
-									<div class="nr__legend-modal">
-										<div class="nr__legend-modal-header">
-											<h4 class="nr__legend-modal-title">범례 설명</h4>
-											<button type="button" class="nr__legend-modal-close" id="nr-summary-legend-close" aria-label="닫기">×</button>
-										</div>
-										<div class="nr__legend-modal-body">
-											<table class="nr__legend-table" summary="하늘상태 및 강수형태, 강수가능성, 강수가능성 예보 변화 추이에 대한 기호와 설명 제공">
-												<caption class="sr-only">범례 설명 상세 표</caption>
-												<thead>
-													<tr>
-														<th scope="col" colspan="2">하늘상태·강수형태</th>
-														<th scope="col" colspan="2">강수가능성</th>
-														<th scope="col" colspan="2">강수가능성 예보 변화 추이</th>
-													</tr>
-													<tr>
-														<th scope="col">기호</th>
-														<th scope="col">설명</th>
-														<th scope="col">기호</th>
-														<th scope="col">설명</th>
-														<th scope="col">기호</th>
-														<th scope="col">설명</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td><span data-icon-weather="NB01" aria-hidden="true"></span></td>
-														<td>맑음</td>
-														<td><span class="nr__legend-chip nr__legend-chip--none"></span></td>
-														<td>거의없음</td>
-														<td><span class="nr__legend-trend-icon nr__legend-trend-icon--up">▲</span></td>
-														<td>높음</td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB02" aria-hidden="true"></span></td>
-														<td>구름조금</td>
-														<td><span class="nr__legend-chip nr__legend-chip--low"></span></td>
-														<td>조금</td>
-														<td><span class="nr__legend-trend-icon nr__legend-trend-icon--down">▼</span></td>
-														<td>낮음</td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB03" aria-hidden="true"></span></td>
-														<td>구름많음</td>
-														<td><span class="nr__legend-chip nr__legend-chip--mid"></span></td>
-														<td>보통</td>
-														<td><span class="nr__legend-trend-icon nr__legend-trend-icon--same">≈</span></td>
-														<td>비슷</td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB04" aria-hidden="true"></span></td>
-														<td>흐림</td>
-														<td><span class="nr__legend-chip nr__legend-chip--high"></span></td>
-														<td>높음</td>
-														<td></td>
-														<td></td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB08" aria-hidden="true"></span></td>
-														<td>비</td>
-														<td></td>
-														<td></td>
-														<td></td>
-														<td></td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB12" aria-hidden="true"></span></td>
-														<td>비/눈</td>
-														<td></td>
-														<td></td>
-														<td></td>
-														<td></td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB13" aria-hidden="true"></span></td>
-														<td>눈/비</td>
-														<td></td>
-														<td></td>
-														<td></td>
-														<td></td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB11" aria-hidden="true"></span></td>
-														<td>눈</td>
-														<td></td>
-														<td></td>
-														<td></td>
-														<td></td>
-													</tr>
-													<tr>
-														<td><span data-icon-weather="NB07" aria-hidden="true"></span></td>
-														<td>소나기</td>
-														<td></td>
-														<td></td>
-														<td></td>
-														<td></td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
 
 								<!-- 하단 안내 박스 -->
 								<div class="nr__box">
@@ -653,6 +550,116 @@
 	<!-- footer -->
 	<footer class="nr__footer"></footer>
 	<!-- //footer -->
+
+	<!-- 팝업: 범례 설명 ----------------------------------------------------------- -->
+	<div class="modal-pop iconguide-wrap popcont-open" data-pop="open-iconguide-pop" id="nr-summary-legend-modal">
+		<button class="pop-close" id="nr-summary-legend-close" title="범례 설명 닫기"></button>
+		<h2>범례 설명</h2>
+		<div class="layer-pop-wrap">
+			<div class="over-scroll">
+				<table class="table-col nr__legend-table" summary="하늘상태 및 강수형태, 강수가능성, 강수가능성 예보 변화 추이에 대한 기호와 설명 제공">
+					<caption class="hide-caption">범례 설명표</caption>
+					<colgroup>
+						<col style="width: 15%">
+						<col style="width: 25%">
+						<col style="width: 15%">
+						<col style="width: 15%">
+						<col style="width: 15%">
+						<col style="width: 15%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col" colspan="2">하늘상태·강수형태</th>
+							<th scope="col" colspan="2">강수가능성</th>
+							<th scope="col" colspan="2">강수가능성 예보 변화 추이</th>
+						</tr>
+						<tr>
+							<th scope="col">기호</th>
+							<th scope="col">설명</th>
+							<th scope="col">기호</th>
+							<th scope="col">설명</th>
+							<th scope="col">기호</th>
+							<th scope="col">설명</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB01" aria-hidden="true"></span></td>
+							<td>맑음</td>
+							<td><span class="nr__legend-chip nr__legend-chip--none"></span></td>
+							<td>거의없음</td>
+							<td><span class="nr__legend-trend-icon nr__legend-trend-icon--up">▲</span></td>
+							<td>높음</td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB02" aria-hidden="true"></span></td>
+							<td>구름조금</td>
+							<td><span class="nr__legend-chip nr__legend-chip--low"></span></td>
+							<td>조금</td>
+							<td><span class="nr__legend-trend-icon nr__legend-trend-icon--down">▼</span></td>
+							<td>낮음</td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB03" aria-hidden="true"></span></td>
+							<td>구름많음</td>
+							<td><span class="nr__legend-chip nr__legend-chip--mid"></span></td>
+							<td>보통</td>
+							<td><span class="nr__legend-trend-icon nr__legend-trend-icon--same">≈</span></td>
+							<td>비슷</td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB04" aria-hidden="true"></span></td>
+							<td>흐림</td>
+							<td><span class="nr__legend-chip nr__legend-chip--high"></span></td>
+							<td>높음</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB08" aria-hidden="true"></span></td>
+							<td>비</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB12" aria-hidden="true"></span></td>
+							<td>비/눈</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB13" aria-hidden="true"></span></td>
+							<td>눈/비</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB11" aria-hidden="true"></span></td>
+							<td>눈</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><span style="margin:0 auto;" data-icon-weather="NB07" aria-hidden="true"></span></td>
+							<td>소나기</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 
 	<script src="repositary/xml/wnuri_main_tab_config_dev.js?ver=202607091110"></script>
 	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>

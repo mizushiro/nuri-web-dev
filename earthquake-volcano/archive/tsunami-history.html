@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<script>
+		(function () {
+			var isGhPages = window.location.pathname.startsWith('/nuri-web');
+			var baseHref = isGhPages ? '/nuri-web/' : '/';
+			document.write('<base href="' + baseHref + '">');
+		})();
+	</script>
+
+	<title>과거 지진해일 사례 - 기상청 날씨누리</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes">
+	<meta name="format-detection" content="telephone=no">
+
+	<link rel="shortcut icon" href="logo_mark.png" />
+	<link rel="apple-touch-icon-precomposed" href="logo_mark.png" />
+	<meta property="og:title" content="기상청 날씨누리">
+	<meta property="og:description" content="기상청 날씨누리">
+	<meta property="og:image" content="https://www.weather.go.kr/w/iphone-shortcut.png">
+	<meta name="google-site-verification" content="_P1iox01__-mHQsuESbKKKQF3-fHMtks8nkf7But2KY" />
+
+	<link href="resources/css/styles.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<link href="resources/css-2021/slick.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/basic.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/common-ui-new-mobile.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/custom.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/component.css?ver=202607091110" rel="stylesheet" type="text/css">
+	<link href="resources/css-2021/print.css?ver=202607091110" rel="stylesheet" media="print" type="text/css" />
+	<link href="resources/css-2021/ie.css?ver=202607091110" rel="stylesheet" type="text/css">
+
+	<script src="resources/js/lodash.min.js"></script>
+	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+	<script src="resources/js/clipboard.min.js"></script>
+	<script src="resources/js/moment-with-locales.js"></script>
+	<script src="resources/js/moment-timezone.js"></script>
+	<script src="resources/js/jquery-3.5.0.min.js"></script>
+	<script src="resources/js/jquery-ui.min.js"></script>
+	<script src="resources/js/iscroll-probe.js"></script>
+	<script src="resources/js/scrollbooster.min.js"></script>
+	<script src="resources/js/slick.min.js"></script>
+	<script src="resources/js/mustache.min.js"></script>
+	<script src="resources/js/store.modern.min.js"></script>
+	<script src="resources/js/object-assign.js"></script>
+	<script src="resources/js/highcharts.js"></script>
+	<script src="resources/js/fn.js?ver=202607091110"></script>
+	<script>
+		window.appBase = "\/w\/";
+		window.vmapBaseUrl = "https:\/\/vmap.kma.go.kr";
+		window.vmapBaseParam = "HIDEMENU=Y";
+		window.wgisBaseUrl = "https:\/\/www.weather.go.kr\/wgis-nuri";
+		var hashParam = null;
+	</script>
+	<link rel="stylesheet" href="resources/lib/tablesorter/css/theme.blue.css" />
+	<script src="resources/lib/tablesorter/js/jquery.tablesorter.min.js"></script>
+	<script src="resources/lib/tablesorter/widgets/jquery.tablesorter.staticrow.min.js"></script>
+
+
+	<!-- 신규코드 -->
+	<link rel="stylesheet" href="resources/css-2026/common.css">
+	<link rel="stylesheet" href="resources/css-2026/sub.css">
+	<link rel="stylesheet" href="resources/css-2026/icon.css">
+</head>
+
+<body class="subp nr__popup">
+	<a id="skip-to-content" href="#content">본문 바로가기</a>
+
+	<header class="mb-4 border-b border-gray-200 ">
+		<div class="flex items-center justify-between container mx-auto px-2 max-w-5xl">
+			<h1 id="logo-kma" class="order-2 !hidden md:!block !w-20 !h-10">
+				<span class="sr-only">기상청</span>
+			</h1>
+			<h2 class="popup-title order-1">과거 지진해일 사례</h2>
+			<i id="popup-close-button" class="icon order-3 md:hidden" role="button" data-role="tab-close"
+				aria-label="닫기 버튼">close</i>
+		</div>
+	</header>
+
+	<main class="container px-2 mx-auto space-y-4 lg:px-0 lg:space-y-8 max-w-5xl nr__sub-content">
+		<a id="content"></a>
+		<div class="flex items-center justify-between">
+			<nav aria-label="페이지 경로">
+				<ul id="breadcrumb">
+					<li class="home">
+						<a href="/index.do"><span class="sr-only">홈</span></a>
+					</li>
+					<li>
+						<a href="earthquake-volcano/recent.do"><span>지진&middot;화산</span></a>
+					</li>
+					<li>
+						<a href=""><span>지진해일</span></a>
+					</li>
+					<li>
+						<a href=""><span>과거 지진해일 사례</span></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+		<div class="cont-wrap cmp-tsunami-case">
+			<section class="cmp-view">
+				<div class="cmp-view-header2">
+					<h3>우리나라 지진해일 사례</h3>
+				</div>
+				<div class="cmp-common-content">
+					<p>
+						우리나라는 삼면이 바다에 접해 있어 지진해일로 인한 피해가 발생할 수 있다.
+						특히 동해는 수심이 깊고 지진이 자주 발생하는 일본에 인접해 있으므로 지진해일의 발생 가능성이 높다.
+						실제로 1983년과 1993년에 일본 북서 해역에서 발생한 지진해일로 인해 우리나라 동해안 지역에서 인명과 재산 피해가 발생한 사례가 있다.
+						2024년 1월 1일 일본 이시카와현 주변 해역에서 발생한 지진해일로 인해 우리나라 동해안 지역에서 지진해일이 관측되었으나 인명과 재산 피해는 없었다.
+					</p>
+				</div>
+			</section>
+			<section class="cmp-view">
+
+				<div class="over-scroll tsu-content">
+					<table class="table-col table-fixed">
+						<caption>동해안 지진해일 사례 를 발생시기별로 설명하는 표</caption>
+						<colgroup>
+							<col style="width: 8%;">
+							<col style="width: 14%;">
+							<col style="width: 26%;">
+							<col style="width: 26%;">
+							<col style="width: 26%;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col" colspan="2">발생시기</th>
+								<th scope="col">2024. 1. 1.</th>
+								<th scope="col">1993. 7. 12.</th>
+								<th scope="col">1983. 5. 26.</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th scope="row" width="6%" rowspan="3">지진</th>
+								<th>진원시</th>
+								<td>2024년 1월 1일 16시 10분</td>
+								<td>1993년 7월 12일 22시 17분</td>
+								<td>1983년 5월 26일 11시 59분</td>
+							</tr>
+							<tr>
+								<th>규모</th>
+								<td>7.6</td>
+								<td>7.8</td>
+								<td>7.7</td>
+							</tr>
+							<tr>
+								<th>진앙</th>
+								<td>일본 혼슈 이시카와현 노토반도</td>
+								<td>일본 홋카이도 오쿠시리섬 북서쪽 근해 </td>
+								<td>일본 혼슈 아키다현 서쪽 근해</td>
+							</tr>
+							<tr>
+								<th scope="row" rowspan="5">지진<br>해일</th>
+								<th>제1파<br>도달시각</th>
+								<td>
+									<ul>
+										<li>- 울릉도 : 17시 30분</li>
+										<li>- 속 초 : 17시 59분</li>
+										<li>- 남항진 : 17시 57분</li>
+										<li>- 묵 호 : 18시 03분</li>
+										<li>- 동 해 : 18시 00분</li>
+										<li>- 임 원 : 18시 12분</li>
+										<li>- 후 포 : 18시 16분</li>
+										<li>- 영 덕 : 18시 52분</li>
+										<li>- 포 항 : 19시 14분</li>
+										<li>- 구룡포 : 18시 50분</li>
+										<li>- 울 산 : 19시 13분</li>
+										<li>- 부 산 : 19시 45분</li>
+									</ul>
+								</td>
+								<td>
+									<ul>
+										<li>- 울릉도 : 23시 47분</li>
+										<li>- 속초 : 00시 00분</li>
+										<li>- 동해 : 00시 09분</li>
+										<li>- 포항 : 01시 18분</li>
+										<li style="text-align:right; font-size:80%;">출처[2]</li>
+									</ul>
+								</td>
+								<td>
+									<ul>
+										<li>- 울릉도 : 13시 17분</li>
+										<li>- 묵호 : 13시 35분</li>
+										<li>- 속초 : 13시 43분</li>
+										<li>- 포항 : 13시 52분</li>
+										<li style="text-align:right; font-size:80%;">출처[1]</li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<th>최대파고</th>
+								<td>
+									<ul>
+										<li>- 울릉도 : 11cm</li>
+										<li>- 속 초 : 41cm</li>
+										<li>- 남항진 : 20cm</li>
+										<li>- 묵 호 : 82cm</li>
+										<li>- 동 해 : 33cm</li>
+										<li>- 임 원 : 25cm</li>
+										<li>- 후 포 : 54cm</li>
+										<li>- 영 덕 : 19cm</li>
+										<li>- 포 항 : 32cm</li>
+										<li>- 구룡포 : 12cm</li>
+										<li>- 울 산 : 11cm</li>
+										<li>- 부 산 : 15cm</li>
+									</ul>
+								</td>
+								<td>
+									<ul>
+										<li>- 울릉도 : 119cm</li>
+										<li>- 속초 : 203cm</li>
+										<li>- 동해 : 276cm</li>
+										<li>- 포항 : 92cm</li>
+										<li style="text-align:right; font-size:80%;">출처[2]</li>
+									</ul>
+								</td>
+								<td>
+									<ul>
+										<li>- 울릉도 : 126cm</li>
+										<li>- 묵호 : 200cm 이상</li>
+										<li>- 속초 : 156cm</li>
+										<li>- 포항 : 62cm</li>
+										<li style="text-align:right; font-size:80%;">출처[1]</li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<th>평균주기(분)</th>
+								<td>10~15분</td>
+								<td>5~10분</td>
+								<td>8∼12분</td>
+							</tr>
+							<!--
+								<tr>
+									<th>지속시간(시) : 큰 수위 변동/전체 </th>
+									<td>2~4시간/24시간 이상</td>
+									<td>3~5시간/24시간 이상 </td><td>3~5시간/24시간 이상 </td>
+								</tr>
+								-->
+							<tr>
+								<th>피해사항</th>
+								<td rowspan="2">피해없음</td>
+								<td>
+									<ul>
+										<li>- 인명 : 피해없음</li>
+										<li>- 선박 : 전파 17, 반파 15</li>
+										<li>- 어망어구 : 3,228통 </li>
+										<li style="text-align:right; font-size:80%;">출처[2]</li>
+									</ul>
+								</td>
+								<td>
+									<ul>
+										<li>- 인명 : 사망 1, 실종 2, 부상 2</li>
+										<li>- 가옥 : 파괴 1, 파손 22, 침수 19</li>
+										<li>- 선박 : 파괴 47, 파손 34</li>
+										<li style="text-align:right; font-size:80%;">출처[1]</li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<th>총 피해액<br>(당시금액)</th>
+								<td>
+									<ul>
+										<li>약 4억원</li>
+										<li style="text-align:right; font-size:80%;">출처[2]</li>
+									</ul>
+								</td>
+								<td>
+									<ul>
+										<li>약 3억 7천여만원</li>
+										<li style="text-align:right; font-size:80%;">출처[1]</li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<th colspan="2">출처</th>
+								<td>기상청 정밀분석결과</td>
+								<td>[1] 기상청, 1993, 기상연감, p30</td>
+								<td>[2] 중앙기상대 관측국, 1983, 동해안지진해일보고, p.7, 44, 45, 60</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="cmp-common-content">* 1983년, 1993년 지진해일의 경우 골-마루까지 높이(peak to peak)이며 2024년의 해일고 산출 방법(하이패스필터 적용 후
+						zero to peak)과 상이함</div>
+				</div>
+			</section>
+			<div class="cmp-stack">
+				<figure class="cmp-common-figure">
+					<img src="resources/image/renew/earthquake_img_2015_7.jpg"
+						alt="1983년 5월 26일 일본 혼슈 아키다현 서쪽 근해에서 발생한 지진해일이 동해 임원항에 내습한 광경으로 해안가 인근 가옥과 선박들에 피해 발생 ">
+					<figcaption class="hid">동해 임원항 지진해일 내습(1983.5.26)</figcaption>
+				</figure>
+			</div>
+		</div>
+	</main>
+
+	<script src="resources/js/com.ui-2021.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/dong-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/sea-config.js?ver=202607091110"></script>
+	<script src="resources/js/app-2021/app-init.js?ver=202607091110"></script>
+	<script src="resources/js/kmap-wrap.js?ver=202607091110"></script>
+	<script src="resources/js/global.js?ver=202607091110"></script>
+
+	<script src="resources/js/webstats.weather.go.kr.100000.js?ver=202607091110"></script>
+	<noscript><img alt="로그" src="http://webstats.kma.go.kr/tracker.sol.tsp?u=100000&amp;js=N" width="0"
+			height="0" /></noscript>
+	<!-- END OF LOGGER TRACKING SCRIPT -->
+
+	<script src="resources/js/UserScriptConf.js"></script>
+
+	<!-- 신규 코드: 테이블 3단계 정렬(오름차순 -> 내림차순 -> 기본상태) 연동 -->
+	<script type="module">
+		import { initTableSort } from '../../resources/js-2026/component/ui-table-sort.js';
+
+		document.addEventListener('DOMContentLoaded', () => {
+			initTableSort('#excel_body');
+		});
+	</script>
+</body>
+
+</html>

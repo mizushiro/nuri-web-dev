@@ -271,8 +271,12 @@ export const initHeaderMenu = async (options = {}) => {
                     pathname.includes('/numerical/') ||
                     !!document.querySelector('.nr__sub');
 
-  const defaultJsonPath = '/resources/json/aside-menu.json';
-  const jsonPath = options.jsonPath || defaultJsonPath;
+	// <base href> 기준 공통 JSON 경로
+	const defaultJsonPath = 'resources/json/aside-menu.json';
+	const rawJsonPath = options.jsonPath || defaultJsonPath;
+	const jsonPath = (typeof rawJsonPath === 'string' && rawJsonPath.startsWith('/') && !rawJsonPath.startsWith('//'))
+		? rawJsonPath.replace(/^\/+/, '')
+		: rawJsonPath;
 
   try {
     const data = await fetchMenuData(jsonPath);

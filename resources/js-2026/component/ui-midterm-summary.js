@@ -52,9 +52,9 @@ export class RegionalSummaryTable {
 					trend: '#filter-trend',
 					temp: '#filter-temp'
 				},
-				legendBtn: '#nr-summary-legend-btn',
-				legendModal: '#nr-summary-legend-modal',
-				legendCloseBtn: '#nr-summary-legend-close'
+				legendBtn: '#nr-summary-legend-btn, [data-pop-name="open-iconguide-pop"]',
+				legendModal: '#nr-summary-legend-modal, [data-pop="open-iconguide-pop"]',
+				legendCloseBtn: '#nr-summary-legend-close, [data-pop="open-iconguide-pop"] .pop-close'
 			},
 			onLoaded: null,
 			onRegionChange: null,
@@ -132,7 +132,29 @@ export class RegionalSummaryTable {
 		// 테이블 바디 (권역별 행 및 날씨 카드 셀)
 		const rows = Array.isArray(data.rows) ? data.rows : [];
 		const tbodyHtml = rows.map(r => {
-			const cellsHtml = (r.forecasts || []).map(f => this.#createCellHtml(f)).join('');
+			const forecasts = r.forecasts || [];
+			const cellsHtml = forecasts.map((f, idx) => {
+				let tempRole = null;
+				if (f.temp !== undefined) {
+					// 같은 날의 오전(짝수 idx)/오후(홀수 idx) 쌍 비교
+					const pairIdx = (idx % 2 === 0) ? idx + 1 : idx - 1;
+					const pair = forecasts[pairIdx];
+					if (pair && pair.temp !== undefined) {
+						if (f.temp < pair.temp) {
+							tempRole = 'min';
+						} else if (f.temp > pair.temp) {
+							tempRole = 'max';
+						} else {
+							// 온도가 같을 경우 오전을 최저(min), 오후를 최고(max)로 기본 지정
+							tempRole = (idx % 2 === 0) ? 'min' : 'max';
+						}
+					} else {
+						tempRole = (idx % 2 === 0) ? 'min' : 'max';
+					}
+				}
+				return this.#createCellHtml(f, tempRole);
+			}).join('');
+
 			return `
 				<tr data-region-group="${r.group || ''}">
 					<th scope="row">${r.region}</th>
@@ -185,8 +207,9 @@ export class RegionalSummaryTable {
 	/**
 	 * 셀(td) 내부 타일 카드 마크업 생성
 	 * @param {Object} item
+	 * @param {'min'|'max'|null} [tempRole=null]
 	 */
-	#createCellHtml(item) {
+	#createCellHtml(item, tempRole = null) {
 		const precipLevel = item.precipLevel || 'none';
 		const skyCode = item.skyCode || 'NB01';
 		const skyText = item.skyText || '맑음';
@@ -204,9 +227,18 @@ export class RegionalSummaryTable {
 			`;
 		}
 
-		// 최저/최고기온
+		// 기온 (오전/오후 단일 온도 또는 기존 최저/최고기온 병기 호환)
 		let tempHtml = '';
-		if (item.minTemp !== undefined && item.maxTemp !== undefined) {
+		if (item.temp !== undefined) {
+			const isMax = tempRole === 'max';
+			const roleClass = isMax ? 'nr__temp-max' : 'nr__temp-min';
+			const roleLabel = isMax ? '최고기온' : '최저기온';
+			tempHtml = `
+				<div class="nr__cell-temp">
+					<span class="${roleClass}" title="${roleLabel}: ${item.temp}°" aria-label="${roleLabel} ${item.temp}도">${item.temp}°</span>
+				</div>
+			`;
+		} else if (item.minTemp !== undefined && item.maxTemp !== undefined) {
 			tempHtml = `
 				<div class="nr__cell-temp">
 					<span class="nr__temp-min">${item.minTemp}°</span><span class="nr__temp-sep">/</span><span class="nr__temp-max">${item.maxTemp}°</span>
@@ -307,6 +339,11 @@ export class RegionalSummaryTable {
 		bindCheckbox(filters.temp, 'temp', 'show-temp', '', true);
 
 		// 4. 범례 설명 모달
+		// 날씨누리 공통 pop-open / modal-pop 시스템(weatherUI)이 있는 경우 중복 실행 방지
+		if (typeof window.weatherUI === 'object' && typeof window.weatherUI.popOpen === 'function') {
+			return;
+		}
+
 		const lBtn = typeof legendBtn === 'string' ? document.querySelector(legendBtn) : legendBtn;
 		const lModal = typeof legendModal === 'string' ? document.querySelector(legendModal) : legendModal;
 		const lClose = typeof legendCloseBtn === 'string' ? document.querySelector(legendCloseBtn) : legendCloseBtn;
@@ -314,12 +351,15 @@ export class RegionalSummaryTable {
 		if (lBtn && lModal) {
 			lBtn.addEventListener('click', () => {
 				lModal.classList.add('is-open');
+				lModal.style.display = 'block';
 				lModal.setAttribute('aria-hidden', 'false');
 			}, { signal });
 		}
 		if (lClose && lModal) {
-			lClose.addEventListener('click', () => {
+			lClose.addEventListener('click', (e) => {
+				e.preventDefault();
 				lModal.classList.remove('is-open');
+				lModal.style.display = 'none';
 				lModal.setAttribute('aria-hidden', 'true');
 			}, { signal });
 		}
@@ -327,6 +367,7 @@ export class RegionalSummaryTable {
 			lModal.addEventListener('click', (e) => {
 				if (e.target === lModal) {
 					lModal.classList.remove('is-open');
+					lModal.style.display = 'none';
 					lModal.setAttribute('aria-hidden', 'true');
 				}
 			}, { signal });
