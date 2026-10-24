@@ -51,10 +51,9 @@
 html {
   font-size: 10px;
 }
-
 body {
-  height:auto !important;
-  min-height:100% !important;
+	height:auto !important;
+	min-height:100% !important;
 }
 
 /* 1.2 Accessibility (Skip Link & Screen Reader) */
@@ -1390,8 +1389,8 @@ body {
 
   /* --- 5.1.3 헤더 & GNB 반응형 --- */
   .nr__header {
-    height: 6rem;
-    min-height: 6rem;
+    height: 10.8rem;
+    min-height: 10.8rem;
   }
 
   .nr__header .nr__header-slogan,

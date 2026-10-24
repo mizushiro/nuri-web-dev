@@ -1212,21 +1212,25 @@
           <!-- 시간별 예보 -->
           <div class="nr__main-group" id="hourly-forecast-sec">
             <div class="nr__main-head">
-              <div class="nr__main-head-item" data-gap="3">
-                <h3 class="nr__main-title">시간별 예보</h3>
-                <div class="nr__hourly-interval-group">
-                  <button type="button" class="nr__hourly-interval-btn" data-interval="3">3시간 간격</button>
-                  <button type="button" class="nr__hourly-interval-btn active" data-interval="1">1시간 간격</button>
-                </div>
-                <div class="nr__main-head-line nr__desktop-only"></div>
-                <div class="nr__form-radio-wrap nr__desktop-only">
-                  <input type="radio" id="nr__temptype_av" name="nr__temptype" class="nr__sr-only" checked>
-                  <label for="nr__temptype_av">평균기온</label>
-
-                  <input type="radio" id="nr__temptype_mx" name="nr__temptype" class="nr__sr-only">
-                  <label for="nr__temptype_mx">최저/최고 기온</label>
-                </div>
-              </div>
+							<div class="nr__main-head-item" data-gap="3">
+								<h3 class="nr__main-title">시간별 예보</h3>
+								<div class="nr__forecast-tab-container">
+									<div class="nr__forecast-tab-group">
+										<button type="button" class="nr__forecast-tab-btn active" data-tab="short">단기예보</button>
+										<button type="button" class="nr__forecast-tab-btn" data-tab="mid">중기예보</button>
+									</div>
+									<div class="nr__hourly-interval-radio-group" id="hourly-interval-radios">
+										<label class="nr__interval-radio-item">
+											<input type="radio" name="nr__interval_opt" value="1" class="nr__interval-radio-input" checked>
+											<span class="nr__interval-radio-label">1시간 <span>간격</span></span>
+										</label>
+										<label class="nr__interval-radio-item">
+											<input type="radio" name="nr__interval_opt" value="3" class="nr__interval-radio-input">
+											<span class="nr__interval-radio-label">3시간 <span>간격</span></span>
+										</label>
+									</div>
+								</div>
+							</div>
 
               <!-- Desktop Toolbar (1024px 초과 화면 노출) -->
               <div class="nr__main-head-item nr__desktop-only" data-gap="3">
@@ -1263,13 +1267,13 @@
 
                 <!-- View Mode Switcher -->
                 <div class="nr__hourly-view-switcher">
-                  <button type="button" class="nr__hourly-view-btn active" data-view="mode1" aria-label="선형 차트 보기">
+                  <button type="button" class="nr__hourly-view-btn active" data-view="mode1" aria-label="혼합 그래프 보기">
                     <span data-icon="legend-1"></span>
                   </button>
-                  <button type="button" class="nr__hourly-view-btn" data-view="mode2" aria-label="막대 차트 보기">
+                  <button type="button" class="nr__hourly-view-btn" data-view="mode2" aria-label="그래프 상세 보기">
                     <span data-icon="legend-2"></span>
                   </button>
-                  <button type="button" class="nr__hourly-view-btn" data-view="mode3" aria-label="리스트 보기">
+                  <button type="button" class="nr__hourly-view-btn" data-view="mode3" aria-label="표 보기">
                     <span data-icon="legend-3"></span>
                   </button>
                 </div>
@@ -1289,11 +1293,10 @@
                     <li><button type="button" class="nr__item-link" data-view="mode2">그래프형태</button></li>
                     <li><button type="button" class="nr__item-link" data-view="mode3">표형태</button></li>
                   </ul>
-                  <div class="nr__drop-divider" role="separator"></div>
-                  <ul class="nr__drop-list" data-group="temptype">
-                    <li><button type="button" class="nr__item-link active" data-temptype="avg">평균기온</button></li>
-                    <li><button type="button" class="nr__item-link" data-temptype="minmax">최저/최고기온</button></li>
-                  </ul>
+									<ul class="nr__drop-list" data-group="time">
+										<li><button type="button" class="nr__item-link active" data-view="time1" data-interval="1">1시간 간격</button></li>
+										<li><button type="button" class="nr__item-link" data-view="time2" data-interval="3">3시간 간격</button></li>
+									</ul>
                 </div>
               </div>
             </div>
@@ -1301,6 +1304,33 @@
             <div class="nr__hourly-forecast-container">
               <!-- Content Container (Rendered dynamically) -->
               <div id="hourly-forecast-content"></div>
+            </div>
+
+            <!-- 임시 테스트 컨트롤러 패널 -->
+            <div class="nr__forecast-test-panel" id="hourly-forecast-test-panel">
+              <div class="nr__test-panel-header">
+                <div class="nr__test-panel-title-wrap">
+                  <span class="nr__test-panel-badge">테스트 패널</span>
+                </div>
+								<div class="nr__test-panel-items">
+									<label class="nr__test-checkbox-label" for="test-check-precip-zero">
+										<input type="checkbox" id="test-check-precip-zero">
+										<span class="nr__test-label-text">강수량 전체 0</span>
+									</label>
+									<label class="nr__test-checkbox-label" for="test-check-snow-zero">
+										<input type="checkbox" id="test-check-snow-zero">
+										<span class="nr__test-label-text">적설량 전체 0</span>
+									</label>
+									<label class="nr__test-checkbox-label" for="test-check-rain-int-zero">
+										<input type="checkbox" id="test-check-rain-int-zero">
+										<span class="nr__test-label-text">강수강도 - 비 전체 0</span>
+									</label>
+									<label class="nr__test-checkbox-label" for="test-check-snow-int-zero">
+										<input type="checkbox" id="test-check-snow-int-zero">
+										<span class="nr__test-label-text">강수강도 - 눈 전체 0</span>
+									</label>
+              	</div>
+              </div>
             </div>
 
             <!-- Mobile Hourly Bottom Actions (시계열예보안내, 최근발표시각 - 1024px 이하 노출) -->

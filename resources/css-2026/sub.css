@@ -1504,3 +1504,50 @@ input:focus + .nr__label {
 .nr__line-l {
 	border-left: 1px solid #E0E6EF !important;
 }
+
+@media (max-width: 1024px) {
+	.volcano-search-table,
+	.tsunami-search-table{
+		min-width: 102.4rem
+	}
+	.volcano-search-table td, 
+	.volcano-search-table th,
+	.tsunami-search-table td, 
+	.tsunami-search-table th	{
+		padding: 0.4rem 0.2rem;
+		height: 2.4rem;
+	}
+
+}
+@media screen and (max-width: 768px) {
+	.nr__tsunami-mapimg {
+		flex-direction: column;
+	}
+	.nr__tsunami-mapimg-item {
+		width: 100%;
+	}
+	.nr__popup .cmp-eqk-search .cmp-form-select.label-on label,
+	.nr__popup .cmp-eqk-search .cmp-form-input.label-on label {
+		width: 4.4rem;
+		padding:0 !important;
+	}
+	.nr__popup .cmp-form-input-twin input[type="text"] {
+		width: 100%;
+	}
+
+	.nr__popup .cmp-form-select,
+	.nr__popup .cmp-form-input{
+		display: flex;
+	}
+	.nr__popup .cmp-form-select label,
+	.nr__popup .cmp-form-input label {
+		flex-shrink: 0;
+	}
+	.nr__popup .cmp-form-input input[type="text"],
+	.nr__popup .cmp-form-select .select{
+		flex-grow: 1;
+	}
+	.nr__popup .cmp-form-input-twin.label-on label:last-of-type{
+		margin-top: 0;
+	}
+}
